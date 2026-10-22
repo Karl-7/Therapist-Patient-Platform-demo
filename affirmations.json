@@ -1,0 +1,12 @@
+{
+  "categories": ["Stress & Anxiety", "Self-Compassion", "Mindfulness", "ADHD Support", "Confidence", "Relationships"],
+  "note": "Starter library is currently embedded in index.html. This JSON is a clean editable reference for expanding the library.",
+  "affirmations": [
+    {"category":"Stress & Anxiety","moods":["Anxious","Stressed"],"text":"I can take one slow breath at a time. I do not have to solve everything right now."},
+    {"category":"Self-Compassion","moods":["Sad","Low"],"text":"It is okay to feel what I feel. I can meet myself with kindness today."},
+    {"category":"Mindfulness","moods":["Okay","Good"],"text":"I can return to this moment, gently, without needing to change anything."},
+    {"category":"ADHD Support","moods":["Overwhelmed"],"text":"My mind does not need to work like anyone else’s for me to be worthy and capable."},
+    {"category":"Confidence","moods":["Good","Great"],"text":"I can feel unsure and still take a brave next step."},
+    {"category":"Relationships","moods":["Lonely"],"text":"I am worthy of relationships where care, honesty, and respect can grow."}
+  ]
+}
