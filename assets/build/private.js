@@ -1726,13 +1726,18 @@
     let afterRemoval = false;
     tokens.forEach((token, i) => {
       if (drop.has(i)) return void (afterRemoval = true);
-      const prev = kept[kept.length - 1];
-      const sentenceStart = !prev || SENTENCE_END.test(prev.trim());
-      const looksLikeLink = /^(https?:|www\.|\S+@\S+)/i.test(token);
-      kept.push(afterRemoval && sentenceStart && !looksLikeLink ? token.replace(/^([^\p{L}]*)(\p{Ll})/u, (_, lead, letter) => lead + letter.toUpperCase()) : token);
+      let t = token;
+      if (afterRemoval) {
+        const prev = kept[kept.length - 1];
+        if (prev === void 0) t = t.replace(/^[,.;:،؛]+\s*/, "");
+        else if (/^[,.!?;:،؛؟]/.test(t)) kept[kept.length - 1] = prev.replace(/[ \t]+$/, "");
+        const sentenceStart = prev === void 0 || SENTENCE_END.test(prev.trim());
+        if (sentenceStart && !/^(https?:|www\.|\S+@\S+)/i.test(t)) t = t.replace(/^([^\p{L}]*)(\p{Ll})/u, (_, lead, letter) => lead + letter.toUpperCase());
+      }
+      if (t) kept.push(t);
       afterRemoval = false;
     });
-    return kept.join("").replace(/[ \t]+([,.!?;:،؛؟])/g, "$1").replace(/[ \t]{2,}/g, " ").trim().replace(/^[,.;:،؛\s]+/, "");
+    return kept.join("").replace(/[ \t]+([,.!?;:،؛؟])/g, "$1").replace(/[ \t]{2,}/g, " ").trim();
   }
 
   // assets/affirmations-ui.js
@@ -1744,6 +1749,9 @@
   };
   var favorites = [];
   var featured = null;
+  var topic = null;
+  var topicPicks = [];
+  var PER_TOPIC = 3;
   var favFilter = "All";
   var onError = (err) => console.error(err);
   var isSaved = (item) => favorites.some((f) => f.id === item.id);
@@ -1753,14 +1761,19 @@
     const hasUi = $("searchResults") || $("favoriteList") || $("featuredQuote");
     if (!hasUi) return;
     window.renderSearch = renderSearch2;
+    window.renderCategories = renderTopics;
     window.renderFavorites = renderFavorites;
     await loadFavorites();
     setupFeatured();
+    renderTopics();
     renderSearch2($("searchInput")?.value || "");
     renderFavorites();
   }
   function refreshAffirmations() {
     if (featured && !lib().some((x) => x.id === featured.id)) pickFeatured();
+    if (topic && !lib().some((x) => x.category === topic)) topic = null;
+    if (topic && topicPicks.some((p) => !lib().some((x) => x.id === p.id))) pickTopic();
+    renderTopics();
     renderSearch2($("searchInput")?.value || "");
     updateSaveButtons();
   }
@@ -1819,18 +1832,47 @@
     const out = $("searchResults");
     if (!out) return;
     const q = query.trim().toLowerCase();
-    const cat = typeof activeCategory !== "undefined" ? activeCategory : "All";
-    out.innerHTML = "";
-    if (!q && cat === "All") {
-      out.append(el("p", { className: "notice", textContent: `Search above or choose a topic to explore ${lib().length} affirmations.` }));
-      return;
+    if (q && topic) {
+      topic = null;
+      renderTopics();
     }
-    const items = lib().filter((x) => (cat === "All" || x.category === cat) && (!q || `${x.text} ${x.category} ${(x.tags || []).join(" ")}`.toLowerCase().includes(q)));
-    if (!items.length) {
-      out.append(el("p", { className: "empty", textContent: "No match yet. Try another word or topic." }));
-      return;
+    out.innerHTML = "";
+    let items;
+    if (q) {
+      items = lib().filter((x) => `${x.text} ${x.category} ${(x.tags || []).join(" ")}`.toLowerCase().includes(q));
+      if (!items.length) return out.append(el("p", { className: "empty", textContent: "No match yet. Try another word or topic." }));
+    } else if (topic) {
+      items = topicPicks;
+    } else {
+      return out.append(el("p", { className: "notice", textContent: `Search above or choose a topic below to explore ${lib().length} affirmations.` }));
     }
     items.forEach((item) => out.append(el("div", { className: "result" }, el("small", { textContent: item.category }), el("p", { textContent: `\u201C${item.text}\u201D` }), saveButton(item))));
+  }
+  function renderTopics() {
+    const chips = $("categoryChips");
+    if (!chips) return;
+    chips.innerHTML = "";
+    [...new Set(lib().map((x) => x.category).filter(Boolean))].forEach((c) => {
+      const active = c === topic;
+      const b = el("button", { type: "button", className: "chip" + (active ? " active" : ""), textContent: active ? `\u21BB ${c}` : c });
+      b.title = active ? `Show three other ${c} affirmations` : `Show three ${c} affirmations`;
+      b.setAttribute("aria-pressed", String(active));
+      b.onclick = () => {
+        topic = c;
+        pickTopic();
+        if ($("searchInput")) $("searchInput").value = "";
+        renderTopics();
+        renderSearch2("");
+        chips.querySelector(".chip.active")?.focus();
+      };
+      chips.append(b);
+    });
+  }
+  function pickTopic() {
+    const pool = lib().filter((x) => x.category === topic);
+    const fresh = pool.filter((x) => !topicPicks.some((p) => p.id === x.id));
+    const from = fresh.length >= PER_TOPIC ? fresh : pool;
+    topicPicks = [...from].sort(() => Math.random() - 0.5).slice(0, PER_TOPIC);
   }
   function setupFeatured() {
     const quote = $("featuredQuote");
@@ -1979,9 +2021,17 @@
     const float = el2("span", { className: "mood-float", textContent: emoji, ariaHidden: "true" });
     float.style.left = `${r.left + r.width / 2}px`;
     float.style.top = `${r.top + r.height / 2 - 10}px`;
-    document.body.append(float);
+    floatLayer().append(float);
     float.addEventListener("animationend", () => float.remove());
     setTimeout(() => float.remove(), 1500);
+  }
+  function floatLayer() {
+    let layer = document.getElementById("mood-float-layer");
+    if (!layer) {
+      layer = el2("div", { id: "mood-float-layer", ariaHidden: "true" });
+      document.body.append(layer);
+    }
+    return layer;
   }
   function addStyles() {
     if (document.getElementById("mood-checkin-style")) return;
@@ -1992,7 +2042,10 @@
 .mood-status{min-height:22px;margin:12px 0 0;font-size:14px;color:#6b6283}
 .mood.tapped{animation:moodPress .35s ease}
 .mood:disabled,.arrow:disabled{opacity:.35;cursor:default}
-.mood-float{position:fixed;z-index:9999;pointer-events:none;font-size:34px;transform:translate(-50%,-50%);animation:moodRise .95s ease-out forwards}
+#mood-float-layer{position:fixed;inset:0;z-index:2147483647;pointer-events:none;isolation:isolate}
+.mood-float{position:fixed;pointer-events:none;font-size:34px;transform:translate(-50%,-50%);animation:moodRise .95s ease-out forwards;will-change:transform,opacity}
+#mood h2,#mood .sub,.mood-checkin h2,.mood-checkin .sub{position:relative;z-index:1}
+.mood-controls{position:relative;z-index:2}
 @keyframes moodRise{0%{opacity:1;transform:translate(-50%,-50%) scale(1)}70%{opacity:.9}100%{opacity:0;transform:translate(-50%,-150px) scale(1.6)}}
 @keyframes moodPress{0%{transform:scale(1)}40%{transform:scale(.93)}100%{transform:scale(1)}}
 @media (prefers-reduced-motion:reduce){.mood-float{animation-duration:.01s}.mood.tapped{animation:none}}`;
@@ -2016,7 +2069,7 @@
     const nav = $2("navlinks");
     if (!nav) return;
     const style = document.createElement("style");
-    style.textContent = ".account{display:flex;align-items:center;gap:8px;padding-left:8px;border-left:1px solid var(--line,#e8dfed)}.account span{font-size:12px;color:#8a7fa0;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}@media(max-width:650px){.account{border-left:0;padding:8px 5px}}.section,.about-page,footer{overflow-wrap:break-word}.grid2>*,.two-fields>*,.about-grid>*{min-width:0}.result,.saved-item,.tidy-text,.affirmation-text,#journalEntries,#bookingStatus,#journalStatus{overflow-wrap:anywhere}.step-link{display:block;text-decoration:none;color:inherit;cursor:pointer;transition:transform .18s,box-shadow .18s,border-color .18s}.step-link:hover,.step-link:focus-visible{transform:translateY(-3px);border-color:#b7a4d0;box-shadow:0 8px 22px #57466d18}.step-link:focus-visible{outline:2px solid #b7a4d0;outline-offset:2px}";
+    style.textContent = ".account{display:flex;align-items:center;gap:8px;padding-left:8px;border-left:1px solid var(--line,#e8dfed)}.account span{font-size:12px;color:#8a7fa0;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}@media(max-width:650px){.account{border-left:0;padding:8px 5px}}.section,.about-page,footer{overflow-wrap:break-word}.grid2>*,.two-fields>*,.about-grid>*{min-width:0}.result,.saved-item,.tidy-text,.affirmation-text,#journalEntries,#bookingStatus,#journalStatus{overflow-wrap:anywhere}a.btn,a.btn:hover{text-decoration:none}.step-link{display:block;text-decoration:none;color:inherit;cursor:pointer;transition:transform .18s,box-shadow .18s,border-color .18s}.step-link:hover,.step-link:focus-visible{transform:translateY(-3px);border-color:#b7a4d0;box-shadow:0 8px 22px #57466d18}.step-link:focus-visible{outline:2px solid #b7a4d0;outline-offset:2px}";
     document.head.append(style);
     const out = el3("button", { className: "btn secondary small", type: "button", textContent: "Sign out" });
     out.onclick = async () => {
@@ -2099,52 +2152,100 @@
     style.textContent = `
 .dictate-tip{display:flex;gap:10px;align-items:flex-start;background:#f6f0fc;border:1px solid #e6dcf2;border-radius:14px;padding:11px 13px;margin:4px 0 14px;font-size:13.5px;color:#5b5677;line-height:1.5}
 .dictate-icon{font-size:18px;line-height:1.2}
-.tidy-review{border:1px solid #d9cde8;background:#fff;border-radius:16px;padding:16px;margin-top:14px}
+.tidy-review{border:1px solid #d9cde8;background:#fff;border-radius:16px;padding:16px;margin:4px 0 14px}
 .tidy-review h3{margin:0 0 4px;font-size:17px}
-.tidy-text{font-size:16px;line-height:1.8;white-space:pre-wrap;border:1px solid var(--line,#e8dfed);border-radius:12px;padding:12px 14px;margin:10px 0;background:#fffdfd;max-height:55vh;overflow:auto}
-.tidy-del{all:unset;cursor:pointer;color:#c4548c;background:#fde8f2;text-decoration:line-through;text-decoration-color:#ec7fb2;text-decoration-thickness:2px;border-radius:5px;padding:0 2px}
+.tidy-text{font-size:16px;line-height:1.8;white-space:pre-wrap;border:1px solid var(--line,#e8dfed);border-radius:12px;padding:12px 14px;margin:10px 0;background:#fffdfd;max-height:55vh;overflow:auto;cursor:text}
+.tidy-del{all:unset;cursor:pointer;color:#c4548c;background:#fde8f2;text-decoration:line-through;text-decoration-color:#ec7fb2;text-decoration-thickness:2px;border-radius:5px;padding:0 2px;-webkit-user-select:text;user-select:text}
 .tidy-del.kept{color:inherit;background:#eef5ec;text-decoration:none;outline:1px dashed #9cbf98}
 .tidy-del:focus-visible{outline:2px solid #7866a8}
 .tidy-legend{font-size:13px;color:#77718a;margin:0}
 .tidy-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}`;
     document.head.append(style);
     const panel = el3("div", { className: "tidy-review hidden", ariaLive: "polite" });
-    ($2("journalStatus") || $2("saveJournal").parentElement).after(panel);
+    $2("journalText").after(panel);
+    const writing = () => [document.querySelector("#journal .dictate-tip"), document.querySelector('label[for="journalText"]'), $2("journalText"), $2("saveJournal")?.parentElement].filter(Boolean);
+    const showWriting = (on) => writing().forEach((n2) => n2.classList.toggle("hidden", !on));
     const ctl = { onRecord: null };
     let tokens = [];
     let deletions = [];
+    let text = null;
     const finalText = () => applyDeletions(tokens, deletions.filter((d) => !d.kept));
     ctl.close = () => {
       panel.classList.add("hidden");
       panel.innerHTML = "";
-      $2("journalText").readOnly = false;
+      showWriting(true);
     };
-    ctl.open = (result) => {
-      tokens = result.tokens;
-      deletions = result.deletions.map((d) => ({ ...d, kept: false }));
-      panel.innerHTML = "";
-      const text = el3("div", { className: "tidy-text", dir: "auto" });
+    function renderText() {
+      text.innerHTML = "";
+      const word = (k) => {
+        const span = el3("span", { textContent: tokens[k] });
+        span.dataset.i = k;
+        return span;
+      };
       let i = 0;
-      deletions.forEach((d) => {
-        if (d.from > i) text.append(tokens.slice(i, d.from).join(""));
-        const b = el3("button", { type: "button", className: "tidy-del", title: (d.reason || "Suggested removal") + " \xB7 tap to keep", textContent: tokens.slice(d.from, d.to + 1).join("") });
-        b.setAttribute("aria-pressed", "false");
-        b.setAttribute("aria-label", `Will be removed: ${b.textContent.trim()}. Tap to keep.`);
+      deletions.sort((a, b) => a.from - b.from).forEach((d) => {
+        for (; i < d.from; i++) text.append(word(i));
+        const label = tokens.slice(d.from, d.to + 1).join("").trim();
+        const b = el3("button", { type: "button", className: "tidy-del" + (d.kept ? " kept" : ""), title: (d.reason || "Suggested removal") + (d.kept ? " \xB7 tap to remove" : " \xB7 tap to keep") });
+        for (let k = d.from; k <= d.to; k++) b.append(word(k));
+        b.setAttribute("aria-pressed", String(!!d.kept));
+        b.setAttribute("aria-label", `${d.kept ? "Kept" : "Will be removed"}: ${label}. Tap to ${d.kept ? "remove" : "keep"}.`);
         b.onclick = () => {
+          if (!getSelection().isCollapsed) return;
           d.kept = !d.kept;
-          b.classList.toggle("kept", d.kept);
-          b.setAttribute("aria-pressed", String(d.kept));
-          b.setAttribute("aria-label", `${d.kept ? "Kept" : "Will be removed"}: ${b.textContent.trim()}. Tap to ${d.kept ? "remove" : "keep"}.`);
+          renderText();
         };
         text.append(b);
         i = d.to + 1;
       });
-      if (i < tokens.length) text.append(tokens.slice(i).join(""));
-      const legend = deletions.length ? "Struck-through parts will be removed. Tap any of them to keep it, or choose \u201CEdit text\u201D to change anything yourself." : "Nothing to remove. You can save it, or choose \u201CEdit text\u201D to change anything yourself.";
-      const record = el3("button", { className: "btn", type: "button", textContent: "Record entry" });
+      for (; i < tokens.length; i++) text.append(word(i));
+    }
+    function strikeSelection() {
+      if (!text || panel.classList.contains("hidden")) return;
+      const sel = getSelection();
+      if (!sel.rangeCount || sel.isCollapsed) return;
+      const range = sel.getRangeAt(0);
+      if (!text.contains(range.commonAncestorContainer)) return;
+      const hit = [...text.querySelectorAll("[data-i]")].filter((s) => s.textContent.trim() && range.intersectsNode(s)).map((s) => Number(s.dataset.i));
+      if (!hit.length) return;
+      let from = Math.min(...hit);
+      let to = Math.max(...hit);
+      const overlapping = deletions.filter((d) => d.from <= to && d.to >= from);
+      overlapping.forEach((d) => {
+        from = Math.min(from, d.from);
+        to = Math.max(to, d.to);
+      });
+      deletions = deletions.filter((d) => !overlapping.includes(d));
+      deletions.push({ from, to, type: "manual", reason: "You selected this", kept: false });
+      sel.removeAllRanges();
+      renderText();
+    }
+    let mouseDown = false;
+    let selTimer = null;
+    document.addEventListener("pointerdown", (e) => {
+      mouseDown = e.pointerType === "mouse";
+    });
+    document.addEventListener("mouseup", () => {
+      if (!mouseDown) return;
+      mouseDown = false;
+      setTimeout(strikeSelection, 0);
+    });
+    document.addEventListener("selectionchange", () => {
+      if (mouseDown || panel.classList.contains("hidden")) return;
+      clearTimeout(selTimer);
+      selTimer = setTimeout(strikeSelection, 800);
+    });
+    ctl.open = (result) => {
+      tokens = result.tokens;
+      deletions = result.deletions.map((d) => ({ ...d, kept: false }));
+      panel.innerHTML = "";
+      text = el3("div", { className: "tidy-text", dir: "auto" });
+      renderText();
+      const legend = "Struck-through parts will be removed. Tap one to keep it, or select any words to strike them out. \u201CEdit text\u201D lets you change anything yourself.";
+      const record = el3("button", { className: "btn", type: "button", textContent: "Record this" });
       record.onclick = () => {
         const out = finalText();
-        if (!out) return $2("journalStatus").textContent = "Everything was removed. Tap a struck-through part to keep it, or go back to editing.";
+        if (!out) return $2("journalStatus").textContent = "Everything was removed. Tap a struck-through part to keep it, or choose \u201CEdit text\u201D.";
         ctl.onRecord?.(out, record);
       };
       const edit = el3("button", { className: "btn secondary", type: "button", textContent: "Edit text" });
@@ -2156,10 +2257,14 @@
         $2("journalStatus").textContent = "Edit as you like, then press \u201CTidy up & review\u201D again or \u201CSave as written\u201D.";
       };
       const back = el3("button", { className: "btn secondary", type: "button", textContent: "Cancel" });
-      back.onclick = () => ctl.close();
+      back.onclick = () => {
+        ctl.close();
+        $2("journalText").focus();
+      };
       panel.append(el3("h3", { textContent: "Review before saving" }), el3("p", { className: "tidy-legend", textContent: legend }), text, el3("div", { className: "tidy-actions" }, record, edit, back));
+      showWriting(false);
+      $2("journalStatus").textContent = "";
       panel.classList.remove("hidden");
-      $2("journalText").readOnly = true;
       panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
       record.focus({ preventScroll: true });
     };

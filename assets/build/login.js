@@ -1778,6 +1778,46 @@
     $("loginTitle").textContent = copy[0];
     $("loginSub").textContent = copy[1];
     $("submitBtn").textContent = copy[2];
+    applyResetCooldown();
+  }
+  var RESET_WAIT_MS = 3 * 60 * 1e3;
+  var resetTimer = null;
+  var resetUntil = () => {
+    try {
+      return Number(localStorage.getItem("sst_reset_until")) || 0;
+    } catch {
+      return 0;
+    }
+  };
+  function startResetCooldown() {
+    try {
+      localStorage.setItem("sst_reset_until", String(Date.now() + RESET_WAIT_MS));
+    } catch {
+    }
+    applyResetCooldown();
+  }
+  function applyResetCooldown() {
+    clearInterval(resetTimer);
+    if (mode !== "forgot") {
+      $("submitBtn").disabled = false;
+      return;
+    }
+    const tick = () => {
+      const left = resetUntil() - Date.now();
+      if (mode !== "forgot" || left <= 0) {
+        clearInterval(resetTimer);
+        if (mode === "forgot") {
+          $("submitBtn").disabled = false;
+          $("submitBtn").textContent = "Send reset link";
+        }
+        return;
+      }
+      const sec = Math.ceil(left / 1e3);
+      $("submitBtn").disabled = true;
+      $("submitBtn").textContent = `Send again in ${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, "0")}`;
+    };
+    tick();
+    resetTimer = setInterval(tick, 1e3);
   }
   function destination(user) {
     if (isDoctor(user)) return "doctor.html";
@@ -1819,6 +1859,7 @@
     mode = mode === "forgot" ? "signin" : "forgot";
     setStatus("");
     render();
+    if (mode === "forgot" && resetUntil() > Date.now()) setStatus("A reset link was sent recently. Please check your inbox and spam folder; you can ask for another one when the timer ends.", "ok");
   };
   $("authForm").addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -1840,7 +1881,8 @@
         setStatus("Account created. Check your email and click the confirmation link, then sign in here.", "ok");
       } else if (mode === "forgot") {
         await requestPasswordRecovery2(email);
-        setStatus("If that email has an account, a reset link is on its way.", "ok");
+        setStatus(`An email with a password reset link has been sent to ${email}. It can take a few minutes; please also check your spam folder.`, "ok");
+        startResetCooldown();
       } else if (mode === "invite") {
         const user = await acceptInvite2(inviteToken, password);
         role = isDoctor(user) ? "doctor" : "private";
@@ -1854,6 +1896,7 @@
       setStatus(friendly(err), "error");
     } finally {
       $("submitBtn").disabled = false;
+      applyResetCooldown();
     }
   });
   async function start() {

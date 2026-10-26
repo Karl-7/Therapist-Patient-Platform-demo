@@ -107,9 +107,19 @@ function rise(button, emoji) {
   const float = el('span', { className: 'mood-float', textContent: emoji, ariaHidden: 'true' })
   float.style.left = `${r.left + r.width / 2}px`
   float.style.top = `${r.top + r.height / 2 - 10}px`
-  document.body.append(float)
+  floatLayer().append(float)
   float.addEventListener('animationend', () => float.remove())
   setTimeout(() => float.remove(), 1500)
+}
+
+// A see-through layer over the whole page, above everything (titles, the top menu), for the rising emoji.
+function floatLayer() {
+  let layer = document.getElementById('mood-float-layer')
+  if (!layer) {
+    layer = el('div', { id: 'mood-float-layer', ariaHidden: 'true' })
+    document.body.append(layer)
+  }
+  return layer
 }
 
 function addStyles() {
@@ -121,7 +131,10 @@ function addStyles() {
 .mood-status{min-height:22px;margin:12px 0 0;font-size:14px;color:#6b6283}
 .mood.tapped{animation:moodPress .35s ease}
 .mood:disabled,.arrow:disabled{opacity:.35;cursor:default}
-.mood-float{position:fixed;z-index:9999;pointer-events:none;font-size:34px;transform:translate(-50%,-50%);animation:moodRise .95s ease-out forwards}
+#mood-float-layer{position:fixed;inset:0;z-index:2147483647;pointer-events:none;isolation:isolate}
+.mood-float{position:fixed;pointer-events:none;font-size:34px;transform:translate(-50%,-50%);animation:moodRise .95s ease-out forwards;will-change:transform,opacity}
+#mood h2,#mood .sub,.mood-checkin h2,.mood-checkin .sub{position:relative;z-index:1}
+.mood-controls{position:relative;z-index:2}
 @keyframes moodRise{0%{opacity:1;transform:translate(-50%,-50%) scale(1)}70%{opacity:.9}100%{opacity:0;transform:translate(-50%,-150px) scale(1.6)}}
 @keyframes moodPress{0%{transform:scale(1)}40%{transform:scale(.93)}100%{transform:scale(1)}}
 @media (prefers-reduced-motion:reduce){.mood-float{animation-duration:.01s}.mood.tapped{animation:none}}`

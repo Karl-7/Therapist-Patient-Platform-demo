@@ -32,6 +32,8 @@ function addAccountMenu(user) {
     // Long words and links wrap instead of pushing the page wider than the phone.
     '.section,.about-page,footer{overflow-wrap:break-word}.grid2>*,.two-fields>*,.about-grid>*{min-width:0}' +
     '.result,.saved-item,.tidy-text,.affirmation-text,#journalEntries,#bookingStatus,#journalStatus{overflow-wrap:anywhere}' +
+    // Buttons made from links (e.g. "Get My Affirmation", "Book a Session") have no underline.
+    'a.btn,a.btn:hover{text-decoration:none}' +
     // The four "journey" cards are links on every page (only the home page had this style).
     '.step-link{display:block;text-decoration:none;color:inherit;cursor:pointer;transition:transform .18s,box-shadow .18s,border-color .18s}' +
     '.step-link:hover,.step-link:focus-visible{transform:translateY(-3px);border-color:#b7a4d0;box-shadow:0 8px 22px #57466d18}' +
@@ -86,7 +88,7 @@ function setupJournal() {
 
   // Step 1: tidy up and show what would be removed.
   $('saveJournal').textContent = 'Tidy up & review'
-  // Runs in the browser with simple rules; nothing is sent anywhere until "Record entry".
+  // Runs in the browser with simple rules; nothing is sent anywhere until "Record this".
   $('saveJournal').onclick = () => {
     const text = $('journalText').value.trim()
     if (!text) return status('Write or dictate a little note first.')
@@ -104,7 +106,7 @@ function setupJournal() {
   }
   $('saveJournal').after(asIs)
 
-  // Step 2: "Record entry" saves the reviewed text.
+  // Step 2: "Record this" saves the reviewed text.
   review.onRecord = (text, button) => saveEntry(text, button)
 
   // The page script calls renderJournals(); point it at the account copy.
@@ -130,64 +132,112 @@ function setupReview() {
   style.textContent = `
 .dictate-tip{display:flex;gap:10px;align-items:flex-start;background:#f6f0fc;border:1px solid #e6dcf2;border-radius:14px;padding:11px 13px;margin:4px 0 14px;font-size:13.5px;color:#5b5677;line-height:1.5}
 .dictate-icon{font-size:18px;line-height:1.2}
-.tidy-review{border:1px solid #d9cde8;background:#fff;border-radius:16px;padding:16px;margin-top:14px}
+.tidy-review{border:1px solid #d9cde8;background:#fff;border-radius:16px;padding:16px;margin:4px 0 14px}
 .tidy-review h3{margin:0 0 4px;font-size:17px}
-.tidy-text{font-size:16px;line-height:1.8;white-space:pre-wrap;border:1px solid var(--line,#e8dfed);border-radius:12px;padding:12px 14px;margin:10px 0;background:#fffdfd;max-height:55vh;overflow:auto}
-.tidy-del{all:unset;cursor:pointer;color:#c4548c;background:#fde8f2;text-decoration:line-through;text-decoration-color:#ec7fb2;text-decoration-thickness:2px;border-radius:5px;padding:0 2px}
+.tidy-text{font-size:16px;line-height:1.8;white-space:pre-wrap;border:1px solid var(--line,#e8dfed);border-radius:12px;padding:12px 14px;margin:10px 0;background:#fffdfd;max-height:55vh;overflow:auto;cursor:text}
+.tidy-del{all:unset;cursor:pointer;color:#c4548c;background:#fde8f2;text-decoration:line-through;text-decoration-color:#ec7fb2;text-decoration-thickness:2px;border-radius:5px;padding:0 2px;-webkit-user-select:text;user-select:text}
 .tidy-del.kept{color:inherit;background:#eef5ec;text-decoration:none;outline:1px dashed #9cbf98}
 .tidy-del:focus-visible{outline:2px solid #7866a8}
 .tidy-legend{font-size:13px;color:#77718a;margin:0}
 .tidy-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}`
   document.head.append(style)
 
+  // The review takes the place of the writing area until "Edit text" or "Cancel".
   const panel = el('div', { className: 'tidy-review hidden', ariaLive: 'polite' })
-  ;($('journalStatus') || $('saveJournal').parentElement).after(panel)
+  $('journalText').after(panel)
+  const writing = () => [document.querySelector('#journal .dictate-tip'), document.querySelector('label[for="journalText"]'), $('journalText'), $('saveJournal')?.parentElement].filter(Boolean)
+  const showWriting = (on) => writing().forEach((n) => n.classList.toggle('hidden', !on))
+
   const ctl = { onRecord: null }
   let tokens = []
   let deletions = []
+  let text = null
 
   const finalText = () => applyDeletions(tokens, deletions.filter((d) => !d.kept))
 
   ctl.close = () => {
     panel.classList.add('hidden')
     panel.innerHTML = ''
-    $('journalText').readOnly = false
+    showWriting(true)
   }
+
+  // Each word is its own span (data-i = word number), so a text selection can be mapped to words.
+  function renderText() {
+    text.innerHTML = ''
+    const word = (k) => {
+      const span = el('span', { textContent: tokens[k] })
+      span.dataset.i = k
+      return span
+    }
+    let i = 0
+    deletions.sort((a, b) => a.from - b.from).forEach((d) => {
+      for (; i < d.from; i++) text.append(word(i))
+      const label = tokens.slice(d.from, d.to + 1).join('').trim()
+      const b = el('button', { type: 'button', className: 'tidy-del' + (d.kept ? ' kept' : ''), title: (d.reason || 'Suggested removal') + (d.kept ? ' · tap to remove' : ' · tap to keep') })
+      for (let k = d.from; k <= d.to; k++) b.append(word(k))
+      b.setAttribute('aria-pressed', String(!!d.kept))
+      b.setAttribute('aria-label', `${d.kept ? 'Kept' : 'Will be removed'}: ${label}. Tap to ${d.kept ? 'remove' : 'keep'}.`)
+      b.onclick = () => {
+        if (!getSelection().isCollapsed) return
+        d.kept = !d.kept
+        renderText()
+      }
+      text.append(b)
+      i = d.to + 1
+    })
+    for (; i < tokens.length; i++) text.append(word(i))
+  }
+
+  // Selecting words in the review strikes them out (whole words, merged with any overlapping part).
+  function strikeSelection() {
+    if (!text || panel.classList.contains('hidden')) return
+    const sel = getSelection()
+    if (!sel.rangeCount || sel.isCollapsed) return
+    const range = sel.getRangeAt(0)
+    if (!text.contains(range.commonAncestorContainer)) return
+    const hit = [...text.querySelectorAll('[data-i]')].filter((s) => s.textContent.trim() && range.intersectsNode(s)).map((s) => Number(s.dataset.i))
+    if (!hit.length) return
+    let from = Math.min(...hit)
+    let to = Math.max(...hit)
+    const overlapping = deletions.filter((d) => d.from <= to && d.to >= from)
+    overlapping.forEach((d) => { from = Math.min(from, d.from); to = Math.max(to, d.to) })
+    deletions = deletions.filter((d) => !overlapping.includes(d))
+    deletions.push({ from, to, type: 'manual', reason: 'You selected this', kept: false })
+    sel.removeAllRanges()
+    renderText()
+  }
+
+  // Mouse: strike when the button is released. Touch and keyboard: strike once the selection stops changing.
+  let mouseDown = false
+  let selTimer = null
+  document.addEventListener('pointerdown', (e) => { mouseDown = e.pointerType === 'mouse' })
+  document.addEventListener('mouseup', () => {
+    if (!mouseDown) return
+    mouseDown = false
+    setTimeout(strikeSelection, 0)
+  })
+  document.addEventListener('selectionchange', () => {
+    if (mouseDown || panel.classList.contains('hidden')) return
+    clearTimeout(selTimer)
+    selTimer = setTimeout(strikeSelection, 800)
+  })
 
   ctl.open = (result) => {
     tokens = result.tokens
     deletions = result.deletions.map((d) => ({ ...d, kept: false }))
     panel.innerHTML = ''
+    text = el('div', { className: 'tidy-text', dir: 'auto' })
+    renderText()
 
-    const text = el('div', { className: 'tidy-text', dir: 'auto' })
-    let i = 0
-    deletions.forEach((d) => {
-      if (d.from > i) text.append(tokens.slice(i, d.from).join(''))
-      const b = el('button', { type: 'button', className: 'tidy-del', title: (d.reason || 'Suggested removal') + ' · tap to keep', textContent: tokens.slice(d.from, d.to + 1).join('') })
-      b.setAttribute('aria-pressed', 'false')
-      b.setAttribute('aria-label', `Will be removed: ${b.textContent.trim()}. Tap to keep.`)
-      b.onclick = () => {
-        d.kept = !d.kept
-        b.classList.toggle('kept', d.kept)
-        b.setAttribute('aria-pressed', String(d.kept))
-        b.setAttribute('aria-label', `${d.kept ? 'Kept' : 'Will be removed'}: ${b.textContent.trim()}. Tap to ${d.kept ? 'remove' : 'keep'}.`)
-      }
-      text.append(b)
-      i = d.to + 1
-    })
-    if (i < tokens.length) text.append(tokens.slice(i).join(''))
+    const legend = 'Struck-through parts will be removed. Tap one to keep it, or select any words to strike them out. “Edit text” lets you change anything yourself.'
 
-    const legend = deletions.length
-      ? 'Struck-through parts will be removed. Tap any of them to keep it, or choose “Edit text” to change anything yourself.'
-      : 'Nothing to remove. You can save it, or choose “Edit text” to change anything yourself.'
-
-    const record = el('button', { className: 'btn', type: 'button', textContent: 'Record entry' })
+    const record = el('button', { className: 'btn', type: 'button', textContent: 'Record this' })
     record.onclick = () => {
       const out = finalText()
-      if (!out) return ($('journalStatus').textContent = 'Everything was removed. Tap a struck-through part to keep it, or go back to editing.')
+      if (!out) return ($('journalStatus').textContent = 'Everything was removed. Tap a struck-through part to keep it, or choose “Edit text”.')
       ctl.onRecord?.(out, record)
     }
-    // Puts the tidied text (with the person's choices) back in the box to edit by hand.
+    // Back to writing, with the tidied text (and the person's choices) in the box.
     const edit = el('button', { className: 'btn secondary', type: 'button', textContent: 'Edit text' })
     edit.onclick = () => {
       const out = finalText()
@@ -196,12 +246,17 @@ function setupReview() {
       $('journalText').focus()
       $('journalStatus').textContent = 'Edit as you like, then press “Tidy up & review” again or “Save as written”.'
     }
+    // Back to writing, with the text exactly as it was.
     const back = el('button', { className: 'btn secondary', type: 'button', textContent: 'Cancel' })
-    back.onclick = () => ctl.close()
+    back.onclick = () => {
+      ctl.close()
+      $('journalText').focus()
+    }
 
     panel.append(el('h3', { textContent: 'Review before saving' }), el('p', { className: 'tidy-legend', textContent: legend }), text, el('div', { className: 'tidy-actions' }, record, edit, back))
+    showWriting(false)
+    $('journalStatus').textContent = ''
     panel.classList.remove('hidden')
-    $('journalText').readOnly = true
     panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
     record.focus({ preventScroll: true })
   }

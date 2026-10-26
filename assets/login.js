@@ -45,6 +45,39 @@ function render() {
   $('loginTitle').textContent = copy[0]
   $('loginSub').textContent = copy[1]
   $('submitBtn').textContent = copy[2]
+  applyResetCooldown()
+}
+
+// "Send reset link" can be used once every 3 minutes (remembered in this browser, also after a reload).
+const RESET_WAIT_MS = 3 * 60 * 1000
+let resetTimer = null
+const resetUntil = () => { try { return Number(localStorage.getItem('sst_reset_until')) || 0 } catch { return 0 } }
+function startResetCooldown() {
+  try { localStorage.setItem('sst_reset_until', String(Date.now() + RESET_WAIT_MS)) } catch {}
+  applyResetCooldown()
+}
+function applyResetCooldown() {
+  clearInterval(resetTimer)
+  if (mode !== 'forgot') {
+    $('submitBtn').disabled = false // the wait only applies to "Send reset link"
+    return
+  }
+  const tick = () => {
+    const left = resetUntil() - Date.now()
+    if (mode !== 'forgot' || left <= 0) {
+      clearInterval(resetTimer)
+      if (mode === 'forgot') {
+        $('submitBtn').disabled = false
+        $('submitBtn').textContent = 'Send reset link'
+      }
+      return
+    }
+    const sec = Math.ceil(left / 1000)
+    $('submitBtn').disabled = true
+    $('submitBtn').textContent = `Send again in ${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`
+  }
+  tick()
+  resetTimer = setInterval(tick, 1000)
 }
 
 function destination(user) {
@@ -78,7 +111,12 @@ const friendly = (err) => {
 
 document.querySelectorAll('[data-role]').forEach((b) => (b.onclick = () => { role = b.dataset.role; mode = 'signin'; setStatus(''); render() }))
 document.querySelectorAll('[data-mode]').forEach((b) => (b.onclick = () => { mode = b.dataset.mode; setStatus(''); render() }))
-$('forgotBtn').onclick = () => { mode = mode === 'forgot' ? 'signin' : 'forgot'; setStatus(''); render() }
+$('forgotBtn').onclick = () => {
+  mode = mode === 'forgot' ? 'signin' : 'forgot'
+  setStatus('')
+  render()
+  if (mode === 'forgot' && resetUntil() > Date.now()) setStatus('A reset link was sent recently. Please check your inbox and spam folder; you can ask for another one when the timer ends.', 'ok')
+}
 
 $('authForm').addEventListener('submit', async (e) => {
   e.preventDefault()
@@ -101,7 +139,8 @@ $('authForm').addEventListener('submit', async (e) => {
       setStatus('Account created. Check your email and click the confirmation link, then sign in here.', 'ok')
     } else if (mode === 'forgot') {
       await requestPasswordRecovery(email)
-      setStatus('If that email has an account, a reset link is on its way.', 'ok')
+      setStatus(`An email with a password reset link has been sent to ${email}. It can take a few minutes; please also check your spam folder.`, 'ok')
+      startResetCooldown()
     } else if (mode === 'invite') {
       const user = await acceptInvite(inviteToken, password)
       role = isDoctor(user) ? 'doctor' : 'private'
@@ -115,6 +154,7 @@ $('authForm').addEventListener('submit', async (e) => {
     setStatus(friendly(err), 'error')
   } finally {
     $('submitBtn').disabled = false
+    applyResetCooldown()
   }
 })
 

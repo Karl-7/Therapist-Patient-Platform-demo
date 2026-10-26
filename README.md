@@ -42,7 +42,7 @@ People choose **Private** or **Doctor**. Private people can create an account; d
 
 ### Journal with "Tidy up & review"
 
-People can type, or dictate with the microphone on their phone keyboard. Before saving, **Tidy up & review** strikes through fillers (uh, um, امم) and spoken take-backs ("no wait, delete that"). They tap any struck-through part to keep it, or choose **Edit text** to change it by hand, then press **Record entry**. Text is only ever removed, never added. This runs in the browser; no AI is involved.
+People can type, or dictate with the microphone on their phone keyboard. **Tidy up & review** replaces the writing box with a review: fillers (uh, um, امم) and spoken take-backs ("no wait, delete that") are struck through. People tap a struck-through part to keep it, or select any words to strike them out, then press **Record this**. **Edit text** goes back to the writing box with the tidied text; **Cancel** goes back with the text as it was. Text is only ever removed, never added. This runs in the browser; no AI is involved.
 
 Each entry can be shared with the therapist, or kept private.
 

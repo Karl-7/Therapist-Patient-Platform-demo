@@ -63,9 +63,9 @@ export function mergeDeletions(list, count) {
   return merged
 }
 
-// Joins the kept words back into text.
-// Only where something was removed at the start of a sentence is the next word capitalised
-// ("Um it was fine" -> "It was fine"). Everything else, links included, keeps its original letters.
+// Joins the kept words back into text:
+// - no space before punctuation, and single spaces between words (everywhere)
+// - "Um it was fine" -> "It was fine": capital letter where a sentence now starts after a removal (links excepted)
 export function applyDeletions(tokens, deletions) {
   const drop = new Set()
   deletions.forEach((d) => { for (let i = d.from; i <= d.to; i++) drop.add(i) })
@@ -73,11 +73,16 @@ export function applyDeletions(tokens, deletions) {
   let afterRemoval = false
   tokens.forEach((token, i) => {
     if (drop.has(i)) return void (afterRemoval = true)
-    const prev = kept[kept.length - 1]
-    const sentenceStart = !prev || SENTENCE_END.test(prev.trim())
-    const looksLikeLink = /^(https?:|www\.|\S+@\S+)/i.test(token)
-    kept.push(afterRemoval && sentenceStart && !looksLikeLink ? token.replace(/^([^\p{L}]*)(\p{Ll})/u, (_, lead, letter) => lead + letter.toUpperCase()) : token)
+    let t = token
+    if (afterRemoval) {
+      const prev = kept[kept.length - 1]
+      if (prev === undefined) t = t.replace(/^[,.;:،؛]+\s*/, '') // nothing left before it
+      else if (/^[,.!?;:،؛؟]/.test(t)) kept[kept.length - 1] = prev.replace(/[ \t]+$/, '')
+      const sentenceStart = prev === undefined || SENTENCE_END.test(prev.trim())
+      if (sentenceStart && !/^(https?:|www\.|\S+@\S+)/i.test(t)) t = t.replace(/^([^\p{L}]*)(\p{Ll})/u, (_, lead, letter) => lead + letter.toUpperCase())
+    }
+    if (t) kept.push(t)
     afterRemoval = false
   })
-  return kept.join('').replace(/[ \t]+([,.!?;:،؛؟])/g, '$1').replace(/[ \t]{2,}/g, ' ').trim().replace(/^[,.;:،؛\s]+/, '')
+  return kept.join('').replace(/[ \t]+([,.!?;:،؛؟])/g, '$1').replace(/[ \t]{2,}/g, ' ').trim()
 }
