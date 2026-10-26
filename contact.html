@@ -37,6 +37,8 @@ body[data-page="contact"] #about {display:block;} body[data-page="contact"] #con
 }
 </style>
 
+<style>html.auth-pending body{visibility:hidden}</style>
+<script>document.documentElement.classList.add("auth-pending");setTimeout(function(){if(document.documentElement.classList.contains("auth-pending"))location.replace("login.html")},15000)</script>
 </head>
 <body data-page="contact">
 <div class="topbar"><nav class="nav" aria-label="Main navigation"><a class="brand" href="index.html">♡ Safe Space Therapy </a><button class="menu-toggle" id="menuToggle" aria-expanded="false" aria-label="Open menu">☰</button><div class="navlinks" id="navlinks"><a href="index.html">Home</a><a href="about.html">About</a><a href="booking.html">Book a Session</a><a href="affirmations.html">Affirmations & Journaling</a><a href="contact.html">FAQ & Contact</a></div></nav></div>
@@ -97,4 +99,5 @@ $('menuToggle').onclick=()=>{const open=$('navlinks').classList.toggle('open');$
 // Replace this with the therapist's real booking email before publishing. Until configured, the form will not send anything.
 const BOOKING_EMAIL='support@safe-spacetherapy.com';$('bookingForm').addEventListener('submit',e=>{e.preventDefault();if(!BOOKING_EMAIL||!BOOKING_EMAIL.includes('@')){$('bookingStatus').textContent='Booking form is ready, but the therapist’s booking email has not been configured yet. Add the correct email in the website code before launch.';return}const data=new FormData(e.currentTarget);const subject=encodeURIComponent('Safe Space Therapy — booking enquiry');const body=encodeURIComponent(`Name: ${data.get('name')}\nEmail: ${data.get('email')}\nSession: ${data.get('session')}\nPreferred date: ${data.get('date')||'Not specified'}\nMessage: ${data.get('message')||'Not provided'}`);window.location.href=`mailto:${BOOKING_EMAIL}?subject=${subject}&body=${body}`;$('bookingStatus').textContent='Your email app should open so you can send the enquiry. This is not an appointment confirmation.'});
 renderMoods();renderCategories();renderSearch();renderFavorites();renderJournals();
-</script></body></html>
+</script><script type="module" src="assets/private.js"></script>
+</body></html>

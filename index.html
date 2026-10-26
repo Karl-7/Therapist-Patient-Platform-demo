@@ -42,6 +42,8 @@ body[data-page="contact"] #about {display:block;} body[data-page="contact"] #con
 }
 </style>
 
+<style>html.auth-pending body{visibility:hidden}</style>
+<script>document.documentElement.classList.add("auth-pending");setTimeout(function(){if(document.documentElement.classList.contains("auth-pending"))location.replace("login.html")},15000)</script>
 </head>
 <body data-page="home">
 <div class="topbar"><nav class="nav" aria-label="Main navigation"><a class="brand" href="index.html">♡ Safe Space Therapy </a><button class="menu-toggle" id="menuToggle" aria-expanded="false" aria-label="Open menu">☰</button><div class="navlinks" id="navlinks"><a href="index.html">Home</a><a href="about.html">About</a><a href="booking.html">Book a Session</a><a href="affirmations.html">Affirmations & Journaling</a><a href="contact.html">FAQ & Contact</a></div></nav></div>
@@ -118,4 +120,5 @@ const dailyReminders=[
 const dayNumber=Math.floor(new Date().setHours(0,0,0,0)/86400000);
 $('affirmationText').textContent='“'+dailyReminders[((dayNumber%dailyReminders.length)+dailyReminders.length)%dailyReminders.length]+'”';
 renderMoods();renderCategories();renderSearch();renderFavorites();renderJournals();
-</script></body></html>
+</script><script type="module" src="assets/private.js"></script>
+</body></html>

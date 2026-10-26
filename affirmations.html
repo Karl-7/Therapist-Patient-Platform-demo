@@ -39,6 +39,8 @@ body[data-page="contact"] #about {display:block;} body[data-page="contact"] #con
 }
 </style>
 
+<style>html.auth-pending body{visibility:hidden}</style>
+<script>document.documentElement.classList.add("auth-pending");setTimeout(function(){if(document.documentElement.classList.contains("auth-pending"))location.replace("login.html")},15000)</script>
 </head>
 <body data-page="affirmations">
 <div class="topbar"><nav class="nav" aria-label="Main navigation"><a class="brand" href="index.html">♡ Safe Space Therapy </a><button class="menu-toggle" id="menuToggle" aria-expanded="false" aria-label="Open menu">☰</button><div class="navlinks" id="navlinks"><a href="index.html">Home</a><a href="about.html">About</a><a href="booking.html">Book a Session</a><a href="affirmations.html">Affirmations & Journaling</a><a href="contact.html">FAQ & Contact</a></div></nav></div>
@@ -100,4 +102,5 @@ const BOOKING_EMAIL='support@safe-spacetherapy.com';$('bookingForm').addEventLis
 
 const dailyQuotes=['You are allowed to take life one gentle step at a time.','You do not have to solve everything today.','You deserve the same kindness you give to others.','Small steps still move you forward.','You can begin again, as many times as you need.','Rest is part of your growth, not a reward you must earn.','You are allowed to make space for your own needs.','You are doing the best you can with what you have today.','Your feelings deserve patience, not judgement.','You do not need to have it all figured out to take the next step.','You are worthy of peace, even on difficult days.','Give yourself permission to grow at your own pace.'];const dayNumber=Math.floor(new Date().setHours(0,0,0,0)/86400000);const dailyQuoteEl=document.getElementById('dailyQuote');if(dailyQuoteEl)dailyQuoteEl.textContent=dailyQuotes[((dayNumber%dailyQuotes.length)+dailyQuotes.length)%dailyQuotes.length];
 renderMoods();renderCategories();renderSearch();renderFavorites();renderJournals();
-</script></body></html>
+</script><script type="module" src="assets/private.js"></script>
+</body></html>

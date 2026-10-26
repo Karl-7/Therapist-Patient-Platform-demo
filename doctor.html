@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en" class="auth-pending">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f8f3f8"><meta name="robots" content="noindex">
+<title>Doctor | Safe Space Therapy</title>
+<link rel="stylesheet" href="assets/site.css">
+<style>
+html.auth-pending body{visibility:hidden}
+body{background:#fcfaff}
+.brand em{font-style:normal;font-weight:600;font-size:13px;color:#9179ae;margin-left:6px}
+.account{display:flex;align-items:center;gap:10px}
+.account span{font-size:13px;color:#8a7fa0;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.demo-banner{background:#fff3e5;border-bottom:1px solid #f1dfc8;color:#7a5a32;font-size:13px;text-align:center;padding:8px 16px}
+.wrap{max-width:1160px;margin:0 auto;padding:22px 22px 60px}
+.tabbar{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 18px}
+.tabbar button{border:1px solid #dfd4eb;background:#fff;color:#63577e;border-radius:999px;padding:9px 16px;font-weight:600;font-size:14px}
+.tabbar button[aria-selected="true"]{background:var(--purple);border-color:var(--purple);color:#fff}
+.count{display:inline-block;min-width:20px;padding:0 6px;margin-left:6px;border-radius:999px;background:#f3d9e0;color:#8a3550;font-size:12px;line-height:20px;text-align:center}
+.tabbar button[aria-selected="true"] .count{background:#ffffff33;color:#fff}
+.card{background:#fff;border:1px solid #eee6f2;border-radius:20px;box-shadow:0 5px 25px #4e3d6810;padding:24px}
+.card h2{margin:0 0 4px;font-size:24px;letter-spacing:-.4px}
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0 16px}
+.toolbar .field{margin:0;max-width:280px}
+.list{display:grid;gap:12px}
+.booking{border:1px solid var(--line);border-radius:16px;padding:16px;display:grid;grid-template-columns:1fr 220px;gap:16px}
+.booking h3{margin:0;font-size:17px}
+.meta{font-size:13px;color:var(--muted)}
+.meta a{color:var(--purple-dark)}
+.booking p{margin:8px 0 0;white-space:pre-wrap}
+.booking .field{margin:4px 0 8px;padding:9px 11px;font-size:14px}
+.booking textarea.field{min-height:70px}
+.pill{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;border-radius:999px;padding:2px 9px;margin-left:8px;vertical-align:middle}
+.pill.new{background:#f3d9e0;color:#8a3550}.pill.contacted{background:#f2edf8;color:#66528f}.pill.scheduled{background:#eaf1e8;color:#4e7a4c}.pill.closed{background:#eee;color:#777}
+.clients{display:grid;grid-template-columns:280px 1fr;gap:18px;align-items:start}
+.client-list{display:grid;gap:6px;max-height:70vh;overflow:auto}
+.client-list button{text-align:left;border:1px solid var(--line);background:#fff;border-radius:13px;padding:11px 13px;color:var(--ink)}
+.client-list button small{display:block;color:var(--muted);font-size:12px;overflow:hidden;text-overflow:ellipsis}
+.client-list button[aria-current="true"]{border-color:#a995ca;background:#f6f0fc}
+.week{border:1px solid var(--line);border-radius:18px;padding:18px;margin-top:14px}
+.week h3{margin:0 0 10px;font-size:17px}
+.ai{background:linear-gradient(140deg,#f7f1fc,#fff7f4);border:1px solid #f0e8f3;border-radius:14px;padding:14px 16px}
+.ai .label{font-size:11px;letter-spacing:1.5px;font-weight:750;color:#9179ae}
+.ai p{margin:6px 0 0;white-space:pre-wrap}
+.ai .compare{margin-top:10px;padding-top:10px;border-top:1px dashed #e2d6ec}
+.ai.missing{background:#fff;border-style:dashed;color:var(--muted)}
+.entry{border-left:3px solid #c9b8e0;padding:6px 0 6px 14px;margin-top:12px}
+.entry strong{font-size:15px}
+.entry p{margin:4px 0 0;white-space:pre-wrap}
+.aff-row{display:grid;grid-template-columns:180px 1fr 200px 40px;gap:8px;align-items:start;border-bottom:1px solid var(--line);padding:8px 0}
+.aff-row .field{margin:0;padding:9px 11px;font-size:14px}
+.aff-row textarea.field{min-height:44px}
+.aff-head{font-size:12px;font-weight:700;color:#7a7091;letter-spacing:.4px}
+.icon-btn{border:1px solid var(--line);background:#fff;border-radius:10px;height:40px;color:#a2435a;font-size:16px}
+.savebar{position:sticky;bottom:0;background:#ffffffee;backdrop-filter:blur(8px);border-top:1px solid var(--line);margin:16px -24px -24px;padding:12px 24px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;border-radius:0 0 20px 20px}
+.status.error{color:#a2435a}.status.ok{color:#4e7a4c}
+@media(max-width:800px){.booking{grid-template-columns:1fr}.clients{grid-template-columns:1fr}.client-list{max-height:none}.aff-row{grid-template-columns:1fr 40px}.aff-row .aff-text,.aff-row .aff-tags{grid-column:1 / 2}.aff-head{display:none}}
+@media(max-width:650px){.wrap{padding:16px 16px 50px}.card{padding:18px}.savebar{margin:16px -18px -18px;padding:12px 18px}.account span{display:none}}
+</style>
+</head>
+<body>
+<div class="demo-banner hidden" id="demoBanner">Sample data preview. Nothing here is real and nothing is saved.</div>
+<div class="topbar"><nav class="nav" aria-label="Doctor navigation">
+  <a class="brand" href="doctor.html">♡ Safe Space Therapy<em>Doctor</em></a>
+  <div class="account"><span id="who"></span><button class="btn secondary small" id="signOutBtn" type="button">Sign out</button></div>
+</nav></div>
+
+<main class="wrap">
+  <div class="tabbar" role="tablist">
+    <button role="tab" data-tab="bookings" aria-selected="true">Booking enquiries<span class="count hidden" id="newCount"></span></button>
+    <button role="tab" data-tab="clients" aria-selected="false">Clients</button>
+    <button role="tab" data-tab="affirmations" aria-selected="false">Affirmations</button>
+  </div>
+
+  <section class="card" id="tab-bookings">
+    <h2>Booking enquiries</h2>
+    <p class="sub">Enquiries sent from the Book a Session form. Reply to the person by email, then update the status.</p>
+    <div class="toolbar"><div class="chips" id="statusFilter" style="margin:0"></div></div>
+    <div class="list" id="bookingList"><p class="empty">Loading…</p></div>
+  </section>
+
+  <section class="card hidden" id="tab-clients">
+    <h2>Clients</h2>
+    <p class="sub">You see each person's weekly AI summary and only the journal entries they chose to share.</p>
+    <div class="clients">
+      <div>
+        <input class="field" id="clientSearch" type="search" placeholder="Search name or email" aria-label="Search clients">
+        <div class="client-list" id="clientList"><p class="empty">Loading…</p></div>
+      </div>
+      <div id="clientDetail"><p class="empty">Choose a person on the left.</p></div>
+    </div>
+  </section>
+
+  <section class="card hidden" id="tab-affirmations">
+    <h2>Affirmation library</h2>
+    <p class="sub">These appear on the Affirmations page for everyone. Tags help people find them by searching.</p>
+    <div class="toolbar">
+      <input class="field" id="affSearch" type="search" placeholder="Filter affirmations" aria-label="Filter affirmations">
+      <button class="btn secondary small" id="affAdd" type="button">+ Add affirmation</button>
+    </div>
+    <div class="aff-row aff-head" aria-hidden="true"><div>Category</div><div>Affirmation</div><div>Tags (comma separated)</div><div></div></div>
+    <datalist id="categoryOptions"></datalist>
+    <div id="affList"><p class="empty">Loading…</p></div>
+    <div class="savebar">
+      <button class="btn" id="affSave" type="button">Save changes</button>
+      <span class="status" id="affStatus" role="status" aria-live="polite"></span>
+    </div>
+  </section>
+</main>
+
+<script type="module" src="assets/doctor.js"></script>
+</body>
+</html>

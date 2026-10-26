@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f8f3f8"><meta name="robots" content="noindex">
+<title>Sign in | Safe Space Therapy</title>
+<link rel="stylesheet" href="assets/site.css">
+<style>
+body{min-height:100vh;display:flex;flex-direction:column;background:linear-gradient(115deg,#fff0f2 0%,#f1eafb 52%,#fff3e5 100%)}
+.login-wrap{flex:1;display:grid;place-items:center;padding:36px 16px}
+.login-card{width:min(100%,440px);background:#fff;border:1px solid #eee6f2;border-radius:24px;box-shadow:var(--shadow);padding:32px 28px}
+.login-card h1{font-size:26px;letter-spacing:-.5px;margin:6px 0 4px;color:#41486a}
+.login-card .sub{margin-bottom:18px}
+.role-label{font-size:12px;font-weight:650;color:#7a7091;letter-spacing:.4px;margin-bottom:6px}
+.segment{display:grid;grid-template-columns:1fr 1fr;background:var(--lav);border-radius:999px;padding:4px;margin-bottom:18px}
+.segment button{border:0;background:transparent;border-radius:999px;padding:10px 8px;font-weight:650;color:#6b6283}
+.segment button[aria-pressed="true"]{background:#fff;color:var(--purple-dark);box-shadow:0 2px 8px #57466d1c}
+.tabs{display:flex;gap:18px;border-bottom:1px solid var(--line);margin-bottom:14px}
+.tabs button{border:0;background:none;padding:8px 0;color:var(--muted);font-weight:600;border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs button[aria-selected="true"]{color:var(--purple-dark);border-color:var(--purple)}
+label{font-size:13px;font-weight:600;color:#575c78}
+.field{margin:6px 0 12px}
+.check{display:flex;align-items:center;gap:8px;font-weight:500;margin:2px 0 16px}
+.check input{width:17px;height:17px;accent-color:var(--purple)}
+.btn.block{width:100%}
+.linkbtn{border:0;background:none;color:var(--purple-dark);text-decoration:underline;text-underline-offset:3px;padding:0;font-size:13px}
+.row-between{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:12px}
+.status{min-height:22px}
+.status.error{color:#a2435a}
+.status.ok{color:#4e7a4c}
+.back{display:inline-block;margin-top:16px;font-size:13px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="topbar"><nav class="nav" aria-label="Main navigation"><a class="brand" href="index.html">♡ Safe Space Therapy</a></nav></div>
+
+<main class="login-wrap">
+  <section class="login-card" aria-labelledby="loginTitle">
+    <div class="eyebrow">WELCOME</div>
+    <h1 id="loginTitle">Sign in</h1>
+    <p class="sub" id="loginSub">Your journal is saved to your account, on every device.</p>
+
+    <div id="roleBlock">
+      <div class="role-label" id="roleLabel">SIGN IN AS</div>
+      <div class="segment" role="group" aria-labelledby="roleLabel">
+        <button type="button" data-role="private" aria-pressed="true">Private</button>
+        <button type="button" data-role="doctor" aria-pressed="false">Doctor</button>
+      </div>
+      <div class="tabs" role="tablist" id="privateTabs">
+        <button type="button" role="tab" data-mode="signin" aria-selected="true">Sign in</button>
+        <button type="button" role="tab" data-mode="signup" aria-selected="false">Create account</button>
+      </div>
+    </div>
+
+    <form id="authForm" novalidate>
+      <div id="nameRow" class="hidden">
+        <label for="name">Name (optional)</label>
+        <input class="field" id="name" autocomplete="name" placeholder="What should we call you?">
+      </div>
+      <div id="emailRow">
+        <label for="email">Email</label>
+        <input class="field" id="email" type="email" autocomplete="email" required placeholder="you@example.com">
+      </div>
+      <div id="passwordRow">
+        <label for="password">Password</label>
+        <input class="field" id="password" type="password" autocomplete="current-password" required minlength="8" placeholder="At least 8 characters">
+      </div>
+      <label class="check" id="rememberRow"><input type="checkbox" id="remember" checked> Keep me signed in on this device</label>
+      <button class="btn block" type="submit" id="submitBtn">Sign in</button>
+      <div class="row-between" id="helperRow">
+        <button type="button" class="linkbtn" id="forgotBtn">Forgot password?</button>
+        <span class="notice hidden" id="doctorNote">Doctor accounts are invite-only.</span>
+      </div>
+      <div class="status" id="status" role="status" aria-live="polite"></div>
+    </form>
+    <a class="back" href="index.html" id="backLink">← Back to the website</a>
+  </section>
+</main>
+
+<script type="module">
+import { currentUser, isDoctor, signIn, signOut, signUp, requestPasswordRecovery, handleAuthCallback, acceptInvite, updatePassword } from './assets/auth.js'
+
+const $ = (id) => document.getElementById(id)
+const params = new URLSearchParams(location.search)
+let role = params.get('as') === 'doctor' ? 'doctor' : 'private'
+let mode = 'signin' // signin | signup | forgot | invite | recovery
+let inviteToken = null
+
+const reasons = {
+  'signed-out': 'You have been signed out.',
+  'not-doctor': 'That account does not have doctor access.',
+  'is-doctor': 'This is a doctor account. Please sign in as Doctor.',
+  expired: 'Your session has ended. Please sign in again.',
+}
+
+function setStatus(text, kind = '') {
+  $('status').textContent = text
+  $('status').className = 'status' + (kind ? ' ' + kind : '')
+}
+
+function render() {
+  document.querySelectorAll('[data-role]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.role === role)))
+  document.querySelectorAll('[data-mode]').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.mode === mode)))
+  const special = mode === 'invite' || mode === 'recovery'
+  $('roleBlock').classList.toggle('hidden', special)
+  $('privateTabs').classList.toggle('hidden', role !== 'private' || mode === 'forgot')
+  $('nameRow').classList.toggle('hidden', !(role === 'private' && mode === 'signup'))
+  $('emailRow').classList.toggle('hidden', special)
+  $('passwordRow').classList.toggle('hidden', mode === 'forgot')
+  $('rememberRow').classList.toggle('hidden', mode === 'signup' || mode === 'forgot')
+  $('forgotBtn').textContent = mode === 'forgot' ? '← Back to sign in' : 'Forgot password?'
+  $('forgotBtn').classList.toggle('hidden', special || mode === 'signup')
+  $('doctorNote').classList.toggle('hidden', role !== 'doctor' || mode !== 'signin')
+  $('password').autocomplete = mode === 'signin' ? 'current-password' : 'new-password'
+
+  const copy = {
+    signin: [role === 'doctor' ? 'Doctor sign in' : 'Sign in', role === 'doctor' ? 'View booking enquiries, weekly summaries and the affirmation library.' : 'Your journal is saved to your account, on every device.', 'Sign in'],
+    signup: ['Create your account', 'A private space for your journal. Only you can read entries you do not share.', 'Create account'],
+    forgot: ['Reset your password', 'We will email you a link to choose a new password.', 'Send reset link'],
+    invite: ['Set up your account', 'You have been invited to Safe Space Therapy. Choose a password to finish.', 'Save password'],
+    recovery: ['Choose a new password', 'Enter a new password for your account.', 'Save new password'],
+  }[mode]
+  $('loginTitle').textContent = copy[0]
+  $('loginSub').textContent = copy[1]
+  $('submitBtn').textContent = copy[2]
+}
+
+function destination(user) {
+  if (isDoctor(user)) return 'doctor.html'
+  const next = params.get('next')
+  return next && /^[a-z-]+\.html$/.test(next) && next !== 'doctor.html' ? next : 'index.html'
+}
+
+// Signs out and explains when the account does not match the chosen role.
+async function enter(user) {
+  if (role === 'doctor' && !isDoctor(user)) {
+    await signOut()
+    return setStatus(reasons['not-doctor'], 'error')
+  }
+  if (role === 'private' && isDoctor(user)) {
+    await signOut()
+    return setStatus(reasons['is-doctor'], 'error')
+  }
+  location.replace(destination(user))
+}
+
+const friendly = (err) => {
+  const msg = String(err?.message || err || '')
+  if (/invalid_grant|No user found|Invalid Password|invalid login/i.test(msg)) return 'Email or password is incorrect.'
+  if (/not confirmed|Email not confirmed/i.test(msg)) return 'Please confirm your email first. Check your inbox for the link.'
+  if (/already (been )?registered|already exists/i.test(msg)) return 'An account with this email already exists. Try signing in.'
+  if (/Signups not allowed|signup.*disabled/i.test(msg)) return 'New accounts are not open right now.'
+  if (/Identity|MissingIdentity|404|Unsupported method|Failed to fetch|Unexpected token/i.test(msg)) return 'Sign-in is not available yet. Netlify Identity needs to be turned on for this site.'
+  return msg || 'Something went wrong. Please try again.'
+}
+
+document.querySelectorAll('[data-role]').forEach((b) => (b.onclick = () => { role = b.dataset.role; mode = 'signin'; setStatus(''); render() }))
+document.querySelectorAll('[data-mode]').forEach((b) => (b.onclick = () => { mode = b.dataset.mode; setStatus(''); render() }))
+$('forgotBtn').onclick = () => { mode = mode === 'forgot' ? 'signin' : 'forgot'; setStatus(''); render() }
+
+$('authForm').addEventListener('submit', async (e) => {
+  e.preventDefault()
+  const email = $('email').value.trim()
+  const password = $('password').value
+  if (mode !== 'invite' && mode !== 'recovery' && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return setStatus('Please enter a valid email.', 'error')
+  if (mode !== 'forgot' && password.length < 8) return setStatus('Password needs at least 8 characters.', 'error')
+
+  $('submitBtn').disabled = true
+  setStatus('Please wait…')
+  try {
+    if (mode === 'signin') {
+      await enter(await signIn(email, password, $('remember').checked))
+    } else if (mode === 'signup') {
+      const user = await signUp(email, password, $('name').value.trim())
+      if (user?.confirmedAt) return enter(user)
+      mode = 'signin'
+      render()
+      setStatus('Account created. Check your email and click the confirmation link, then sign in here.', 'ok')
+    } else if (mode === 'forgot') {
+      await requestPasswordRecovery(email)
+      setStatus('If that email has an account, a reset link is on its way.', 'ok')
+    } else if (mode === 'invite') {
+      const user = await acceptInvite(inviteToken, password)
+      role = isDoctor(user) ? 'doctor' : 'private'
+      await enter(user)
+    } else if (mode === 'recovery') {
+      const user = await updatePassword(password)
+      role = isDoctor(user) ? 'doctor' : 'private'
+      await enter(user)
+    }
+  } catch (err) {
+    setStatus(friendly(err), 'error')
+  } finally {
+    $('submitBtn').disabled = false
+  }
+})
+
+async function start() {
+  render()
+  if (reasons[params.get('reason')]) setStatus(reasons[params.get('reason')], params.get('reason') === 'signed-out' ? 'ok' : 'error')
+
+  // Finish links from Identity emails (invite, confirm, password reset).
+  if (/_token=/.test(location.hash)) {
+    try {
+      const result = await handleAuthCallback()
+      history.replaceState(null, '', location.pathname + location.search)
+      if (result?.type === 'invite' && result.token) {
+        inviteToken = result.token
+        mode = 'invite'
+        return render()
+      }
+      if (result?.type === 'recovery') {
+        mode = 'recovery'
+        return render()
+      }
+      if (result?.user) {
+        role = isDoctor(result.user) ? 'doctor' : 'private'
+        return enter(result.user)
+      }
+    } catch (err) {
+      return setStatus('This link has expired or was already used. ' + friendly(err), 'error')
+    }
+  }
+
+  // Already signed in on this device: go straight in.
+  if (!params.get('reason')) {
+    const user = await currentUser().catch(() => null)
+    if (user) {
+      role = isDoctor(user) ? 'doctor' : 'private'
+      location.replace(destination(user))
+    }
+  }
+}
+start()
+</script>
+</body>
+</html>
