@@ -16,9 +16,9 @@ const at = (weeksAgo, dayOffset, hour) => {
 }
 
 const bookings = [
-  { id: 'b1', name: 'Alex Morgan', email: 'alex@example.com', session: 'Online session', date: ymd(monday(-1)), message: 'I would like to talk about work stress. Evenings suit me best.', status: 'new', note: '', created: at(0, 1, 9) },
-  { id: 'b2', name: 'Sam Lee', email: 'sam@example.com', session: 'Individual session', date: '', message: '', status: 'contacted', note: 'Sent available times on Monday.', created: at(1, 3, 14) },
-  { id: 'b3', name: 'Jordan Kim', email: 'jordan@example.com', session: "I'd like to discuss options", date: ymd(monday(-2)), message: 'Looking for ADHD support for my teenager.', status: 'scheduled', note: 'First session booked.', created: at(2, 2, 11) },
+  { id: 'b1', name: 'Alex Morgan', email: 'alex@example.com', service: 'Individual Therapy', session: 'Online session', date: ymd(monday(-1)), message: 'I would like to talk about work stress. Evenings suit me best.', status: 'new', note: '', created: at(0, 1, 9) },
+  { id: 'b2', name: 'Sam Lee', email: 'sam@example.com', service: 'Initial Consultation', session: 'Individual session', date: '', message: '', status: 'contacted', note: 'Sent available times on Monday.', created: at(1, 3, 14) },
+  { id: 'b3', name: 'Jordan Kim', email: 'jordan@example.com', service: 'ADHD and Neurodivergence Support', session: "I'd like to discuss options", date: ymd(monday(-2)), message: 'Looking for ADHD support for my teenager.', status: 'scheduled', note: 'First session booked.', created: at(2, 2, 11) },
 ]
 
 const clients = [

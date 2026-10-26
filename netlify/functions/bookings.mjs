@@ -25,6 +25,7 @@ export default async (req) => {
       accountEmail: user.email || '',
       name,
       email,
+      service: cleanText(body?.service, 120),
       session: cleanText(body?.session, 120),
       date: /^\d{4}-\d{2}-\d{2}$/.test(body?.date) ? body.date : '',
       message: cleanText(body?.message, 4000),

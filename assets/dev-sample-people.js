@@ -143,8 +143,8 @@ export function addSamplePeople(db, weekOf, newId) {
   if (!db.bookings.some((b) => b.userId?.startsWith('sample-'))) {
     const at = (daysAgo) => new Date(Date.now() - daysAgo * 86400000).toISOString()
     db.bookings.push(
-      { id: newId(), userId: 'sample-lina', accountEmail: 'lina@example.test', name: 'Lina Karim', email: 'lina@example.test', session: 'Online session', date: '', message: 'Evenings work best for me.', status: 'new', note: '', created: at(1) },
-      { id: newId(), userId: 'sample-omar', accountEmail: 'omar@example.test', name: 'Omar Haddad', email: 'omar@example.test', session: 'Individual session', date: '', message: '', status: 'contacted', note: 'Offered Tuesday or Thursday.', created: at(6) },
+      { id: newId(), userId: 'sample-lina', accountEmail: 'lina@example.test', name: 'Lina Karim', email: 'lina@example.test', service: 'Individual Therapy', session: 'Online session', date: '', message: 'Evenings work best for me.', status: 'new', note: '', created: at(1) },
+      { id: newId(), userId: 'sample-omar', accountEmail: 'omar@example.test', name: 'Omar Haddad', email: 'omar@example.test', service: 'Marriage Counselling', session: 'Individual session', date: '', message: '', status: 'contacted', note: 'Offered Tuesday or Thursday.', created: at(6) },
     )
   }
 }

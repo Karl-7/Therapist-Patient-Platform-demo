@@ -78,7 +78,7 @@ await shot('login-debug', '.login-card')
 
 // 3. Journal with the tidy-up review (Private: Sara, sample data)
 await run(`localStorage.setItem('sst_dev_session', JSON.stringify({id:'sample-sara', email:'sara@example.test', name:'Sara Ahmed', roles:[], createdAt:'2026-09-14T00:00:00.000Z'}))`)
-await go('/affirmations.html', 1200)
+await go('/journal.html', 1200)
 await run(`${noBanners} const $=id=>document.getElementById(id);
   $('journalText').value='Um so today the meeting ran late again and I felt really tense. I was furious with my manager. No wait, delete that. Uh I was just tired. In the evening I went for a walk and felt a lot calmer.';
   $('journalShare').checked = true; $('saveJournal').click();`)

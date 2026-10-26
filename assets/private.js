@@ -352,7 +352,7 @@ function handleApiError(err, fallback) {
   return err?.message || fallback
 }
 
-// Links like affirmations.html#journal: the page is hidden until sign-in is checked and some
+// Links like booking.html#booking: the page is hidden until sign-in is checked and some
 // sections fill in afterwards, so jump to the section again once everything is in place.
 function scrollToHash() {
   const id = decodeURIComponent(location.hash.slice(1))

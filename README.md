@@ -11,6 +11,23 @@ It runs on Netlify (pages, sign-in and storage). Weekly AI summaries come from Q
 
 ---
 
+## Pages
+
+Each page has one job:
+
+| Menu | What is on it |
+|---|---|
+| **Home** (`index.html`) | Welcome banner, "How are you feeling today?", and four cards leading to the other pages |
+| **Journal** (`journal.html`) | "How are you feeling today?", writing with Tidy up & review, and your saved entries |
+| **Affirmations** (`affirmations.html`) | A featured affirmation, search and topics, and Your Favorites |
+| **Services & Booking** (`booking.html`) | Services & Pricing and the booking enquiry form |
+| **FAQ & Contact** (`contact.html`) | About us with a "Check our therapist" button, contact details, FAQ |
+| (not in the menu) `about.html` | The therapist page, opened from "Check our therapist" |
+
+All five menu pages are copies of the same HTML. A small `<style id="page-layout">` block in each page decides which sections that page shows, so a section is edited in all copies but appears on one page only.
+
+---
+
 ## Tour
 
 ### Sign in
@@ -37,7 +54,7 @@ More than 100 affirmations in 13 topics. People search or pick a topic, and tap 
 
 ### Doctor: booking enquiries
 
-Enquiries from the Book a Session form, with a status and a private note for each.
+Enquiries from the Book a Session form (including the service type the person chose, such as Individual Therapy or Marriage Counselling), with a status and a private note for each.
 
 <img src="docs/screenshots/doctor-bookings.png" alt="Doctor page listing booking enquiries" width="760">
 
@@ -111,7 +128,7 @@ Typing another password resets the count. Once shown, the box stays for the rest
 
 | Path | What it is |
 |---|---|
-| `index.html`, `about.html`, `booking.html`, `affirmations.html`, `contact.html` | The Private pages. Everyone must sign in first. |
+| `index.html`, `journal.html`, `affirmations.html`, `booking.html`, `contact.html`, `about.html` | The Private pages (see **Pages** above). Everyone must sign in first. |
 | `login.html` | Sign in as Private or Doctor. |
 | `doctor.html` | The Doctor page. |
 | `assets/` | Page scripts (`auth.js`, `private.js`, `doctor.js`, `login.js`, `dev-backend.js`, …) and `site.css`. |

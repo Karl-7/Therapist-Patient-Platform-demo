@@ -1270,8 +1270,8 @@
     if (!db.bookings.some((b) => b.userId?.startsWith("sample-"))) {
       const at = (daysAgo) => new Date(Date.now() - daysAgo * 864e5).toISOString();
       db.bookings.push(
-        { id: newId2(), userId: "sample-lina", accountEmail: "lina@example.test", name: "Lina Karim", email: "lina@example.test", session: "Online session", date: "", message: "Evenings work best for me.", status: "new", note: "", created: at(1) },
-        { id: newId2(), userId: "sample-omar", accountEmail: "omar@example.test", name: "Omar Haddad", email: "omar@example.test", session: "Individual session", date: "", message: "", status: "contacted", note: "Offered Tuesday or Thursday.", created: at(6) }
+        { id: newId2(), userId: "sample-lina", accountEmail: "lina@example.test", name: "Lina Karim", email: "lina@example.test", service: "Individual Therapy", session: "Online session", date: "", message: "Evenings work best for me.", status: "new", note: "", created: at(1) },
+        { id: newId2(), userId: "sample-omar", accountEmail: "omar@example.test", name: "Omar Haddad", email: "omar@example.test", service: "Marriage Counselling", session: "Individual session", date: "", message: "", status: "contacted", note: "Offered Tuesday or Thursday.", created: at(6) }
       );
     }
   }
@@ -1458,7 +1458,7 @@
     if (route === "/api/bookings") {
       if (method === "POST") {
         if (!body?.name?.trim() || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(body?.email || "")) throw fail(400, "Please add your name and a valid email.");
-        const booking = { id: newId(), userId: user.id, accountEmail: user.email, name: body.name.trim(), email: body.email.trim(), session: body.session || "", date: body.date || "", message: (body.message || "").trim(), status: "new", note: "", created: (/* @__PURE__ */ new Date()).toISOString() };
+        const booking = { id: newId(), userId: user.id, accountEmail: user.email, name: body.name.trim(), email: body.email.trim(), service: body.service || "", session: body.session || "", date: body.date || "", message: (body.message || "").trim(), status: "new", note: "", created: (/* @__PURE__ */ new Date()).toISOString() };
         db.bookings.push(booking);
         saveDb(db);
         return { booking: { id: booking.id, created: booking.created } };

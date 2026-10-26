@@ -1270,8 +1270,8 @@
     if (!db.bookings.some((b) => b.userId?.startsWith("sample-"))) {
       const at2 = (daysAgo) => new Date(Date.now() - daysAgo * 864e5).toISOString();
       db.bookings.push(
-        { id: newId2(), userId: "sample-lina", accountEmail: "lina@example.test", name: "Lina Karim", email: "lina@example.test", session: "Online session", date: "", message: "Evenings work best for me.", status: "new", note: "", created: at2(1) },
-        { id: newId2(), userId: "sample-omar", accountEmail: "omar@example.test", name: "Omar Haddad", email: "omar@example.test", session: "Individual session", date: "", message: "", status: "contacted", note: "Offered Tuesday or Thursday.", created: at2(6) }
+        { id: newId2(), userId: "sample-lina", accountEmail: "lina@example.test", name: "Lina Karim", email: "lina@example.test", service: "Individual Therapy", session: "Online session", date: "", message: "Evenings work best for me.", status: "new", note: "", created: at2(1) },
+        { id: newId2(), userId: "sample-omar", accountEmail: "omar@example.test", name: "Omar Haddad", email: "omar@example.test", service: "Marriage Counselling", session: "Individual session", date: "", message: "", status: "contacted", note: "Offered Tuesday or Thursday.", created: at2(6) }
       );
     }
   }
@@ -1458,7 +1458,7 @@
     if (route === "/api/bookings") {
       if (method === "POST") {
         if (!body?.name?.trim() || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(body?.email || "")) throw fail(400, "Please add your name and a valid email.");
-        const booking = { id: newId(), userId: user.id, accountEmail: user.email, name: body.name.trim(), email: body.email.trim(), session: body.session || "", date: body.date || "", message: (body.message || "").trim(), status: "new", note: "", created: (/* @__PURE__ */ new Date()).toISOString() };
+        const booking = { id: newId(), userId: user.id, accountEmail: user.email, name: body.name.trim(), email: body.email.trim(), service: body.service || "", session: body.session || "", date: body.date || "", message: (body.message || "").trim(), status: "new", note: "", created: (/* @__PURE__ */ new Date()).toISOString() };
         db.bookings.push(booking);
         saveDb(db);
         return { booking: { id: booking.id, created: booking.created } };
@@ -1682,9 +1682,9 @@
     return d.toISOString();
   };
   var bookings = [
-    { id: "b1", name: "Alex Morgan", email: "alex@example.com", session: "Online session", date: ymd(monday(-1)), message: "I would like to talk about work stress. Evenings suit me best.", status: "new", note: "", created: at(0, 1, 9) },
-    { id: "b2", name: "Sam Lee", email: "sam@example.com", session: "Individual session", date: "", message: "", status: "contacted", note: "Sent available times on Monday.", created: at(1, 3, 14) },
-    { id: "b3", name: "Jordan Kim", email: "jordan@example.com", session: "I'd like to discuss options", date: ymd(monday(-2)), message: "Looking for ADHD support for my teenager.", status: "scheduled", note: "First session booked.", created: at(2, 2, 11) }
+    { id: "b1", name: "Alex Morgan", email: "alex@example.com", service: "Individual Therapy", session: "Online session", date: ymd(monday(-1)), message: "I would like to talk about work stress. Evenings suit me best.", status: "new", note: "", created: at(0, 1, 9) },
+    { id: "b2", name: "Sam Lee", email: "sam@example.com", service: "Initial Consultation", session: "Individual session", date: "", message: "", status: "contacted", note: "Sent available times on Monday.", created: at(1, 3, 14) },
+    { id: "b3", name: "Jordan Kim", email: "jordan@example.com", service: "ADHD and Neurodivergence Support", session: "I'd like to discuss options", date: ymd(monday(-2)), message: "Looking for ADHD support for my teenager.", status: "scheduled", note: "First session booked.", created: at(2, 2, 11) }
   ];
   var clients = [
     { id: "c1", name: "Alex Morgan", email: "alex@example.com", createdAt: at(3, 0, 10) },
@@ -1857,7 +1857,7 @@
             "div",
             { className: "meta" },
             el("a", { href: replyHref, textContent: b.email }),
-            ` \xB7 ${b.session || "Session not chosen"} \xB7 Preferred date: ${b.date ? fmtDate(b.date + "T00:00:00", { dateStyle: "medium" }) : "not given"}`
+            ` \xB7 ${b.service || "Service not chosen"} \xB7 ${b.session || "Format not chosen"} \xB7 Preferred date: ${b.date ? fmtDate(b.date + "T00:00:00", { dateStyle: "medium" }) : "not given"}`
           ),
           el("div", { className: "meta", textContent: "Sent " + fmtDate(b.created) }),
           b.message ? el("p", { textContent: b.message }) : el("p", { className: "meta", textContent: "No message." })
