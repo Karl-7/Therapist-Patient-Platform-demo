@@ -19,6 +19,10 @@ People choose **Private** or **Doctor**. Private people can create an account; d
 
 <img src="docs/screenshots/login.png" alt="Sign-in page with Private and Doctor options" width="360">
 
+### Mood check-in
+
+"How are you feeling today?" appears on the home page and at the top of the journal, and both work the same way. People can tap any mood as often as they like; each tap floats up with a small animation and is counted for today. The counts become one hidden line at the top of that day's journal, for example 3 × Happy + 1 × Sad gives "I feel very happy and a bit sad today." (1 tap = "a bit", 2 = "quite", 3 or more = "very"; if every mood was tapped once, no strength words are added). The person never sees this line and the doctor does not see it as an entry; only the weekly AI summary reads it. This notes how someone feels even on days they do not want to write.
+
 ### Journal with "Tidy up & review"
 
 People can type, or dictate with the microphone on their phone keyboard. Before saving, **Tidy up & review** strikes through fillers (uh, um, امم) and spoken take-backs ("no wait, delete that"). They tap any struck-through part to keep it, or choose **Edit text** to change it by hand, then press **Record entry**. Text is only ever removed, never added. This runs in the browser; no AI is involved.
@@ -26,6 +30,10 @@ People can type, or dictate with the microphone on their phone keyboard. Before 
 Each entry can be shared with the therapist, or kept private.
 
 <img src="docs/screenshots/journal-review.png" alt="Journal entry with the tidy-up review showing struck-through filler words" width="420">
+
+### Affirmations
+
+More than 100 affirmations in 13 topics. People search or pick a topic, and tap **♡ Save** on any affirmation (including the featured one). Saved affirmations appear under **Your Favorites** with a **Remove** button, and are kept in their account.
 
 ### Doctor: booking enquiries
 
@@ -125,13 +133,14 @@ Typing another password resets the count. Once shown, the box stays for the rest
   `{ week, mood (1-10), summary (≤100 words), comparison, changes (2-5 points), entryCount, generatedAt }`.
 - **Doctor's Symptoms notes**: store `doctor-notes`, key `<userId>`. Only doctors can read them.
 - **Weeks waiting for a summary**: store `summary-queue`. Job status: store `site`, key `summary-job`.
-- **Favourites** are still saved only in each browser (not in the account).
+- **Saved affirmations (Your Favorites)**: store `favorites`, key `<userId>`.
+- **Mood check-ins**: in the `journals` store as a hidden item `<userId>/mood-<YYYY-MM-DD>` with `kind: "mood"`, the tap counts and the sentence. Never shown in the person's journal or to the doctor as an entry.
 
 ## Who sees what
 
 - A Private user sees only their own journal.
 - The Doctor sees booking enquiries, the list of Private accounts, the entries each person chose to share, and the weekly AI summary. The Doctor never receives entries that were not shared.
-- The journal page tells people that the weekly AI summary covers all their entries, shared or not.
+- The journal page tells people that the weekly AI summary covers all their entries and mood check-ins, shared or not.
 
 ## The weekly AI summary
 
@@ -139,7 +148,7 @@ Qwen runs on an AWS EC2 server that is normally switched off.
 
 - Saving, editing or deleting a journal entry puts that person's week in the `summary-queue`.
 - Nothing is summarised automatically. When the doctor presses **Summarize recent journals**, the site starts the EC2 server (only if some week is waiting).
-- At boot the worker summarises every waiting week for everyone (the opened person first, older weeks first). For each week it writes a mood score, a summary of up to 100 words, a comparison with the week before, and 2–5 points on what changed compared with the three weeks before. Then the server powers off.
+- At boot the worker summarises every waiting week for everyone (the opened person first, older weeks first). It reads the written entries and the mood check-ins. For each week it writes a mood score, a summary of up to 100 words, a comparison with the week before, and 2–5 points on what changed compared with the three weeks before. Then the server powers off.
 - If any entry mentions self-harm, suicide or harming someone, the summary starts with "Safety note:".
 - The Doctor page shows the progress and reloads the person's page when their weeks are ready.
 

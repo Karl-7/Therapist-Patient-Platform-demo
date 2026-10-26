@@ -164,7 +164,9 @@ start()
 const UNLOCK_WORD = 'steffiroshan'
 const UNLOCK_CLICKS = 5
 let unlockClicks = 0
-const sessionUnlocked = () => { try { return sessionStorage.getItem('sst_debug_unlocked') === '1' } catch { return false } }
+function sessionUnlocked() {
+  try { return sessionStorage.getItem('sst_debug_unlocked') === '1' } catch { return false }
+}
 
 function debugUnlockClick() {
   if (!DEV || $('password').value !== UNLOCK_WORD) {

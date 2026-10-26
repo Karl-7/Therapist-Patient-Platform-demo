@@ -981,7 +981,7 @@
   };
 
   // netlify/lib/default-affirmations.mjs
-  var DEFAULT_AFFIRMATIONS = [
+  var FIRST = [
     { id: "a1", category: "Stress & Anxiety", tags: ["anxious", "calm", "breathing"], text: "I can take one slow breath at a time. I do not have to solve everything right now." },
     { id: "a2", category: "Stress & Anxiety", tags: ["stress", "rest", "pause"], text: "I am allowed to pause. Rest is part of moving forward." },
     { id: "a3", category: "Stress & Anxiety", tags: ["overwhelmed", "small steps"], text: "One small step is enough for today. I can move at my own pace." },
@@ -998,6 +998,129 @@
     { id: "a14", category: "Relationships", tags: ["angry", "feelings", "space"], text: "My feelings are valid. I can give myself space before choosing my next step." },
     { id: "a15", category: "Mindfulness", tags: ["happy", "joy", "enjoy"], text: "My joy is allowed to take up space. I can let myself enjoy this moment." },
     { id: "a16", category: "Self-Compassion", tags: ["low", "tired", "enough"], text: "Even on a difficult day, I am still worthy of tenderness and care." }
+  ];
+  var MORE = {
+    "Stress & Anxiety": [
+      [["anxious", "breathing", "body"], "My breath is always with me. I can come back to it whenever I need."],
+      [["worry", "future", "present"], "Worry is not a prediction. Right now, I am safe enough to take one breath."],
+      [["panic", "calm", "grounding"], "This feeling is strong, and it will pass. I can let it rise and fall."],
+      [["overthinking", "thoughts", "calm"], "I do not have to follow every thought. I can let some of them drift by."],
+      [["stress", "control", "letting go"], "I can focus on what is in my hands and gently set down the rest."],
+      [["nervous", "brave", "courage"], "I can feel nervous and still show up. Courage often feels like this."],
+      [["tense", "body", "relax"], "I can soften my shoulders, unclench my jaw, and let my body rest a little."],
+      [["uncertainty", "trust", "future"], "I do not need every answer today. I can handle things as they come."],
+      [["busy", "pace", "slow"], "Slowing down is not falling behind. It is how I take care of myself."]
+    ],
+    "Self-Compassion": [
+      [["mistake", "kindness", "learning"], "Making a mistake does not make me a mistake. I can learn and keep going."],
+      [["self criticism", "kindness", "voice"], "I can speak to myself the way I would speak to someone I love."],
+      [["enough", "worth", "self worth"], "I am enough as I am, even while I am still growing."],
+      [["tired", "rest", "permission"], "Rest is not something I have to earn. I am allowed to stop."],
+      [["guilt", "forgive", "past"], "I can forgive the version of me who was doing the best they could."],
+      [["hard day", "gentle", "care"], "On hard days, small acts of care still count."],
+      [["perfection", "progress", "enough"], "I do not need to be perfect to be worthy of love and care."],
+      [["feelings", "allowed", "emotions"], "All of my feelings are allowed. None of them make me too much."],
+      [["healing", "time", "patience"], "Healing is not a straight line. I can be patient with my own pace."]
+    ],
+    "Mindfulness": [
+      [["present", "now", "grounding"], "Right now, I can notice five things I see and let my mind settle."],
+      [["breathing", "calm", "present"], "With each breath out, I can let go of a little tension."],
+      [["moment", "enough", "present"], "This moment does not need to be special. It only needs to be lived."],
+      [["noticing", "curious", "thoughts"], "I can watch my thoughts with curiosity, like clouds passing by."],
+      [["senses", "body", "grounding"], "My feet are on the ground. I am here, in this body, in this moment."],
+      [["slow", "simple", "peace"], "Peace can be found in simple things: warm tea, quiet light, a slow breath."],
+      [["acceptance", "feelings", "present"], "I can let this moment be as it is, without fighting it."],
+      [["gratitude", "small things", "joy"], "I can notice one small good thing around me right now."]
+    ],
+    "ADHD Support": [
+      [["adhd", "focus", "start"], "Starting is the hardest part. Two minutes is a good enough beginning."],
+      [["adhd", "brain", "different"], "My brain works differently, not wrongly. I can work with it, not against it."],
+      [["adhd", "forgetful", "kindness"], "Forgetting something does not mean I do not care. I can try again."],
+      [["adhd", "energy", "interest"], "My curiosity and energy are strengths, too."],
+      [["adhd", "routine", "tools"], "Using reminders and tools is smart, not a weakness."],
+      [["adhd", "overwhelmed", "one thing"], "I only need to choose one thing to do next."],
+      [["adhd", "rest", "hyperfocus"], "I can pause, drink some water, and come back with fresh eyes."],
+      [["adhd", "self worth", "productivity"], "My worth is not measured by how productive I was today."]
+    ],
+    "Confidence": [
+      [["confidence", "voice", "speak"], "My voice matters. I am allowed to take up space."],
+      [["brave", "try", "growth"], "Trying something new is brave, whatever the result."],
+      [["proud", "progress", "notice"], "I can be proud of how far I have come, not only of where I am going."],
+      [["doubt", "confidence", "trust"], "I can trust myself a little more each day."],
+      [["boundaries", "no", "confidence"], "Saying no to others can be saying yes to myself."],
+      [["strength", "resilience", "past"], "I have handled hard things before. I can handle this, too."],
+      [["comparison", "own path", "enough"], "My path is my own. I do not need to compare it to anyone else."],
+      [["growth", "learning", "future"], "I am capable of learning, changing, and growing."]
+    ],
+    "Relationships": [
+      [["love", "connection", "worthy"], "I deserve relationships where I feel safe and respected."],
+      [["boundaries", "relationships", "respect"], "Healthy boundaries help my relationships grow stronger."],
+      [["lonely", "connection", "reach out"], "Reaching out is a strength. Someone would be glad to hear from me."],
+      [["conflict", "calm", "listen"], "I can listen with an open heart and still stay true to myself."],
+      [["family", "patience", "love"], "I can love my family and still need some space."],
+      [["friendship", "gratitude", "connection"], "I am grateful for the people who make me feel at home."],
+      [["hurt", "healing", "trust"], "Being hurt before does not mean I cannot find safe connection again."],
+      [["partner", "communication", "honest"], "I can share how I feel honestly and kindly."]
+    ],
+    "Sleep & Rest": [
+      [["sleep", "night", "rest"], "The day is done. I can let it go and rest now."],
+      [["sleep", "thoughts", "tomorrow"], "My thoughts can wait until morning. Right now is for rest."],
+      [["insomnia", "calm", "body"], "Even if sleep is slow to come, resting quietly still helps my body."],
+      [["tired", "rest", "recharge"], "Rest is how I recharge. I give myself permission to slow down."],
+      [["evening", "peace", "letting go"], "I did enough today. I can put the day down gently."],
+      [["night", "safe", "breathing"], "I am safe in this moment. I can breathe slowly and let my body soften."]
+    ],
+    "Grief & Loss": [
+      [["grief", "loss", "love"], "Grief is love with nowhere to go. It is okay to miss them."],
+      [["grief", "time", "healing"], "There is no right way or timeline for grief."],
+      [["loss", "sad", "allowed"], "I am allowed to feel sad and still have moments of joy."],
+      [["memory", "love", "remember"], "The love I shared is still part of me."],
+      [["grief", "gentle", "care"], "On heavy days, I can be extra gentle with myself."],
+      [["change", "loss", "new"], "Endings are hard. I can grieve what was and slowly make room for what comes next."]
+    ],
+    "Anger & Frustration": [
+      [["angry", "feelings", "allowed"], "Anger tells me something matters. I can listen without letting it take over."],
+      [["frustrated", "pause", "breathing"], "Before I react, I can take one long breath out."],
+      [["angry", "calm", "space"], "I can step away, cool down, and come back when I am ready."],
+      [["irritable", "needs", "care"], "When I feel short-tempered, I can check if I am tired, hungry, or overwhelmed."],
+      [["conflict", "boundaries", "anger"], "I can express my anger in ways that respect me and others."]
+    ],
+    "Motivation": [
+      [["motivation", "start", "small steps"], "I do not need motivation to begin. Starting often brings it."],
+      [["progress", "small steps", "consistency"], "Small steps, taken often, add up to big changes."],
+      [["stuck", "move", "gentle"], "Feeling stuck is temporary. One tiny action can get me moving again."],
+      [["goals", "patience", "growth"], "I can work towards my goals at a pace I can keep."],
+      [["procrastination", "kindness", "start"], "I can begin badly. Beginning is what counts."],
+      [["hope", "future", "possible"], "Good things are still possible for me."]
+    ],
+    "Body & Health": [
+      [["body", "kindness", "gratitude"], "My body carries me through every day. I can treat it with kindness."],
+      [["eating", "care", "nourish"], "Nourishing my body is an act of self-care."],
+      [["movement", "walk", "energy"], "A short walk or stretch can help me feel a little lighter."],
+      [["pain", "patience", "body"], "On days my body hurts, I can listen to it and rest."],
+      [["body image", "worth", "acceptance"], "My worth is not decided by how my body looks."],
+      [["health", "water", "basics"], "Water, food, rest, fresh air: the basics are a good place to start."]
+    ],
+    "Work & Study": [
+      [["work", "stress", "boundaries"], "My job is something I do, not who I am."],
+      [["study", "exam", "calm"], "I have prepared what I can. I will do my best, and that is enough."],
+      [["deadline", "one task", "focus"], "I can take this one task at a time."],
+      [["work", "rest", "balance"], "Logging off is part of doing good work."],
+      [["feedback", "growth", "learning"], "Feedback helps me grow. It does not define my worth."],
+      [["mistake", "work", "learning"], "Everyone makes mistakes at work. I can fix what I can and move on."]
+    ],
+    "Parenting": [
+      [["parent", "enough", "love"], "I do not have to be a perfect parent. A loving, present one is enough."],
+      [["parent", "patience", "calm"], "When things get loud, I can be the calm my child needs, or take a moment to find it."],
+      [["parent", "repair", "mistake"], "If I lose my temper, I can repair. Repair teaches love, too."],
+      [["parent", "self care", "rest"], "Taking care of myself helps me take care of my family."],
+      [["parent", "tired", "kindness"], "Being tired does not make me a bad parent. I am doing a lot."]
+    ]
+  };
+  var n = FIRST.length;
+  var DEFAULT_AFFIRMATIONS = [
+    ...FIRST,
+    ...Object.entries(MORE).flatMap(([category, items]) => items.map(([tags, text]) => ({ id: `a${++n}`, category, tags, text })))
   ];
 
   // assets/dev-sample-people.js
@@ -1115,7 +1238,7 @@
   function addSamplePeople(db, weekOf2, newId2) {
     const rand = rng(20261026);
     const pick = (list) => list[Math.floor(rand() * list.length)];
-    const pickSome = (list, n) => [...list].sort(() => rand() - 0.5).slice(0, n);
+    const pickSome = (list, n2) => [...list].sort(() => rand() - 0.5).slice(0, n2);
     const thisMonday = /* @__PURE__ */ new Date();
     thisMonday.setHours(0, 0, 0, 0);
     thisMonday.setDate(thisMonday.getDate() - (thisMonday.getDay() + 6) % 7);
@@ -1151,6 +1274,30 @@
         { id: newId2(), userId: "sample-omar", accountEmail: "omar@example.test", name: "Omar Haddad", email: "omar@example.test", session: "Individual session", date: "", message: "", status: "contacted", note: "Offered Tuesday or Thursday.", created: at(6) }
       );
     }
+  }
+
+  // netlify/lib/moods.mjs
+  var MOODS = [
+    ["\u{1F60A}", "Happy"],
+    ["\u{1F614}", "Sad"],
+    ["\u{1F61F}", "Anxious"],
+    ["\u{1F623}", "Stressed"],
+    ["\u{1F635}", "Overwhelmed"],
+    ["\u{1F61E}", "Lonely"],
+    ["\u{1F610}", "Okay"],
+    ["\u{1F642}", "Good"],
+    ["\u{1F31E}", "Great"]
+  ];
+  var MOOD_NAMES = MOODS.map(([, name]) => name);
+  function moodSentence(counts, order = Object.keys(counts)) {
+    const names = [...new Set(order)].filter((m) => counts[m] > 0);
+    if (!names.length) return "";
+    names.sort((a, b) => counts[b] - counts[a] || order.indexOf(a) - order.indexOf(b));
+    const showStrength = names.some((m) => counts[m] > 1);
+    const word = (m) => (showStrength ? counts[m] >= 3 ? "very " : counts[m] === 2 ? "quite " : "a bit " : "") + m.toLowerCase();
+    const parts = names.map(word);
+    const list = parts.length > 1 ? `${parts.slice(0, -1).join(", ")} and ${parts[parts.length - 1]}` : parts[0];
+    return `I feel ${list} today.`;
   }
 
   // assets/dev-backend.js
@@ -1250,7 +1397,7 @@
     if (!user) throw fail(401, "Please sign in.");
     if (route === "/api/journals") {
       if (isDoctor(user)) throw fail(403, "Doctor accounts do not keep a journal.");
-      const mine = db.journals.filter((e) => e.userId === user.id);
+      const mine = db.journals.filter((e) => e.userId === user.id && e.kind !== "mood");
       if (method === "GET") return { entries: clone(mine).sort((a, b) => b.created.localeCompare(a.created)) };
       if (method === "POST") {
         if (!body?.text?.trim()) throw fail(400, "Write a little note before saving.");
@@ -1278,6 +1425,35 @@
         saveDb(db);
         return { ok: true };
       }
+    }
+    if (route === "/api/moods") {
+      if (isDoctor(user)) throw fail(403, "Mood check-ins are for Private accounts.");
+      if (!MOOD_NAMES.includes(body?.mood)) throw fail(400, "Unknown mood");
+      const date = body.date || (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
+      let day = db.journals.find((e) => e.userId === user.id && e.kind === "mood" && e.date === date);
+      if (!day) {
+        day = { id: "mood-" + date, userId: user.id, kind: "mood", date, counts: {}, order: [], title: "", shared: false, created: body.created || date + "T00:00:00", week: body.week || weekOf(date + "T12:00:00") };
+        db.journals.push(day);
+      }
+      day.counts[body.mood] = (day.counts[body.mood] || 0) + 1;
+      if (!day.order.includes(body.mood)) day.order.push(body.mood);
+      day.text = moodSentence(day.counts, day.order);
+      db.queue[`${user.id}/${day.week}`] = Date.now();
+      saveDb(db);
+      return { ok: true };
+    }
+    if (route === "/api/favorites") {
+      if (isDoctor(user)) throw fail(403, "Favorites are for Private accounts.");
+      db.favorites || (db.favorites = {});
+      let items = db.favorites[user.id] || [];
+      if (method === "POST") {
+        if (!body?.id || !body?.text) throw fail(400, "Missing affirmation");
+        items = [{ id: body.id, text: body.text, category: body.category || "", savedAt: (/* @__PURE__ */ new Date()).toISOString() }, ...items.filter((x) => x.id !== body.id)];
+      }
+      if (method === "DELETE") items = items.filter((x) => x.id !== id);
+      db.favorites[user.id] = items;
+      saveDb(db);
+      return { items: clone(items) };
     }
     if (route === "/api/bookings") {
       if (method === "POST") {
@@ -1325,7 +1501,7 @@
       const weeks = /* @__PURE__ */ new Map();
       const slot = (w) => weeks.get(w) || weeks.set(w, { week: w, summary: null, shared: [], waiting: waiting.has(w) }).get(w);
       db.summaries.filter((s) => s.userId === clientId).forEach((s) => slot(s.week).summary = s);
-      db.journals.filter((e) => e.userId === clientId && e.shared).forEach(({ id: eid, title, text, created, week }) => slot(week).shared.push({ id: eid, title, text, created, week }));
+      db.journals.filter((e) => e.userId === clientId && e.shared && e.kind !== "mood").forEach(({ id: eid, title, text, created, week }) => slot(week).shared.push({ id: eid, title, text, created, week }));
       waiting.forEach((w) => slot(w));
       const list = [...weeks.values()].sort((a, b) => b.week.localeCompare(a.week));
       list.forEach((w) => w.shared.sort((a, b) => a.created.localeCompare(b.created)));
@@ -1335,17 +1511,19 @@
   }
   var DEBUG_RUN_MS = 4e3;
   function runDebugSummaries(db) {
-    const minus = (week, n) => {
+    const minus = (week, n2) => {
       const d = /* @__PURE__ */ new Date(week + "T00:00:00");
-      d.setDate(d.getDate() - 7 * n);
+      d.setDate(d.getDate() - 7 * n2);
       return weekOf(d.toISOString());
     };
     Object.keys(db.queue).sort((a, b) => a.split("/")[1].localeCompare(b.split("/")[1])).forEach((key) => {
       const [userId, week] = key.split("/");
-      const entries2 = db.journals.filter((e) => e.userId === userId && e.week === week);
+      const all = db.journals.filter((e) => e.userId === userId && e.week === week);
+      const entries2 = all.filter((e) => e.kind !== "mood");
+      const moodLines = all.filter((e) => e.kind === "mood").map((e) => e.text);
       db.summaries = db.summaries.filter((s) => !(s.userId === userId && s.week === week));
-      if (!entries2.length) return;
-      const earlier = [1, 2, 3].map((n) => db.summaries.find((s) => s.userId === userId && s.week === minus(week, n))).filter(Boolean);
+      if (!all.length) return;
+      const earlier = [1, 2, 3].map((n2) => db.summaries.find((s) => s.userId === userId && s.week === minus(week, n2))).filter(Boolean);
       const text = entries2.map((e) => e.text).join(" ");
       const count = (re) => (text.match(re) || []).length;
       const mood = Math.max(1, Math.min(10, 5 + 2 * count(/calm|good|better|happy|fine|جيد/gi) - 2 * count(/sad|angry|mad|anxious|tired|low|غاضب/gi)));
@@ -1355,7 +1533,7 @@
         entryCount: entries2.length,
         model: "debug",
         mood,
-        summary: `(Debug sample, not real AI.) ${entries2.length} ${entries2.length === 1 ? "entry" : "entries"} this week. The real summary of up to 100 words will come from Qwen on your AWS server.`,
+        summary: `(Debug sample, not real AI.) ${entries2.length} ${entries2.length === 1 ? "entry" : "entries"} this week.${moodLines.length ? " Mood check-ins: " + moodLines.join(" ") : ""} The real summary of up to 100 words will come from Qwen on your AWS server.`,
         comparison: earlier.length ? `Mood ${mood}/10 vs ${earlier[0].mood}/10 the week before (sample text).` : "First week with entries.",
         changes: earlier.length ? [
           `Mood ${mood >= earlier[0].mood ? "up" : "down"} from ${earlier[0].mood} to ${mood} (sample).`,
@@ -1557,9 +1735,273 @@
     return kept.join("").replace(/[ \t]+([,.!?;:،؛؟])/g, "$1").replace(/[ \t]{2,}/g, " ").trim().replace(/^[,.;:،؛\s]+/, "");
   }
 
-  // assets/private.js
+  // assets/affirmations-ui.js
   var $ = (id) => document.getElementById(id);
   var el = (tag, props = {}, ...kids) => {
+    const node = Object.assign(document.createElement(tag), props);
+    node.append(...kids.filter((k) => k !== null && k !== void 0));
+    return node;
+  };
+  var favorites = [];
+  var featured = null;
+  var favFilter = "All";
+  var onError = (err) => console.error(err);
+  var isSaved = (item) => favorites.some((f) => f.id === item.id);
+  var lib = () => typeof library !== "undefined" && Array.isArray(library) ? library : [];
+  async function setupAffirmations(handleError) {
+    onError = handleError || onError;
+    const hasUi = $("searchResults") || $("favoriteList") || $("featuredQuote");
+    if (!hasUi) return;
+    window.renderSearch = renderSearch2;
+    window.renderFavorites = renderFavorites;
+    await loadFavorites();
+    setupFeatured();
+    renderSearch2($("searchInput")?.value || "");
+    renderFavorites();
+  }
+  function refreshAffirmations() {
+    if (featured && !lib().some((x) => x.id === featured.id)) pickFeatured();
+    renderSearch2($("searchInput")?.value || "");
+    updateSaveButtons();
+  }
+  async function loadFavorites() {
+    try {
+      favorites = (await api("/api/favorites")).items || [];
+      let local = [];
+      try {
+        local = JSON.parse(localStorage.getItem("sst_favorites")) || [];
+      } catch {
+      }
+      for (const f of local.filter((x) => x?.id && x?.text && !favorites.some((y) => y.id === x.id))) {
+        favorites = (await api("/api/favorites", { method: "POST", body: { id: f.id, text: f.text, category: f.category || "" } })).items;
+      }
+      if (local.length) try {
+        localStorage.removeItem("sst_favorites");
+      } catch {
+      }
+    } catch (err) {
+      onError(err);
+    }
+  }
+  async function toggleSave(item, button) {
+    if (button) button.disabled = true;
+    try {
+      const res = isSaved(item) ? await api(`/api/favorites?id=${encodeURIComponent(item.id)}`, { method: "DELETE" }) : await api("/api/favorites", { method: "POST", body: { id: item.id, text: item.text, category: item.category || "" } });
+      favorites = res.items || [];
+    } catch (err) {
+      onError(err);
+    } finally {
+      if (button) button.disabled = false;
+    }
+    updateSaveButtons();
+    renderFavorites();
+  }
+  function saveButton(item) {
+    const b = el("button", { type: "button", className: "btn secondary small save-aff" });
+    b.dataset.id = item.id;
+    b.onclick = () => toggleSave(item, b);
+    paintSave(b, item);
+    return b;
+  }
+  function paintSave(b, item) {
+    const saved = isSaved(item);
+    b.textContent = saved ? "\u2713 Saved" : "\u2661 Save";
+    b.setAttribute("aria-pressed", String(saved));
+    b.title = saved ? "Saved to Your Favorites. Tap to remove." : "Save to Your Favorites";
+  }
+  function updateSaveButtons() {
+    document.querySelectorAll(".save-aff").forEach((b) => {
+      const item = b.dataset.featured ? featured : lib().find((x) => x.id === b.dataset.id) || favorites.find((x) => x.id === b.dataset.id);
+      if (item) paintSave(b, item);
+    });
+  }
+  function renderSearch2(query = "") {
+    const out = $("searchResults");
+    if (!out) return;
+    const q = query.trim().toLowerCase();
+    const cat = typeof activeCategory !== "undefined" ? activeCategory : "All";
+    out.innerHTML = "";
+    if (!q && cat === "All") {
+      out.append(el("p", { className: "notice", textContent: `Search above or choose a topic to explore ${lib().length} affirmations.` }));
+      return;
+    }
+    const items = lib().filter((x) => (cat === "All" || x.category === cat) && (!q || `${x.text} ${x.category} ${(x.tags || []).join(" ")}`.toLowerCase().includes(q)));
+    if (!items.length) {
+      out.append(el("p", { className: "empty", textContent: "No match yet. Try another word or topic." }));
+      return;
+    }
+    items.forEach((item) => out.append(el("div", { className: "result" }, el("small", { textContent: item.category }), el("p", { textContent: `\u201C${item.text}\u201D` }), saveButton(item))));
+  }
+  function setupFeatured() {
+    const quote = $("featuredQuote");
+    const next = $("newQuote");
+    if (!quote || !next) return;
+    const save = el("button", { type: "button", className: "btn small save-aff" });
+    save.dataset.featured = "1";
+    save.onclick = () => featured && toggleSave(featured, save);
+    next.after(save);
+    next.onclick = pickFeatured;
+    pickFeatured();
+  }
+  function pickFeatured() {
+    const items = lib().filter((x) => x.id !== featured?.id);
+    if (!items.length || !$("featuredQuote")) return;
+    featured = items[Math.floor(Math.random() * items.length)];
+    $("featuredQuote").textContent = featured.text;
+    const save = document.querySelector(".save-aff[data-featured]");
+    if (save) paintSave(save, featured);
+  }
+  function renderFavorites() {
+    const list = $("favoriteList");
+    const filters = $("favoriteFilters");
+    if (!list) return;
+    const cats = ["All", ...new Set(favorites.map((x) => x.category).filter(Boolean))];
+    if (!cats.includes(favFilter)) favFilter = "All";
+    if (filters) {
+      filters.innerHTML = "";
+      if (favorites.length) {
+        cats.forEach((c) => {
+          const b = el("button", { type: "button", className: "chip" + (favFilter === c ? " active" : ""), textContent: c });
+          b.onclick = () => {
+            favFilter = c;
+            renderFavorites();
+          };
+          filters.append(b);
+        });
+      }
+    }
+    list.innerHTML = "";
+    const shown = favorites.filter((x) => favFilter === "All" || x.category === favFilter);
+    if (!shown.length) {
+      list.append(el("p", { className: "empty", textContent: "No saved affirmations yet. Tap \u201C\u2661 Save\u201D on one you love and it will appear here." }));
+      return;
+    }
+    shown.forEach((item) => {
+      const remove = el("button", { type: "button", className: "btn secondary small", textContent: "Remove" });
+      remove.onclick = () => toggleSave(item, remove);
+      list.append(el("article", { className: "saved-item" }, el("small", { textContent: item.category || "Saved" }), el("p", { textContent: `\u201C${item.text}\u201D` }), remove));
+    });
+  }
+
+  // assets/mood-checkin.js
+  var QUOTES = {
+    Happy: "Let yourself enjoy this moment. You deserve the little joys, too. \u{1F49B}",
+    Sad: "It is okay to feel sad. You do not have to pretend to be okay to deserve care. \u{1F497}",
+    Anxious: "Come back to one slow breath. You only need to take the next small step. \u{1F33F}",
+    Stressed: "Pause for a moment. You are allowed to rest, even when there is more to do. \u2601\uFE0F",
+    Overwhelmed: "You do not have to do everything at once. One small thing is enough for now. \u{1F90D}",
+    Lonely: "Even when you feel alone, you still matter and you are worthy of connection. \u{1FAF6}",
+    Okay: "You do not need to feel amazing every day. Being here is enough. \u{1F33C}",
+    Good: "Let this good feeling have a little space. You are allowed to enjoy it. \u2728",
+    Great: "Celebrate this moment and the light you are carrying today. \u2600\uFE0F"
+  };
+  var TITLE = "How are you feeling today?";
+  var SUB = "Choose the mood that feels closest to you right now.";
+  var NOTICE = "Tap as often as you like, even on days you do not feel like writing. Each tap is quietly noted for today.";
+  var narrow = window.matchMedia("(max-width: 650px)");
+  var visibleCount = () => narrow.matches ? 2 : 5;
+  var el2 = (tag, props = {}, ...kids) => {
+    const node = Object.assign(document.createElement(tag), props);
+    node.append(...kids.filter((k) => k !== null && k !== void 0));
+    return node;
+  };
+  var pad = (n2) => String(n2).padStart(2, "0");
+  var ymd = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  var onError2 = (err) => console.error(err);
+  function setupMoodPickers(handleError) {
+    onError2 = handleError || onError2;
+    addStyles();
+    const home = document.getElementById("mood");
+    if (home) {
+      home.querySelector("h2") && (home.querySelector("h2").textContent = TITLE);
+      home.querySelector(".sub") && (home.querySelector(".sub").textContent = SUB);
+      home.querySelector(".mood-controls")?.replaceWith(...buildPicker());
+      home.querySelector(".notice")?.remove();
+      home.append(el2("p", { className: "notice", textContent: NOTICE }));
+    }
+    const journal = document.getElementById("journal");
+    if (journal && !journal.querySelector(".mood-checkin")) {
+      const block = el2("div", { className: "mood-checkin center" }, el2("h2", { textContent: TITLE }), el2("p", { className: "sub", textContent: SUB }), ...buildPicker(), el2("p", { className: "notice", textContent: NOTICE }));
+      journal.prepend(block);
+    }
+  }
+  function buildPicker() {
+    let start2 = 0;
+    const row = el2("div", { className: "moods" });
+    const status = el2("p", { className: "mood-status", role: "status", ariaLive: "polite" });
+    const prev = el2("button", { type: "button", className: "arrow", ariaLabel: "Previous moods", textContent: "\u2039" });
+    const next = el2("button", { type: "button", className: "arrow", ariaLabel: "More moods", textContent: "\u203A" });
+    const render = () => {
+      const visible = visibleCount();
+      start2 = Math.min(start2, MOODS.length - visible);
+      row.innerHTML = "";
+      MOODS.slice(start2, start2 + visible).forEach(([emoji, name]) => {
+        const b = el2("button", { type: "button", className: "mood", ariaLabel: `I feel ${name.toLowerCase()}` }, el2("span", { textContent: emoji }), name);
+        b.onclick = () => tap(b, emoji, name, status);
+        row.append(b);
+      });
+      prev.disabled = start2 === 0;
+      next.disabled = start2 + visible >= MOODS.length;
+    };
+    prev.onclick = () => {
+      start2 = Math.max(0, start2 - 1);
+      render();
+    };
+    next.onclick = () => {
+      start2 = Math.min(MOODS.length - visibleCount(), start2 + 1);
+      render();
+    };
+    narrow.addEventListener("change", render);
+    render();
+    return [el2("div", { className: "mood-controls" }, prev, row, next), status];
+  }
+  async function tap(button, emoji, name, status) {
+    rise(button, emoji);
+    status.textContent = QUOTES[name] || "Thank you for checking in with yourself.";
+    const now = /* @__PURE__ */ new Date();
+    const monday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    monday.setDate(monday.getDate() - (monday.getDay() + 6) % 7);
+    try {
+      await api("/api/moods", {
+        method: "POST",
+        body: { mood: name, date: ymd(now), week: ymd(monday), created: new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString() }
+      });
+    } catch (err) {
+      status.textContent = "That tap could not be noted. Please try again.";
+      onError2(err);
+    }
+  }
+  function rise(button, emoji) {
+    button.classList.remove("tapped");
+    void button.offsetWidth;
+    button.classList.add("tapped");
+    const r = button.getBoundingClientRect();
+    const float = el2("span", { className: "mood-float", textContent: emoji, ariaHidden: "true" });
+    float.style.left = `${r.left + r.width / 2}px`;
+    float.style.top = `${r.top + r.height / 2 - 10}px`;
+    document.body.append(float);
+    float.addEventListener("animationend", () => float.remove());
+    setTimeout(() => float.remove(), 1500);
+  }
+  function addStyles() {
+    if (document.getElementById("mood-checkin-style")) return;
+    const style = el2("style", { id: "mood-checkin-style" });
+    style.textContent = `
+.mood-checkin{margin-bottom:28px;padding-bottom:26px;border-bottom:1px solid var(--line,#e8dfed)}
+.mood-checkin h2{margin-bottom:8px}
+.mood-status{min-height:22px;margin:12px 0 0;font-size:14px;color:#6b6283}
+.mood.tapped{animation:moodPress .35s ease}
+.mood:disabled,.arrow:disabled{opacity:.35;cursor:default}
+.mood-float{position:fixed;z-index:9999;pointer-events:none;font-size:34px;transform:translate(-50%,-50%);animation:moodRise .95s ease-out forwards}
+@keyframes moodRise{0%{opacity:1;transform:translate(-50%,-50%) scale(1)}70%{opacity:.9}100%{opacity:0;transform:translate(-50%,-150px) scale(1.6)}}
+@keyframes moodPress{0%{transform:scale(1)}40%{transform:scale(.93)}100%{transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){.mood-float{animation-duration:.01s}.mood.tapped{animation:none}}`;
+    document.head.append(style);
+  }
+
+  // assets/private.js
+  var $2 = (id) => document.getElementById(id);
+  var el3 = (tag, props = {}, ...kids) => {
     const node = Object.assign(document.createElement(tag), props);
     node.append(...kids);
     return node;
@@ -1571,32 +2013,32 @@
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
   }
   function addAccountMenu(user) {
-    const nav = $("navlinks");
+    const nav = $2("navlinks");
     if (!nav) return;
     const style = document.createElement("style");
-    style.textContent = ".account{display:flex;align-items:center;gap:8px;padding-left:8px;border-left:1px solid var(--line,#e8dfed)}.account span{font-size:12px;color:#8a7fa0;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}@media(max-width:650px){.account{border-left:0;padding:8px 5px}}.section,.about-page,footer{overflow-wrap:break-word}.grid2>*,.two-fields>*,.about-grid>*{min-width:0}.result,.saved-item,.tidy-text,.affirmation-text,#journalEntries,#bookingStatus,#journalStatus{overflow-wrap:anywhere}";
+    style.textContent = ".account{display:flex;align-items:center;gap:8px;padding-left:8px;border-left:1px solid var(--line,#e8dfed)}.account span{font-size:12px;color:#8a7fa0;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}@media(max-width:650px){.account{border-left:0;padding:8px 5px}}.section,.about-page,footer{overflow-wrap:break-word}.grid2>*,.two-fields>*,.about-grid>*{min-width:0}.result,.saved-item,.tidy-text,.affirmation-text,#journalEntries,#bookingStatus,#journalStatus{overflow-wrap:anywhere}.step-link{display:block;text-decoration:none;color:inherit;cursor:pointer;transition:transform .18s,box-shadow .18s,border-color .18s}.step-link:hover,.step-link:focus-visible{transform:translateY(-3px);border-color:#b7a4d0;box-shadow:0 8px 22px #57466d18}.step-link:focus-visible{outline:2px solid #b7a4d0;outline-offset:2px}";
     document.head.append(style);
-    const out = el("button", { className: "btn secondary small", type: "button", textContent: "Sign out" });
+    const out = el3("button", { className: "btn secondary small", type: "button", textContent: "Sign out" });
     out.onclick = async () => {
       await signOut();
       location.replace(loginUrl("private", "signed-out"));
     };
-    nav.append(el("div", { className: "account" }, el("span", { textContent: user.name || user.email || "Signed in", title: user.email || "" }), out));
+    nav.append(el3("div", { className: "account" }, el3("span", { textContent: user.name || user.email || "Signed in", title: user.email || "" }), out));
   }
   var entries = [];
   function setupJournal() {
-    if (!$("journalText") || !$("saveJournal")) return;
-    const status = (t) => $("journalStatus").textContent = t;
-    const share = el("input", { type: "checkbox", id: "journalShare" });
+    if (!$2("journalText") || !$2("saveJournal")) return;
+    const status = (t) => $2("journalStatus").textContent = t;
+    const share = el3("input", { type: "checkbox", id: "journalShare" });
     share.style.cssText = "width:17px;height:17px;accent-color:#7866a8;flex:none";
-    const shareLabel = el("label", { htmlFor: "journalShare" }, share, el("span", { textContent: "Share this entry with my therapist" }));
+    const shareLabel = el3("label", { htmlFor: "journalShare" }, share, el3("span", { textContent: "Share this entry with my therapist" }));
     shareLabel.style.cssText = "display:flex;align-items:center;gap:8px;margin:-4px 0 12px;font-size:14px;cursor:pointer";
-    $("journalText").after(shareLabel);
+    $2("journalText").after(shareLabel);
     const notice = document.querySelector("#journal .notice");
     if (notice) {
-      notice.textContent = "Entries are saved to your account, so you can read them on any device. Your therapist can read only the entries you share. Each week an AI-written summary of all your entries, shared or not, is prepared for your therapist.";
+      notice.textContent = "Entries are saved to your account, so you can read them on any device. Your therapist can read only the entries you share. Each week an AI-written summary of all your entries and mood check-ins, shared or not, is prepared for your therapist.";
     }
-    const sub = $("journalEntries")?.previousElementSibling;
+    const sub = $2("journalEntries")?.previousElementSibling;
     if (sub?.classList.contains("sub")) sub.textContent = "Your saved reflections, on every device you sign in to.";
     setupDictationTip();
     const review = setupReview();
@@ -1604,10 +2046,9 @@
       button.disabled = true;
       status("Saving\u2026");
       try {
-        const { entry } = await api("/api/journals", { method: "POST", body: { title: $("journalTitle").value.trim(), text, shared: share.checked, week: localWeek(), created: (/* @__PURE__ */ new Date()).toISOString() } });
+        const { entry } = await api("/api/journals", { method: "POST", body: { text, shared: share.checked, week: localWeek(), created: (/* @__PURE__ */ new Date()).toISOString() } });
         entries.unshift(entry);
-        $("journalTitle").value = "";
-        $("journalText").value = "";
+        $2("journalText").value = "";
         share.checked = false;
         review.close();
         status(entry.shared ? "Saved and shared with your therapist." : "Saved to your account.");
@@ -1618,41 +2059,40 @@
         button.disabled = false;
       }
     }
-    $("saveJournal").textContent = "Tidy up & review";
-    $("saveJournal").onclick = () => {
-      const text = $("journalText").value.trim();
+    $2("saveJournal").textContent = "Tidy up & review";
+    $2("saveJournal").onclick = () => {
+      const text = $2("journalText").value.trim();
       if (!text) return status("Write or dictate a little note first.");
       status("");
       const tokens = tokenize(text);
       review.open({ tokens, deletions: mergeDeletions(ruleDeletions(tokens), tokens.length) });
     };
-    const asIs = el("button", { className: "btn secondary", type: "button", textContent: "Save as written" });
+    const asIs = el3("button", { className: "btn secondary", type: "button", textContent: "Save as written" });
     asIs.onclick = () => {
-      const text = $("journalText").value.trim();
+      const text = $2("journalText").value.trim();
       if (!text) return status("Write a little note before saving.");
       saveEntry(text, asIs);
     };
-    $("saveJournal").after(asIs);
+    $2("saveJournal").after(asIs);
     review.onRecord = (text, button) => saveEntry(text, button);
     window.renderJournals = renderJournalList;
     loadJournals();
   }
   function setupDictationTip() {
-    const tip = el(
+    const tip = el3(
       "div",
       { className: "dictate-tip" },
-      el("span", { className: "dictate-icon", textContent: "\u{1F399}\uFE0F", ariaHidden: "true" }),
-      el(
+      el3("span", { className: "dictate-icon", textContent: "\u{1F399}\uFE0F", ariaHidden: "true" }),
+      el3(
         "span",
         {},
-        el("strong", { textContent: "Prefer to talk? " }),
+        el3("strong", { textContent: "Prefer to talk? " }),
         "Tap the microphone on your phone keyboard and just speak, in English or Arabic. Don\u2019t worry about \u201Cum\u201Ds or changing your mind (\u201Cwait, delete that\u201D). Press \u201CTidy up & review\u201D: we strike through the bits that look like fillers or take-backs, and you decide what stays. You can also edit the text yourself before saving."
       )
     );
     const label = document.querySelector('label[for="journalText"]');
-    (label || $("journalText")).before(tip);
-    $("journalText").setAttribute("dir", "auto");
-    $("journalTitle")?.setAttribute("dir", "auto");
+    (label || $2("journalText")).before(tip);
+    $2("journalText").setAttribute("dir", "auto");
   }
   function setupReview() {
     const style = document.createElement("style");
@@ -1668,8 +2108,8 @@
 .tidy-legend{font-size:13px;color:#77718a;margin:0}
 .tidy-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}`;
     document.head.append(style);
-    const panel = el("div", { className: "tidy-review hidden", ariaLive: "polite" });
-    ($("journalStatus") || $("saveJournal").parentElement).after(panel);
+    const panel = el3("div", { className: "tidy-review hidden", ariaLive: "polite" });
+    ($2("journalStatus") || $2("saveJournal").parentElement).after(panel);
     const ctl = { onRecord: null };
     let tokens = [];
     let deletions = [];
@@ -1677,17 +2117,17 @@
     ctl.close = () => {
       panel.classList.add("hidden");
       panel.innerHTML = "";
-      $("journalText").readOnly = false;
+      $2("journalText").readOnly = false;
     };
     ctl.open = (result) => {
       tokens = result.tokens;
       deletions = result.deletions.map((d) => ({ ...d, kept: false }));
       panel.innerHTML = "";
-      const text = el("div", { className: "tidy-text", dir: "auto" });
+      const text = el3("div", { className: "tidy-text", dir: "auto" });
       let i = 0;
       deletions.forEach((d) => {
         if (d.from > i) text.append(tokens.slice(i, d.from).join(""));
-        const b = el("button", { type: "button", className: "tidy-del", title: (d.reason || "Suggested removal") + " \xB7 tap to keep", textContent: tokens.slice(d.from, d.to + 1).join("") });
+        const b = el3("button", { type: "button", className: "tidy-del", title: (d.reason || "Suggested removal") + " \xB7 tap to keep", textContent: tokens.slice(d.from, d.to + 1).join("") });
         b.setAttribute("aria-pressed", "false");
         b.setAttribute("aria-label", `Will be removed: ${b.textContent.trim()}. Tap to keep.`);
         b.onclick = () => {
@@ -1701,52 +2141,52 @@
       });
       if (i < tokens.length) text.append(tokens.slice(i).join(""));
       const legend = deletions.length ? "Struck-through parts will be removed. Tap any of them to keep it, or choose \u201CEdit text\u201D to change anything yourself." : "Nothing to remove. You can save it, or choose \u201CEdit text\u201D to change anything yourself.";
-      const record = el("button", { className: "btn", type: "button", textContent: "Record entry" });
+      const record = el3("button", { className: "btn", type: "button", textContent: "Record entry" });
       record.onclick = () => {
         const out = finalText();
-        if (!out) return $("journalStatus").textContent = "Everything was removed. Tap a struck-through part to keep it, or go back to editing.";
+        if (!out) return $2("journalStatus").textContent = "Everything was removed. Tap a struck-through part to keep it, or go back to editing.";
         ctl.onRecord?.(out, record);
       };
-      const edit = el("button", { className: "btn secondary", type: "button", textContent: "Edit text" });
+      const edit = el3("button", { className: "btn secondary", type: "button", textContent: "Edit text" });
       edit.onclick = () => {
         const out = finalText();
         ctl.close();
-        $("journalText").value = out;
-        $("journalText").focus();
-        $("journalStatus").textContent = "Edit as you like, then press \u201CTidy up & review\u201D again or \u201CSave as written\u201D.";
+        $2("journalText").value = out;
+        $2("journalText").focus();
+        $2("journalStatus").textContent = "Edit as you like, then press \u201CTidy up & review\u201D again or \u201CSave as written\u201D.";
       };
-      const back = el("button", { className: "btn secondary", type: "button", textContent: "Cancel" });
+      const back = el3("button", { className: "btn secondary", type: "button", textContent: "Cancel" });
       back.onclick = () => ctl.close();
-      panel.append(el("h3", { textContent: "Review before saving" }), el("p", { className: "tidy-legend", textContent: legend }), text, el("div", { className: "tidy-actions" }, record, edit, back));
+      panel.append(el3("h3", { textContent: "Review before saving" }), el3("p", { className: "tidy-legend", textContent: legend }), text, el3("div", { className: "tidy-actions" }, record, edit, back));
       panel.classList.remove("hidden");
-      $("journalText").readOnly = true;
+      $2("journalText").readOnly = true;
       panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
       record.focus({ preventScroll: true });
     };
     return ctl;
   }
   async function loadJournals() {
-    $("journalEntries").innerHTML = '<p class="empty">Loading your journal\u2026</p>';
+    $2("journalEntries").innerHTML = '<p class="empty">Loading your journal\u2026</p>';
     try {
       entries = (await api("/api/journals")).entries;
       renderJournalList();
     } catch (err) {
-      $("journalEntries").innerHTML = "";
-      $("journalEntries").append(el("p", { className: "empty", textContent: handleApiError(err, "Could not load your journal.") }));
+      $2("journalEntries").innerHTML = "";
+      $2("journalEntries").append(el3("p", { className: "empty", textContent: handleApiError(err, "Could not load your journal.") }));
     }
   }
   function renderJournalList() {
-    const out = $("journalEntries");
+    const out = $2("journalEntries");
     out.innerHTML = "";
     renderImportBanner(out);
     if (!entries.length) {
-      out.append(el("p", { className: "empty", textContent: "Your saved journal entries will appear here." }));
+      out.append(el3("p", { className: "empty", textContent: "Your saved journal entries will appear here." }));
       return;
     }
     entries.forEach((entry) => {
-      const badge = el("span", { textContent: entry.shared ? " \xB7 Shared with therapist" : " \xB7 Private" });
+      const badge = el3("span", { textContent: entry.shared ? " \xB7 Shared with therapist" : " \xB7 Private" });
       badge.style.cssText = `font-size:12px;font-weight:600;color:${entry.shared ? "#4e7a4c" : "#8a7fa0"}`;
-      const toggle = el("button", { className: "btn secondary small", type: "button", textContent: entry.shared ? "Stop sharing" : "Share with therapist" });
+      const toggle = el3("button", { className: "btn secondary small", type: "button", textContent: entry.shared ? "Stop sharing" : "Share with therapist" });
       toggle.onclick = async () => {
         toggle.disabled = true;
         try {
@@ -1755,10 +2195,10 @@
           renderJournalList();
         } catch (err) {
           toggle.disabled = false;
-          $("journalStatus").textContent = handleApiError(err, "Could not update sharing.");
+          $2("journalStatus").textContent = handleApiError(err, "Could not update sharing.");
         }
       };
-      const del = el("button", { className: "btn secondary small", type: "button", textContent: "Delete" });
+      const del = el3("button", { className: "btn secondary small", type: "button", textContent: "Delete" });
       del.onclick = async () => {
         if (!confirm("Delete this journal entry? This cannot be undone.")) return;
         try {
@@ -1766,18 +2206,18 @@
           entries = entries.filter((x) => x.id !== entry.id);
           renderJournalList();
         } catch (err) {
-          $("journalStatus").textContent = handleApiError(err, "Could not delete.");
+          $2("journalStatus").textContent = handleApiError(err, "Could not delete.");
         }
       };
-      const actions = el("div", {}, toggle, del);
+      const actions = el3("div", {}, toggle, del);
       actions.style.cssText = "display:flex;gap:6px;flex-wrap:wrap";
-      out.append(el(
+      out.append(el3(
         "div",
         { className: "result" },
-        el("strong", { textContent: entry.title || "My reflection" }),
-        el("small", { textContent: " \xB7 " + new Date(entry.created).toLocaleString() }),
+        el3("strong", { textContent: entry.title || "My reflection" }),
+        el3("small", { textContent: " \xB7 " + new Date(entry.created).toLocaleString() }),
         badge,
-        el("p", { textContent: entry.text }),
+        el3("p", { textContent: entry.text }),
         actions
       ));
     });
@@ -1789,7 +2229,7 @@
     } catch {
     }
     if (!local.length) return;
-    const btn = el("button", { className: "btn small", type: "button", textContent: `Move ${local.length} to my account` });
+    const btn = el3("button", { className: "btn small", type: "button", textContent: `Move ${local.length} to my account` });
     btn.onclick = async () => {
       btn.disabled = true;
       btn.textContent = "Moving\u2026";
@@ -1802,22 +2242,22 @@
         localStorage.removeItem("sst_journals");
         entries.sort((a, b) => b.created.localeCompare(a.created));
         renderJournalList();
-        $("journalStatus").textContent = "Your earlier entries are now in your account (not shared).";
+        $2("journalStatus").textContent = "Your earlier entries are now in your account (not shared).";
       } catch (err) {
         btn.disabled = false;
         btn.textContent = "Try again";
-        $("journalStatus").textContent = handleApiError(err, "Could not move entries.");
+        $2("journalStatus").textContent = handleApiError(err, "Could not move entries.");
       }
     };
-    const box = el("div", { className: "result" }, el("p", { textContent: `You have ${local.length} journal ${local.length === 1 ? "entry" : "entries"} saved only in this browser from before.` }), btn);
+    const box = el3("div", { className: "result" }, el3("p", { textContent: `You have ${local.length} journal ${local.length === 1 ? "entry" : "entries"} saved only in this browser from before.` }), btn);
     box.style.background = "#fcf9ff";
     out.append(box);
   }
   function setupBooking(user) {
-    const form = $("bookingForm");
+    const form = $2("bookingForm");
     if (!form) return;
-    if ($("bookName") && !$("bookName").value) $("bookName").value = user.name || "";
-    if ($("bookEmail") && !$("bookEmail").value) $("bookEmail").value = user.email || "";
+    if ($2("bookName") && !$2("bookName").value) $2("bookName").value = user.name || "";
+    if ($2("bookEmail") && !$2("bookEmail").value) $2("bookEmail").value = user.email || "";
     const notice = form.querySelector(".notice");
     if (notice) notice.textContent = "Your enquiry goes straight to the therapist, who will reply by email. Sending it does not confirm an appointment.";
     const submitBtn = form.querySelector('[type="submit"]');
@@ -1827,14 +2267,14 @@
       e.preventDefault();
       e.stopImmediatePropagation();
       const data = Object.fromEntries(new FormData(form));
-      const status = (t) => $("bookingStatus").textContent = t;
+      const status = (t) => $2("bookingStatus").textContent = t;
       submitBtn && (submitBtn.disabled = true);
       status("Sending\u2026");
       try {
         await api("/api/bookings", { method: "POST", body: data });
         form.reset();
-        $("bookName").value = user.name || "";
-        $("bookEmail").value = user.email || "";
+        $2("bookName").value = user.name || "";
+        $2("bookEmail").value = user.email || "";
         status("Thank you. Your enquiry has been sent. The therapist will reply by email. This is not yet an appointment confirmation.");
       } catch (err) {
         status(handleApiError(err, "Could not send. Please try again, or email support@safe-spacetherapy.com."));
@@ -1850,7 +2290,7 @@
       if (!Array.isArray(items) || !items.length) return;
       library.splice(0, library.length, ...items);
       if (typeof renderCategories === "function") renderCategories();
-      if (typeof renderSearch === "function") renderSearch($("searchInput")?.value || "");
+      if (typeof renderSearch === "function") renderSearch($2("searchInput")?.value || "");
     } catch {
     }
   }
@@ -1860,6 +2300,11 @@
       return "Your session has ended. Taking you to sign in\u2026";
     }
     return err?.message || fallback;
+  }
+  function scrollToHash() {
+    const id = decodeURIComponent(location.hash.slice(1));
+    const target = id && document.getElementById(id);
+    if (target && target.offsetParent !== null) target.scrollIntoView({ block: "start", behavior: "instant" });
   }
   async function start() {
     if (forwardAuthLinks()) return;
@@ -1874,9 +2319,12 @@
     addAccountMenu(user);
     showDevBanner();
     setupJournal();
+    setupMoodPickers((err) => handleApiError(err, ""));
     setupBooking(user);
     reveal();
-    loadAffirmations();
+    await Promise.all([setupAffirmations((err) => handleApiError(err, "")), loadAffirmations()]);
+    refreshAffirmations();
+    scrollToHash();
   }
   start();
 })();

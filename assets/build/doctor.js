@@ -981,7 +981,7 @@
   };
 
   // netlify/lib/default-affirmations.mjs
-  var DEFAULT_AFFIRMATIONS = [
+  var FIRST = [
     { id: "a1", category: "Stress & Anxiety", tags: ["anxious", "calm", "breathing"], text: "I can take one slow breath at a time. I do not have to solve everything right now." },
     { id: "a2", category: "Stress & Anxiety", tags: ["stress", "rest", "pause"], text: "I am allowed to pause. Rest is part of moving forward." },
     { id: "a3", category: "Stress & Anxiety", tags: ["overwhelmed", "small steps"], text: "One small step is enough for today. I can move at my own pace." },
@@ -998,6 +998,129 @@
     { id: "a14", category: "Relationships", tags: ["angry", "feelings", "space"], text: "My feelings are valid. I can give myself space before choosing my next step." },
     { id: "a15", category: "Mindfulness", tags: ["happy", "joy", "enjoy"], text: "My joy is allowed to take up space. I can let myself enjoy this moment." },
     { id: "a16", category: "Self-Compassion", tags: ["low", "tired", "enough"], text: "Even on a difficult day, I am still worthy of tenderness and care." }
+  ];
+  var MORE = {
+    "Stress & Anxiety": [
+      [["anxious", "breathing", "body"], "My breath is always with me. I can come back to it whenever I need."],
+      [["worry", "future", "present"], "Worry is not a prediction. Right now, I am safe enough to take one breath."],
+      [["panic", "calm", "grounding"], "This feeling is strong, and it will pass. I can let it rise and fall."],
+      [["overthinking", "thoughts", "calm"], "I do not have to follow every thought. I can let some of them drift by."],
+      [["stress", "control", "letting go"], "I can focus on what is in my hands and gently set down the rest."],
+      [["nervous", "brave", "courage"], "I can feel nervous and still show up. Courage often feels like this."],
+      [["tense", "body", "relax"], "I can soften my shoulders, unclench my jaw, and let my body rest a little."],
+      [["uncertainty", "trust", "future"], "I do not need every answer today. I can handle things as they come."],
+      [["busy", "pace", "slow"], "Slowing down is not falling behind. It is how I take care of myself."]
+    ],
+    "Self-Compassion": [
+      [["mistake", "kindness", "learning"], "Making a mistake does not make me a mistake. I can learn and keep going."],
+      [["self criticism", "kindness", "voice"], "I can speak to myself the way I would speak to someone I love."],
+      [["enough", "worth", "self worth"], "I am enough as I am, even while I am still growing."],
+      [["tired", "rest", "permission"], "Rest is not something I have to earn. I am allowed to stop."],
+      [["guilt", "forgive", "past"], "I can forgive the version of me who was doing the best they could."],
+      [["hard day", "gentle", "care"], "On hard days, small acts of care still count."],
+      [["perfection", "progress", "enough"], "I do not need to be perfect to be worthy of love and care."],
+      [["feelings", "allowed", "emotions"], "All of my feelings are allowed. None of them make me too much."],
+      [["healing", "time", "patience"], "Healing is not a straight line. I can be patient with my own pace."]
+    ],
+    "Mindfulness": [
+      [["present", "now", "grounding"], "Right now, I can notice five things I see and let my mind settle."],
+      [["breathing", "calm", "present"], "With each breath out, I can let go of a little tension."],
+      [["moment", "enough", "present"], "This moment does not need to be special. It only needs to be lived."],
+      [["noticing", "curious", "thoughts"], "I can watch my thoughts with curiosity, like clouds passing by."],
+      [["senses", "body", "grounding"], "My feet are on the ground. I am here, in this body, in this moment."],
+      [["slow", "simple", "peace"], "Peace can be found in simple things: warm tea, quiet light, a slow breath."],
+      [["acceptance", "feelings", "present"], "I can let this moment be as it is, without fighting it."],
+      [["gratitude", "small things", "joy"], "I can notice one small good thing around me right now."]
+    ],
+    "ADHD Support": [
+      [["adhd", "focus", "start"], "Starting is the hardest part. Two minutes is a good enough beginning."],
+      [["adhd", "brain", "different"], "My brain works differently, not wrongly. I can work with it, not against it."],
+      [["adhd", "forgetful", "kindness"], "Forgetting something does not mean I do not care. I can try again."],
+      [["adhd", "energy", "interest"], "My curiosity and energy are strengths, too."],
+      [["adhd", "routine", "tools"], "Using reminders and tools is smart, not a weakness."],
+      [["adhd", "overwhelmed", "one thing"], "I only need to choose one thing to do next."],
+      [["adhd", "rest", "hyperfocus"], "I can pause, drink some water, and come back with fresh eyes."],
+      [["adhd", "self worth", "productivity"], "My worth is not measured by how productive I was today."]
+    ],
+    "Confidence": [
+      [["confidence", "voice", "speak"], "My voice matters. I am allowed to take up space."],
+      [["brave", "try", "growth"], "Trying something new is brave, whatever the result."],
+      [["proud", "progress", "notice"], "I can be proud of how far I have come, not only of where I am going."],
+      [["doubt", "confidence", "trust"], "I can trust myself a little more each day."],
+      [["boundaries", "no", "confidence"], "Saying no to others can be saying yes to myself."],
+      [["strength", "resilience", "past"], "I have handled hard things before. I can handle this, too."],
+      [["comparison", "own path", "enough"], "My path is my own. I do not need to compare it to anyone else."],
+      [["growth", "learning", "future"], "I am capable of learning, changing, and growing."]
+    ],
+    "Relationships": [
+      [["love", "connection", "worthy"], "I deserve relationships where I feel safe and respected."],
+      [["boundaries", "relationships", "respect"], "Healthy boundaries help my relationships grow stronger."],
+      [["lonely", "connection", "reach out"], "Reaching out is a strength. Someone would be glad to hear from me."],
+      [["conflict", "calm", "listen"], "I can listen with an open heart and still stay true to myself."],
+      [["family", "patience", "love"], "I can love my family and still need some space."],
+      [["friendship", "gratitude", "connection"], "I am grateful for the people who make me feel at home."],
+      [["hurt", "healing", "trust"], "Being hurt before does not mean I cannot find safe connection again."],
+      [["partner", "communication", "honest"], "I can share how I feel honestly and kindly."]
+    ],
+    "Sleep & Rest": [
+      [["sleep", "night", "rest"], "The day is done. I can let it go and rest now."],
+      [["sleep", "thoughts", "tomorrow"], "My thoughts can wait until morning. Right now is for rest."],
+      [["insomnia", "calm", "body"], "Even if sleep is slow to come, resting quietly still helps my body."],
+      [["tired", "rest", "recharge"], "Rest is how I recharge. I give myself permission to slow down."],
+      [["evening", "peace", "letting go"], "I did enough today. I can put the day down gently."],
+      [["night", "safe", "breathing"], "I am safe in this moment. I can breathe slowly and let my body soften."]
+    ],
+    "Grief & Loss": [
+      [["grief", "loss", "love"], "Grief is love with nowhere to go. It is okay to miss them."],
+      [["grief", "time", "healing"], "There is no right way or timeline for grief."],
+      [["loss", "sad", "allowed"], "I am allowed to feel sad and still have moments of joy."],
+      [["memory", "love", "remember"], "The love I shared is still part of me."],
+      [["grief", "gentle", "care"], "On heavy days, I can be extra gentle with myself."],
+      [["change", "loss", "new"], "Endings are hard. I can grieve what was and slowly make room for what comes next."]
+    ],
+    "Anger & Frustration": [
+      [["angry", "feelings", "allowed"], "Anger tells me something matters. I can listen without letting it take over."],
+      [["frustrated", "pause", "breathing"], "Before I react, I can take one long breath out."],
+      [["angry", "calm", "space"], "I can step away, cool down, and come back when I am ready."],
+      [["irritable", "needs", "care"], "When I feel short-tempered, I can check if I am tired, hungry, or overwhelmed."],
+      [["conflict", "boundaries", "anger"], "I can express my anger in ways that respect me and others."]
+    ],
+    "Motivation": [
+      [["motivation", "start", "small steps"], "I do not need motivation to begin. Starting often brings it."],
+      [["progress", "small steps", "consistency"], "Small steps, taken often, add up to big changes."],
+      [["stuck", "move", "gentle"], "Feeling stuck is temporary. One tiny action can get me moving again."],
+      [["goals", "patience", "growth"], "I can work towards my goals at a pace I can keep."],
+      [["procrastination", "kindness", "start"], "I can begin badly. Beginning is what counts."],
+      [["hope", "future", "possible"], "Good things are still possible for me."]
+    ],
+    "Body & Health": [
+      [["body", "kindness", "gratitude"], "My body carries me through every day. I can treat it with kindness."],
+      [["eating", "care", "nourish"], "Nourishing my body is an act of self-care."],
+      [["movement", "walk", "energy"], "A short walk or stretch can help me feel a little lighter."],
+      [["pain", "patience", "body"], "On days my body hurts, I can listen to it and rest."],
+      [["body image", "worth", "acceptance"], "My worth is not decided by how my body looks."],
+      [["health", "water", "basics"], "Water, food, rest, fresh air: the basics are a good place to start."]
+    ],
+    "Work & Study": [
+      [["work", "stress", "boundaries"], "My job is something I do, not who I am."],
+      [["study", "exam", "calm"], "I have prepared what I can. I will do my best, and that is enough."],
+      [["deadline", "one task", "focus"], "I can take this one task at a time."],
+      [["work", "rest", "balance"], "Logging off is part of doing good work."],
+      [["feedback", "growth", "learning"], "Feedback helps me grow. It does not define my worth."],
+      [["mistake", "work", "learning"], "Everyone makes mistakes at work. I can fix what I can and move on."]
+    ],
+    "Parenting": [
+      [["parent", "enough", "love"], "I do not have to be a perfect parent. A loving, present one is enough."],
+      [["parent", "patience", "calm"], "When things get loud, I can be the calm my child needs, or take a moment to find it."],
+      [["parent", "repair", "mistake"], "If I lose my temper, I can repair. Repair teaches love, too."],
+      [["parent", "self care", "rest"], "Taking care of myself helps me take care of my family."],
+      [["parent", "tired", "kindness"], "Being tired does not make me a bad parent. I am doing a lot."]
+    ]
+  };
+  var n = FIRST.length;
+  var DEFAULT_AFFIRMATIONS = [
+    ...FIRST,
+    ...Object.entries(MORE).flatMap(([category, items]) => items.map(([tags, text]) => ({ id: `a${++n}`, category, tags, text })))
   ];
 
   // assets/dev-sample-people.js
@@ -1115,7 +1238,7 @@
   function addSamplePeople(db, weekOf2, newId2) {
     const rand = rng(20261026);
     const pick = (list) => list[Math.floor(rand() * list.length)];
-    const pickSome = (list, n) => [...list].sort(() => rand() - 0.5).slice(0, n);
+    const pickSome = (list, n2) => [...list].sort(() => rand() - 0.5).slice(0, n2);
     const thisMonday = /* @__PURE__ */ new Date();
     thisMonday.setHours(0, 0, 0, 0);
     thisMonday.setDate(thisMonday.getDate() - (thisMonday.getDay() + 6) % 7);
@@ -1151,6 +1274,30 @@
         { id: newId2(), userId: "sample-omar", accountEmail: "omar@example.test", name: "Omar Haddad", email: "omar@example.test", session: "Individual session", date: "", message: "", status: "contacted", note: "Offered Tuesday or Thursday.", created: at2(6) }
       );
     }
+  }
+
+  // netlify/lib/moods.mjs
+  var MOODS = [
+    ["\u{1F60A}", "Happy"],
+    ["\u{1F614}", "Sad"],
+    ["\u{1F61F}", "Anxious"],
+    ["\u{1F623}", "Stressed"],
+    ["\u{1F635}", "Overwhelmed"],
+    ["\u{1F61E}", "Lonely"],
+    ["\u{1F610}", "Okay"],
+    ["\u{1F642}", "Good"],
+    ["\u{1F31E}", "Great"]
+  ];
+  var MOOD_NAMES = MOODS.map(([, name]) => name);
+  function moodSentence(counts, order = Object.keys(counts)) {
+    const names = [...new Set(order)].filter((m) => counts[m] > 0);
+    if (!names.length) return "";
+    names.sort((a, b) => counts[b] - counts[a] || order.indexOf(a) - order.indexOf(b));
+    const showStrength = names.some((m) => counts[m] > 1);
+    const word = (m) => (showStrength ? counts[m] >= 3 ? "very " : counts[m] === 2 ? "quite " : "a bit " : "") + m.toLowerCase();
+    const parts = names.map(word);
+    const list = parts.length > 1 ? `${parts.slice(0, -1).join(", ")} and ${parts[parts.length - 1]}` : parts[0];
+    return `I feel ${list} today.`;
   }
 
   // assets/dev-backend.js
@@ -1250,7 +1397,7 @@
     if (!user) throw fail(401, "Please sign in.");
     if (route === "/api/journals") {
       if (isDoctor(user)) throw fail(403, "Doctor accounts do not keep a journal.");
-      const mine = db.journals.filter((e) => e.userId === user.id);
+      const mine = db.journals.filter((e) => e.userId === user.id && e.kind !== "mood");
       if (method === "GET") return { entries: clone(mine).sort((a, b) => b.created.localeCompare(a.created)) };
       if (method === "POST") {
         if (!body?.text?.trim()) throw fail(400, "Write a little note before saving.");
@@ -1278,6 +1425,35 @@
         saveDb(db);
         return { ok: true };
       }
+    }
+    if (route === "/api/moods") {
+      if (isDoctor(user)) throw fail(403, "Mood check-ins are for Private accounts.");
+      if (!MOOD_NAMES.includes(body?.mood)) throw fail(400, "Unknown mood");
+      const date = body.date || (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
+      let day = db.journals.find((e) => e.userId === user.id && e.kind === "mood" && e.date === date);
+      if (!day) {
+        day = { id: "mood-" + date, userId: user.id, kind: "mood", date, counts: {}, order: [], title: "", shared: false, created: body.created || date + "T00:00:00", week: body.week || weekOf(date + "T12:00:00") };
+        db.journals.push(day);
+      }
+      day.counts[body.mood] = (day.counts[body.mood] || 0) + 1;
+      if (!day.order.includes(body.mood)) day.order.push(body.mood);
+      day.text = moodSentence(day.counts, day.order);
+      db.queue[`${user.id}/${day.week}`] = Date.now();
+      saveDb(db);
+      return { ok: true };
+    }
+    if (route === "/api/favorites") {
+      if (isDoctor(user)) throw fail(403, "Favorites are for Private accounts.");
+      db.favorites || (db.favorites = {});
+      let items = db.favorites[user.id] || [];
+      if (method === "POST") {
+        if (!body?.id || !body?.text) throw fail(400, "Missing affirmation");
+        items = [{ id: body.id, text: body.text, category: body.category || "", savedAt: (/* @__PURE__ */ new Date()).toISOString() }, ...items.filter((x) => x.id !== body.id)];
+      }
+      if (method === "DELETE") items = items.filter((x) => x.id !== id);
+      db.favorites[user.id] = items;
+      saveDb(db);
+      return { items: clone(items) };
     }
     if (route === "/api/bookings") {
       if (method === "POST") {
@@ -1325,7 +1501,7 @@
       const weeks = /* @__PURE__ */ new Map();
       const slot = (w) => weeks.get(w) || weeks.set(w, { week: w, summary: null, shared: [], waiting: waiting.has(w) }).get(w);
       db.summaries.filter((s) => s.userId === clientId).forEach((s) => slot(s.week).summary = s);
-      db.journals.filter((e) => e.userId === clientId && e.shared).forEach(({ id: eid, title, text, created, week }) => slot(week).shared.push({ id: eid, title, text, created, week }));
+      db.journals.filter((e) => e.userId === clientId && e.shared && e.kind !== "mood").forEach(({ id: eid, title, text, created, week }) => slot(week).shared.push({ id: eid, title, text, created, week }));
       waiting.forEach((w) => slot(w));
       const list = [...weeks.values()].sort((a, b) => b.week.localeCompare(a.week));
       list.forEach((w) => w.shared.sort((a, b) => a.created.localeCompare(b.created)));
@@ -1335,17 +1511,19 @@
   }
   var DEBUG_RUN_MS = 4e3;
   function runDebugSummaries(db) {
-    const minus = (week, n) => {
+    const minus = (week, n2) => {
       const d = /* @__PURE__ */ new Date(week + "T00:00:00");
-      d.setDate(d.getDate() - 7 * n);
+      d.setDate(d.getDate() - 7 * n2);
       return weekOf(d.toISOString());
     };
     Object.keys(db.queue).sort((a, b) => a.split("/")[1].localeCompare(b.split("/")[1])).forEach((key) => {
       const [userId, week] = key.split("/");
-      const entries = db.journals.filter((e) => e.userId === userId && e.week === week);
+      const all = db.journals.filter((e) => e.userId === userId && e.week === week);
+      const entries = all.filter((e) => e.kind !== "mood");
+      const moodLines = all.filter((e) => e.kind === "mood").map((e) => e.text);
       db.summaries = db.summaries.filter((s) => !(s.userId === userId && s.week === week));
-      if (!entries.length) return;
-      const earlier = [1, 2, 3].map((n) => db.summaries.find((s) => s.userId === userId && s.week === minus(week, n))).filter(Boolean);
+      if (!all.length) return;
+      const earlier = [1, 2, 3].map((n2) => db.summaries.find((s) => s.userId === userId && s.week === minus(week, n2))).filter(Boolean);
       const text = entries.map((e) => e.text).join(" ");
       const count = (re) => (text.match(re) || []).length;
       const mood = Math.max(1, Math.min(10, 5 + 2 * count(/calm|good|better|happy|fine|جيد/gi) - 2 * count(/sad|angry|mad|anxious|tired|low|غاضب/gi)));
@@ -1355,7 +1533,7 @@
         entryCount: entries.length,
         model: "debug",
         mood,
-        summary: `(Debug sample, not real AI.) ${entries.length} ${entries.length === 1 ? "entry" : "entries"} this week. The real summary of up to 100 words will come from Qwen on your AWS server.`,
+        summary: `(Debug sample, not real AI.) ${entries.length} ${entries.length === 1 ? "entry" : "entries"} this week.${moodLines.length ? " Mood check-ins: " + moodLines.join(" ") : ""} The real summary of up to 100 words will come from Qwen on your AWS server.`,
         comparison: earlier.length ? `Mood ${mood}/10 vs ${earlier[0].mood}/10 the week before (sample text).` : "First week with entries.",
         changes: earlier.length ? [
           `Mood ${mood >= earlier[0].mood ? "up" : "down"} from ${earlier[0].mood} to ${mood} (sample).`,
@@ -1899,9 +2077,9 @@
     wrap.append(plot, table);
     const NS = "http://www.w3.org/2000/svg";
     const svgEl = (tag, attrs = {}) => {
-      const n = document.createElementNS(NS, tag);
-      Object.entries(attrs).forEach(([k, v]) => n.setAttribute(k, v));
-      return n;
+      const n2 = document.createElementNS(NS, tag);
+      Object.entries(attrs).forEach(([k, v]) => n2.setAttribute(k, v));
+      return n2;
     };
     const draw = () => {
       const W = Math.max(260, plot.clientWidth || 600);
@@ -2019,7 +2197,7 @@
     const btn = $("summarizeBtn");
     if (!s) return summaryBar.classList.add("hidden");
     const forThem = s.pendingForClient || 0;
-    const weeks = (n) => `${n} week${n === 1 ? "" : "s"}`;
+    const weeks = (n2) => `${n2} week${n2 === 1 ? "" : "s"}`;
     const busy = s.state === "starting" || s.state === "running";
     const text = {
       demo: "Sample preview: summarizing is not available here.",

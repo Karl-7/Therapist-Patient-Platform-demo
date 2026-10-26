@@ -45,7 +45,7 @@ export default async (req, context) => {
     const entries = (await listJSON(store('journals'), `${item.userId}/`))
       .filter((e) => e.week === item.week)
       .sort((a, b) => a.created.localeCompare(b.created))
-      .map(({ created, title, text }) => ({ created, title, text }))
+      .map(({ created, title, text, kind }) => ({ created, title, text, kind: kind || 'entry' }))
     // Up to three earlier weeks, most recent first, for the comparison and the "changes" list.
     const earlier = []
     let w = item.week
@@ -63,8 +63,8 @@ export default async (req, context) => {
     if (!userId || !week) return fail(400, 'Missing userId or week')
     const key = `${userId}/${week}`
     const summaries = store('summaries')
-    if (!body.entryCount) {
-      await summaries.delete(key) // every entry of that week was deleted
+    if (body.empty) {
+      await summaries.delete(key) // every entry and mood check-in of that week was deleted
     } else {
       await summaries.setJSON(key, {
         userId,

@@ -59,7 +59,7 @@ export default async (req, context) => {
   ])
   const waiting = new Set(queued.blobs.map((b) => b.key.split('/')[1]))
   const shared = all
-    .filter((e) => e.shared === true)
+    .filter((e) => e.shared === true && e.kind !== 'mood')
     .map(({ id: entryId, title, text, created, week }) => ({ id: entryId, title, text, created, week }))
 
   // Group by week, newest first.

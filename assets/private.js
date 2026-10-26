@@ -5,6 +5,8 @@
 import { api, currentUser, forwardAuthLinks, isDoctor, loginUrl, signOut } from './auth.js'
 import { showDevBanner } from './dev-backend.js'
 import { applyDeletions, mergeDeletions, ruleDeletions, tokenize } from '../netlify/lib/tidy.mjs'
+import { refreshAffirmations, setupAffirmations } from './affirmations-ui.js'
+import { setupMoodPickers } from './mood-checkin.js'
 
 const $ = (id) => document.getElementById(id)
 const el = (tag, props = {}, ...kids) => {
@@ -29,7 +31,11 @@ function addAccountMenu(user) {
   style.textContent = '.account{display:flex;align-items:center;gap:8px;padding-left:8px;border-left:1px solid var(--line,#e8dfed)}.account span{font-size:12px;color:#8a7fa0;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}@media(max-width:650px){.account{border-left:0;padding:8px 5px}}' +
     // Long words and links wrap instead of pushing the page wider than the phone.
     '.section,.about-page,footer{overflow-wrap:break-word}.grid2>*,.two-fields>*,.about-grid>*{min-width:0}' +
-    '.result,.saved-item,.tidy-text,.affirmation-text,#journalEntries,#bookingStatus,#journalStatus{overflow-wrap:anywhere}'
+    '.result,.saved-item,.tidy-text,.affirmation-text,#journalEntries,#bookingStatus,#journalStatus{overflow-wrap:anywhere}' +
+    // The four "journey" cards are links on every page (only the home page had this style).
+    '.step-link{display:block;text-decoration:none;color:inherit;cursor:pointer;transition:transform .18s,box-shadow .18s,border-color .18s}' +
+    '.step-link:hover,.step-link:focus-visible{transform:translateY(-3px);border-color:#b7a4d0;box-shadow:0 8px 22px #57466d18}' +
+    '.step-link:focus-visible{outline:2px solid #b7a4d0;outline-offset:2px}'
   document.head.append(style)
   const out = el('button', { className: 'btn secondary small', type: 'button', textContent: 'Sign out' })
   out.onclick = async () => { await signOut(); location.replace(loginUrl('private', 'signed-out')) }
@@ -52,7 +58,7 @@ function setupJournal() {
 
   const notice = document.querySelector('#journal .notice')
   if (notice) {
-    notice.textContent = 'Entries are saved to your account, so you can read them on any device. Your therapist can read only the entries you share. Each week an AI-written summary of all your entries, shared or not, is prepared for your therapist.'
+    notice.textContent = 'Entries are saved to your account, so you can read them on any device. Your therapist can read only the entries you share. Each week an AI-written summary of all your entries and mood check-ins, shared or not, is prepared for your therapist.'
   }
   const sub = $('journalEntries')?.previousElementSibling
   if (sub?.classList.contains('sub')) sub.textContent = 'Your saved reflections, on every device you sign in to.'
@@ -64,9 +70,8 @@ function setupJournal() {
     button.disabled = true
     status('Saving…')
     try {
-      const { entry } = await api('/api/journals', { method: 'POST', body: { title: $('journalTitle').value.trim(), text, shared: share.checked, week: localWeek(), created: new Date().toISOString() } })
+      const { entry } = await api('/api/journals', { method: 'POST', body: { text, shared: share.checked, week: localWeek(), created: new Date().toISOString() } })
       entries.unshift(entry)
-      $('journalTitle').value = ''
       $('journalText').value = ''
       share.checked = false
       review.close()
@@ -117,7 +122,6 @@ function setupDictationTip() {
   const label = document.querySelector('label[for="journalText"]')
   ;(label || $('journalText')).before(tip)
   $('journalText').setAttribute('dir', 'auto')
-  $('journalTitle')?.setAttribute('dir', 'auto')
 }
 
 // Review panel: shows the text with suggested deletions struck through. Tap one to keep it.
@@ -348,6 +352,14 @@ function handleApiError(err, fallback) {
   return err?.message || fallback
 }
 
+// Links like affirmations.html#journal: the page is hidden until sign-in is checked and some
+// sections fill in afterwards, so jump to the section again once everything is in place.
+function scrollToHash() {
+  const id = decodeURIComponent(location.hash.slice(1))
+  const target = id && document.getElementById(id)
+  if (target && target.offsetParent !== null) target.scrollIntoView({ block: 'start', behavior: 'instant' })
+}
+
 /* ---------- start ---------- */
 async function start() {
   if (forwardAuthLinks()) return
@@ -362,8 +374,11 @@ async function start() {
   addAccountMenu(user)
   showDevBanner()
   setupJournal()
+  setupMoodPickers((err) => handleApiError(err, ''))
   setupBooking(user)
   reveal()
-  loadAffirmations()
+  await Promise.all([setupAffirmations((err) => handleApiError(err, '')), loadAffirmations()])
+  refreshAffirmations()
+  scrollToHash()
 }
 start()

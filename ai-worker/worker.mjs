@@ -50,19 +50,24 @@ Rules:
 - "summary": at most 100 words. Main feelings, events and themes of this week, in plain neutral language.
 - "comparison": at most 50 words. How this week differs from the previous week. If there is no previous week, say this is the first week with entries.
 - "changes": 2 to 5 short points (max 20 words each) on what changed this week compared with the previous three weeks (mood, sleep, relationships, work, recurring worries...). If there are no earlier weeks, return an empty list.
-- Describe only what the person wrote. Do not diagnose, do not give advice, do not guess.
+- Some days only have a "Mood check-in": the person tapped mood buttons without writing. Use these too, especially for the mood score.
+- Describe only what the person wrote or tapped. Do not diagnose, do not give advice, do not guess.
 - If any entry mentions self-harm, suicide, or harming someone, begin the summary with "Safety note:" and state it plainly, and make it the first point in "changes".
 Reply with JSON only: {"mood": 5, "summary": "...", "comparison": "...", "changes": ["...", "..."]}`
 
 function buildPrompt(week, entries, earlier) {
   let journal = entries
-    .map((e) => `[${new Date(e.created).toUTCString().slice(0, 16)}]${e.title ? ' ' + e.title + ':' : ''}\n${e.text}`)
+    .map((e) => e.kind === 'mood'
+      ? `[${new Date(e.created).toUTCString().slice(0, 16)}] Mood check-in (tapped by the person, no writing): ${e.text}`
+      : `[${new Date(e.created).toUTCString().slice(0, 16)}]${e.title ? ' ' + e.title + ':' : ''}\n${e.text}`)
     .join('\n\n')
   if (journal.length > MAX_INPUT_CHARS) journal = journal.slice(0, MAX_INPUT_CHARS) + '\n[...cut for length]'
   const past = earlier.length
     ? earlier.map((w) => `- Week starting ${w.week} (mood ${w.mood ?? '?'}/10): ${w.summary}`).join('\n')
     : '(none)'
-  return `This week starts ${week}. ${entries.length} journal ${entries.length === 1 ? 'entry' : 'entries'}.
+  const written = entries.filter((e) => e.kind !== 'mood').length
+  const checkins = entries.length - written
+  return `This week starts ${week}. ${written} journal ${written === 1 ? 'entry' : 'entries'}, ${checkins} day${checkins === 1 ? '' : 's'} with a mood check-in.
 
 Earlier weeks, most recent first (up to three):
 ${past}
@@ -136,11 +141,12 @@ async function main() {
       log(`Summarising ${item.key} (${entries.length} entries, ${next.remaining} left)`)
       try {
         if (!entries.length) {
-          await site('summary', { userId: item.userId, week: item.week, changedAt: item.changedAt, entryCount: 0 })
+          await site('summary', { userId: item.userId, week: item.week, changedAt: item.changedAt, empty: true })
         } else {
           const started = Date.now()
           const out = await summarize(item.week, entries, earlier)
-          await site('summary', { userId: item.userId, week: item.week, changedAt: item.changedAt, entryCount: entries.length, model: MODEL, ...out })
+          const entryCount = entries.filter((e) => e.kind !== 'mood').length
+          await site('summary', { userId: item.userId, week: item.week, changedAt: item.changedAt, entryCount, model: MODEL, ...out })
           log(`  done in ${Math.round((Date.now() - started) / 1000)} s`)
         }
         done++

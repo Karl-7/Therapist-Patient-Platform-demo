@@ -4,6 +4,7 @@
 // It mirrors netlify/functions/*, so pages behave the same as on Netlify.
 import { DEFAULT_AFFIRMATIONS } from '../netlify/lib/default-affirmations.mjs'
 import { addSamplePeople } from './dev-sample-people.js'
+import { MOOD_NAMES, moodSentence } from '../netlify/lib/moods.mjs'
 
 // Turn debug mode off on localhost (e.g. with `netlify dev`) by opening any page with ?live=1; ?live=0 turns it back on.
 function readLiveFlag() {
@@ -138,7 +139,7 @@ export async function devApi(path, { method = 'GET', body } = {}) {
 
   if (route === '/api/journals') {
     if (isDoctor(user)) throw fail(403, 'Doctor accounts do not keep a journal.')
-    const mine = db.journals.filter((e) => e.userId === user.id)
+    const mine = db.journals.filter((e) => e.userId === user.id && e.kind !== 'mood')
     if (method === 'GET') return { entries: clone(mine).sort((a, b) => b.created.localeCompare(a.created)) }
     if (method === 'POST') {
       if (!body?.text?.trim()) throw fail(400, 'Write a little note before saving.')
@@ -166,6 +167,38 @@ export async function devApi(path, { method = 'GET', body } = {}) {
       saveDb(db)
       return { ok: true }
     }
+  }
+
+  // Mood taps: counted per day into a hidden journal item (same as netlify/functions/moods.mjs).
+  if (route === '/api/moods') {
+    if (isDoctor(user)) throw fail(403, 'Mood check-ins are for Private accounts.')
+    if (!MOOD_NAMES.includes(body?.mood)) throw fail(400, 'Unknown mood')
+    const date = body.date || new Date().toISOString().slice(0, 10)
+    let day = db.journals.find((e) => e.userId === user.id && e.kind === 'mood' && e.date === date)
+    if (!day) {
+      day = { id: 'mood-' + date, userId: user.id, kind: 'mood', date, counts: {}, order: [], title: '', shared: false, created: body.created || date + 'T00:00:00', week: body.week || weekOf(date + 'T12:00:00') }
+      db.journals.push(day)
+    }
+    day.counts[body.mood] = (day.counts[body.mood] || 0) + 1
+    if (!day.order.includes(body.mood)) day.order.push(body.mood)
+    day.text = moodSentence(day.counts, day.order)
+    db.queue[`${user.id}/${day.week}`] = Date.now()
+    saveDb(db)
+    return { ok: true }
+  }
+
+  if (route === '/api/favorites') {
+    if (isDoctor(user)) throw fail(403, 'Favorites are for Private accounts.')
+    db.favorites ||= {}
+    let items = db.favorites[user.id] || []
+    if (method === 'POST') {
+      if (!body?.id || !body?.text) throw fail(400, 'Missing affirmation')
+      items = [{ id: body.id, text: body.text, category: body.category || '', savedAt: new Date().toISOString() }, ...items.filter((x) => x.id !== body.id)]
+    }
+    if (method === 'DELETE') items = items.filter((x) => x.id !== id)
+    db.favorites[user.id] = items
+    saveDb(db)
+    return { items: clone(items) }
   }
 
   if (route === '/api/bookings') {
@@ -216,7 +249,7 @@ export async function devApi(path, { method = 'GET', body } = {}) {
     const weeks = new Map()
     const slot = (w) => weeks.get(w) || weeks.set(w, { week: w, summary: null, shared: [], waiting: waiting.has(w) }).get(w)
     db.summaries.filter((s) => s.userId === clientId).forEach((s) => (slot(s.week).summary = s))
-    db.journals.filter((e) => e.userId === clientId && e.shared).forEach(({ id: eid, title, text, created, week }) => slot(week).shared.push({ id: eid, title, text, created, week }))
+    db.journals.filter((e) => e.userId === clientId && e.shared && e.kind !== 'mood').forEach(({ id: eid, title, text, created, week }) => slot(week).shared.push({ id: eid, title, text, created, week }))
     waiting.forEach((w) => slot(w))
     const list = [...weeks.values()].sort((a, b) => b.week.localeCompare(a.week))
     list.forEach((w) => w.shared.sort((a, b) => a.created.localeCompare(b.created)))
@@ -233,9 +266,11 @@ function runDebugSummaries(db) {
   // Older weeks first, so each week can compare with the ones before it (like the real worker).
   Object.keys(db.queue).sort((a, b) => a.split('/')[1].localeCompare(b.split('/')[1])).forEach((key) => {
     const [userId, week] = key.split('/')
-    const entries = db.journals.filter((e) => e.userId === userId && e.week === week)
+    const all = db.journals.filter((e) => e.userId === userId && e.week === week)
+    const entries = all.filter((e) => e.kind !== 'mood')
+    const moodLines = all.filter((e) => e.kind === 'mood').map((e) => e.text)
     db.summaries = db.summaries.filter((s) => !(s.userId === userId && s.week === week))
-    if (!entries.length) return
+    if (!all.length) return
     const earlier = [1, 2, 3].map((n) => db.summaries.find((s) => s.userId === userId && s.week === minus(week, n))).filter(Boolean)
     const text = entries.map((e) => e.text).join(' ')
     // Rough stand-in for the AI's mood score: happy words up, sad words down.
@@ -243,7 +278,7 @@ function runDebugSummaries(db) {
     const mood = Math.max(1, Math.min(10, 5 + 2 * count(/calm|good|better|happy|fine|جيد/gi) - 2 * count(/sad|angry|mad|anxious|tired|low|غاضب/gi)))
     db.summaries.push({
       userId, week, entryCount: entries.length, model: 'debug', mood,
-      summary: `(Debug sample, not real AI.) ${entries.length} ${entries.length === 1 ? 'entry' : 'entries'} this week. The real summary of up to 100 words will come from Qwen on your AWS server.`,
+      summary: `(Debug sample, not real AI.) ${entries.length} ${entries.length === 1 ? 'entry' : 'entries'} this week.${moodLines.length ? ' Mood check-ins: ' + moodLines.join(' ') : ''} The real summary of up to 100 words will come from Qwen on your AWS server.`,
       comparison: earlier.length ? `Mood ${mood}/10 vs ${earlier[0].mood}/10 the week before (sample text).` : 'First week with entries.',
       changes: earlier.length ? [
         `Mood ${mood >= earlier[0].mood ? 'up' : 'down'} from ${earlier[0].mood} to ${mood} (sample).`,

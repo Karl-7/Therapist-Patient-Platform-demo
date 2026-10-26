@@ -19,7 +19,8 @@ export default async (req) => {
   const key = id ? `${user.id}/${id}` : null
 
   if (req.method === 'GET') {
-    const entries = await listJSON(journals, `${user.id}/`)
+    // Mood check-ins (kind "mood") are stored here too but never shown to the person.
+    const entries = (await listJSON(journals, `${user.id}/`)).filter((e) => e.kind !== 'mood')
     entries.sort((a, b) => b.created.localeCompare(a.created))
     return json({ entries })
   }
@@ -45,7 +46,7 @@ export default async (req) => {
 
   if (!key) return fail(400, 'Missing id')
   const existing = await journals.get(key, { type: 'json' })
-  if (!existing) return fail(404, 'Entry not found')
+  if (!existing || existing.kind === 'mood') return fail(404, 'Entry not found')
 
   if (req.method === 'PATCH') {
     const body = (await readJson(req)) || {}
