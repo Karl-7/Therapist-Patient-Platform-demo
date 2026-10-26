@@ -4,9 +4,11 @@
   "type": "module",
   "scripts": {
     "build": "node scripts/build.mjs --dist",
-    "build:assets": "node scripts/build.mjs"
+    "build:assets": "node scripts/build.mjs",
+    "screenshots": "node scripts/screenshots.mjs"
   },
   "dependencies": {
+    "@aws-sdk/client-ec2": "3.1156.0",
     "@netlify/blobs": "11.1.6",
     "@netlify/identity": "2.0.0"
   },

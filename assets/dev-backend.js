@@ -3,6 +3,7 @@
 // Everything is stored in this browser's localStorage. Real user data is never touched.
 // It mirrors netlify/functions/*, so pages behave the same as on Netlify.
 import { DEFAULT_AFFIRMATIONS } from '../netlify/lib/default-affirmations.mjs'
+import { addSamplePeople } from './dev-sample-people.js'
 
 // Turn debug mode off on localhost (e.g. with `netlify dev`) by opening any page with ?live=1; ?live=0 turns it back on.
 function readLiveFlag() {
@@ -42,7 +43,16 @@ const read = (key, fallback) => {
 const write = (key, value) => {
   try { localStorage.setItem(key, JSON.stringify(value)) } catch {}
 }
-const loadDb = () => ({ accounts: [], journals: [], bookings: [], affirmations: null, summaries: [], ...read(DB_KEY, {}) })
+// The first time (and after "Reset debug data") four sample people with five weeks of entries are added.
+function loadDb() {
+  const db = { accounts: [], journals: [], bookings: [], affirmations: null, summaries: [], queue: {}, job: null, ...read(DB_KEY, {}) }
+  if (!db.seeded) {
+    addSamplePeople(db, weekOf, newId)
+    db.seeded = true
+    saveDb(db)
+  }
+  return db
+}
 const saveDb = (db) => write(DB_KEY, db)
 const newId = () => `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`
 const fail = (status, message) => Object.assign(new Error(message), { status })
@@ -94,7 +104,7 @@ export function devSignOut() {
 
 /* ---------- API ---------- */
 const isDoctor = (u) => u?.roles?.includes('doctor')
-const weekOf = (iso) => {
+function weekOf(iso) {
   const d = new Date(iso)
   d.setHours(0, 0, 0, 0)
   d.setDate(d.getDate() - ((d.getDay() + 6) % 7))
@@ -125,6 +135,7 @@ export async function devApi(path, { method = 'GET', body } = {}) {
 
   if (!user) throw fail(401, 'Please sign in.')
 
+
   if (route === '/api/journals') {
     if (isDoctor(user)) throw fail(403, 'Doctor accounts do not keep a journal.')
     const mine = db.journals.filter((e) => e.userId === user.id)
@@ -134,6 +145,7 @@ export async function devApi(path, { method = 'GET', body } = {}) {
       const created = body.created || new Date().toISOString()
       const entry = { id: newId(), userId: user.id, title: (body.title || '').trim(), text: body.text.trim(), shared: body.shared === true, created, week: body.week || weekOf(created) }
       db.journals.push(entry)
+      db.queue[`${user.id}/${entry.week}`] = Date.now()
       saveDb(db)
       return { entry: clone(entry) }
     }
@@ -144,11 +156,13 @@ export async function devApi(path, { method = 'GET', body } = {}) {
       if (typeof body?.title === 'string') entry.title = body.title.trim()
       if (body?.text?.trim()) entry.text = body.text.trim()
       entry.updated = new Date().toISOString()
+      if (typeof body?.text === 'string' || typeof body?.title === 'string') db.queue[`${user.id}/${entry.week}`] = Date.now()
       saveDb(db)
       return { entry: clone(entry) }
     }
     if (method === 'DELETE') {
       db.journals = db.journals.filter((e) => e !== entry)
+      db.queue[`${user.id}/${entry.week}`] = Date.now()
       saveDb(db)
       return { ok: true }
     }
@@ -175,40 +189,84 @@ export async function devApi(path, { method = 'GET', body } = {}) {
     }
   }
 
+  if (route.startsWith('/api/doctor/summaries/')) {
+    if (!isDoctor(user)) throw fail(403, 'Doctor access only.')
+    if (route.endsWith('/refresh') && Object.keys(db.queue).length && !db.job) {
+      db.job = { startedAt: Date.now() }
+      saveDb(db)
+    }
+    return debugSummaryStatus(db, body?.clientId || url.searchParams.get('clientId'))
+  }
+
   if (route.startsWith('/api/doctor/clients')) {
     if (!isDoctor(user)) throw fail(403, 'Doctor access only.')
     const people = [DEBUG_PRIVATE, ...db.accounts.map(({ id: pid, email, name, createdAt }) => ({ id: pid, email, name, createdAt }))]
-    const clientId = decodeURIComponent(route.split('/')[4] || '')
+    const parts = route.split('/')
+    const clientId = decodeURIComponent(parts[4] || '')
     if (!clientId) return { clients: clone(people) }
+    db.notes ||= {}
+    if (parts[5] === 'notes' && method === 'PUT') {
+      db.notes[clientId] = { symptoms: String(body?.symptoms || ''), updated: new Date().toISOString() }
+      saveDb(db)
+      return { notes: clone(db.notes[clientId]) }
+    }
     const client = people.find((p) => p.id === clientId)
     if (!client) throw fail(404, 'Not found')
+    const waiting = new Set(Object.keys(db.queue).filter((k) => k.startsWith(clientId + '/')).map((k) => k.split('/')[1]))
     const weeks = new Map()
-    const slot = (w) => weeks.get(w) || weeks.set(w, { week: w, summary: null, shared: [] }).get(w)
+    const slot = (w) => weeks.get(w) || weeks.set(w, { week: w, summary: null, shared: [], waiting: waiting.has(w) }).get(w)
     db.summaries.filter((s) => s.userId === clientId).forEach((s) => (slot(s.week).summary = s))
     db.journals.filter((e) => e.userId === clientId && e.shared).forEach(({ id: eid, title, text, created, week }) => slot(week).shared.push({ id: eid, title, text, created, week }))
+    waiting.forEach((w) => slot(w))
     const list = [...weeks.values()].sort((a, b) => b.week.localeCompare(a.week))
     list.forEach((w) => w.shared.sort((a, b) => a.created.localeCompare(b.created)))
-    return clone({ client, weeks: list })
+    return clone({ client, weeks: list, notes: db.notes[clientId] || { symptoms: '' } })
   }
 
   throw fail(405, 'Method not allowed')
 }
 
-// Lets you see how a weekly summary looks in debug mode. The real ones come from your AI service.
-export function devAddSampleSummary(userId) {
-  const db = loadDb()
-  const week = weekOf(new Date().toISOString())
-  const count = db.journals.filter((e) => e.userId === userId && e.week === week).length
-  db.summaries = db.summaries.filter((s) => !(s.userId === userId && s.week === week))
-  db.summaries.push({
-    userId,
-    week,
-    entryCount: count,
-    summary: `(Sample text, written by debug mode, not by AI.) ${count} ${count === 1 ? 'entry' : 'entries'} this week.`,
-    comparison: 'Your AI service will compare this week with the previous one here.',
-    generatedAt: new Date().toISOString(),
+// Debug stand-in for the EC2 summary run: "starts", then writes sample summaries a few seconds later.
+const DEBUG_RUN_MS = 4000
+function runDebugSummaries(db) {
+  const minus = (week, n) => { const d = new Date(week + 'T00:00:00'); d.setDate(d.getDate() - 7 * n); return weekOf(d.toISOString()) }
+  // Older weeks first, so each week can compare with the ones before it (like the real worker).
+  Object.keys(db.queue).sort((a, b) => a.split('/')[1].localeCompare(b.split('/')[1])).forEach((key) => {
+    const [userId, week] = key.split('/')
+    const entries = db.journals.filter((e) => e.userId === userId && e.week === week)
+    db.summaries = db.summaries.filter((s) => !(s.userId === userId && s.week === week))
+    if (!entries.length) return
+    const earlier = [1, 2, 3].map((n) => db.summaries.find((s) => s.userId === userId && s.week === minus(week, n))).filter(Boolean)
+    const text = entries.map((e) => e.text).join(' ')
+    // Rough stand-in for the AI's mood score: happy words up, sad words down.
+    const count = (re) => (text.match(re) || []).length
+    const mood = Math.max(1, Math.min(10, 5 + 2 * count(/calm|good|better|happy|fine|جيد/gi) - 2 * count(/sad|angry|mad|anxious|tired|low|غاضب/gi)))
+    db.summaries.push({
+      userId, week, entryCount: entries.length, model: 'debug', mood,
+      summary: `(Debug sample, not real AI.) ${entries.length} ${entries.length === 1 ? 'entry' : 'entries'} this week. The real summary of up to 100 words will come from Qwen on your AWS server.`,
+      comparison: earlier.length ? `Mood ${mood}/10 vs ${earlier[0].mood}/10 the week before (sample text).` : 'First week with entries.',
+      changes: earlier.length ? [
+        `Mood ${mood >= earlier[0].mood ? 'up' : 'down'} from ${earlier[0].mood} to ${mood} (sample).`,
+        `${entries.length} entries this week vs ${Math.round(earlier.reduce((a, s) => a + s.entryCount, 0) / earlier.length)} on average before (sample).`,
+      ] : [],
+      generatedAt: new Date().toISOString(),
+    })
   })
-  saveDb(db)
+  db.queue = {}
+}
+
+function debugSummaryStatus(db, clientId) {
+  if (db.job && Date.now() - db.job.startedAt > DEBUG_RUN_MS) {
+    runDebugSummaries(db)
+    db.job = null
+    saveDb(db)
+  }
+  const keys = Object.keys(db.queue)
+  return {
+    state: db.job ? (Date.now() - db.job.startedAt < DEBUG_RUN_MS / 2 ? 'starting' : 'running') : keys.length ? 'waiting' : 'idle',
+    pending: keys.length,
+    pendingForClient: clientId ? keys.filter((k) => k.startsWith(clientId + '/')).length : undefined,
+  }
 }
 
 /* ---------- banner ---------- */

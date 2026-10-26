@@ -1000,6 +1000,159 @@
     { id: "a16", category: "Self-Compassion", tags: ["low", "tired", "enough"], text: "Even on a difficult day, I am still worthy of tenderness and care." }
   ];
 
+  // assets/dev-sample-people.js
+  var POOLS = {
+    en: {
+      low: [
+        "Woke up at 4am again and could not get back to sleep.",
+        "Felt heavy all day, like everything took twice the effort.",
+        "Snapped at someone I care about and felt guilty afterwards.",
+        "Skipped lunch, too wound up to eat.",
+        "Cried in the car before going inside.",
+        "Kept replaying a conversation from yesterday in my head.",
+        "Cancelled plans because I did not have the energy.",
+        "My chest felt tight most of the afternoon."
+      ],
+      mid: [
+        "An ordinary day. Nothing great, nothing terrible.",
+        "Got through most of my to-do list.",
+        "Had a short walk at lunch, which helped a bit.",
+        "Still tired, but less tense than last week.",
+        "Talked to a friend on the phone for a while.",
+        "Tried the breathing exercise before bed.",
+        "A bit restless in the evening but managed to read.",
+        "Some worry in the morning that faded by the afternoon."
+      ],
+      high: [
+        "Slept through the night for the first time in ages.",
+        "Laughed a lot at dinner. Felt like myself.",
+        "Went for a long walk and noticed the trees changing colour.",
+        "Felt proud that I said no to extra work.",
+        "A calm, easy day. I want more of these.",
+        "Cooked a proper meal and enjoyed it.",
+        "Felt hopeful about the next few weeks.",
+        "Did the breathing exercise and it actually helped."
+      ],
+      titles: ["Evening", "Today", "Quick note", "Before bed"]
+    },
+    ar: {
+      low: [
+        "\u0627\u0633\u062A\u064A\u0642\u0638\u062A \u0641\u064A \u0627\u0644\u0631\u0627\u0628\u0639\u0629 \u0641\u062C\u0631\u064B\u0627 \u0648\u0644\u0645 \u0623\u0633\u062A\u0637\u0639 \u0627\u0644\u0646\u0648\u0645 \u0645\u0631\u0629 \u0623\u062E\u0631\u0649.",
+        "\u0634\u0639\u0631\u062A \u0628\u062B\u0642\u0644 \u0637\u0648\u0627\u0644 \u0627\u0644\u064A\u0648\u0645\u060C \u0648\u0643\u0644 \u0634\u064A\u0621 \u0643\u0627\u0646 \u064A\u062D\u062A\u0627\u062C \u062C\u0647\u062F\u064B\u0627 \u0645\u0636\u0627\u0639\u0641\u064B\u0627.",
+        "\u062A\u0634\u0627\u062C\u0631\u062A \u0645\u0639 \u0623\u062E\u064A \u0639\u0644\u0649 \u0634\u064A\u0621 \u0635\u063A\u064A\u0631 \u0648\u0646\u062F\u0645\u062A \u0628\u0639\u062F\u0647\u0627.",
+        "\u0644\u0645 \u0622\u0643\u0644 \u0634\u064A\u0626\u064B\u0627 \u062A\u0642\u0631\u064A\u0628\u064B\u0627 \u0627\u0644\u064A\u0648\u0645.",
+        "\u0628\u0642\u064A\u062A \u0641\u064A \u063A\u0631\u0641\u062A\u064A \u0645\u0639\u0638\u0645 \u0627\u0644\u064A\u0648\u0645 \u0648\u0644\u0645 \u0623\u0631\u062F \u0639\u0644\u0649 \u0627\u0644\u0647\u0627\u062A\u0641.",
+        "\u0623\u0641\u0643\u0627\u0631 \u0643\u062B\u064A\u0631\u0629 \u0641\u064A \u0631\u0623\u0633\u064A \u0648\u0644\u0627 \u0623\u0633\u062A\u0637\u064A\u0639 \u0625\u064A\u0642\u0627\u0641\u0647\u0627.",
+        "\u0623\u0644\u063A\u064A\u062A \u0645\u0648\u0639\u062F\u064B\u0627 \u0645\u0639 \u0635\u062F\u064A\u0642 \u0644\u0623\u0646\u0646\u064A \u0644\u0645 \u0623\u0643\u0646 \u0642\u0627\u062F\u0631\u064B\u0627.",
+        "\u0634\u0639\u0631\u062A \u0628\u0636\u064A\u0642 \u0641\u064A \u0635\u062F\u0631\u064A \u0628\u0639\u062F \u0627\u0644\u0638\u0647\u0631."
+      ],
+      mid: [
+        "\u064A\u0648\u0645 \u0639\u0627\u062F\u064A\u060C \u0644\u0627 \u0634\u064A\u0621 \u0645\u0645\u064A\u0632.",
+        "\u0623\u0646\u062C\u0632\u062A \u0645\u0639\u0638\u0645 \u0645\u0627 \u0643\u0627\u0646 \u0639\u0644\u064A \u0641\u0639\u0644\u0647.",
+        "\u0645\u0634\u064A\u062A \u0642\u0644\u064A\u0644\u064B\u0627 \u0628\u0639\u062F \u0627\u0644\u0639\u0635\u0631 \u0648\u0633\u0627\u0639\u062F\u0646\u064A \u0630\u0644\u0643.",
+        "\u0645\u0627 \u0632\u0644\u062A \u0645\u062A\u0639\u0628\u064B\u0627 \u0644\u0643\u0646 \u0623\u0642\u0644 \u062A\u0648\u062A\u0631\u064B\u0627 \u0645\u0646 \u0627\u0644\u0623\u0633\u0628\u0648\u0639 \u0627\u0644\u0645\u0627\u0636\u064A.",
+        "\u062A\u062D\u062F\u062B\u062A \u0645\u0639 \u0635\u062F\u064A\u0642 \u0639\u0644\u0649 \u0627\u0644\u0647\u0627\u062A\u0641 \u0644\u0628\u0639\u0636 \u0627\u0644\u0648\u0642\u062A.",
+        "\u062C\u0631\u0628\u062A \u062A\u0645\u0631\u064A\u0646 \u0627\u0644\u062A\u0646\u0641\u0633 \u0642\u0628\u0644 \u0627\u0644\u0646\u0648\u0645.",
+        "\u0642\u0644\u0642 \u062E\u0641\u064A\u0641 \u0641\u064A \u0627\u0644\u0635\u0628\u0627\u062D \u062B\u0645 \u0647\u062F\u0623\u062A.",
+        "\u0642\u0631\u0623\u062A \u0642\u0644\u064A\u0644\u064B\u0627 \u0641\u064A \u0627\u0644\u0645\u0633\u0627\u0621."
+      ],
+      high: [
+        "\u0646\u0645\u062A \u062C\u064A\u062F\u064B\u0627 \u0644\u0623\u0648\u0644 \u0645\u0631\u0629 \u0645\u0646\u0630 \u0645\u062F\u0629 \u0637\u0648\u064A\u0644\u0629.",
+        "\u0636\u062D\u0643\u0646\u0627 \u0643\u062B\u064A\u0631\u064B\u0627 \u0639\u0644\u0649 \u0627\u0644\u0639\u0634\u0627\u0621 \u0645\u0639 \u0627\u0644\u0639\u0627\u0626\u0644\u0629.",
+        "\u062E\u0631\u062C\u062A \u0641\u064A \u0646\u0632\u0647\u0629 \u0637\u0648\u064A\u0644\u0629 \u0648\u0634\u0639\u0631\u062A \u0628\u0627\u0644\u0631\u0627\u062D\u0629.",
+        "\u0634\u0639\u0631\u062A \u0628\u0627\u0644\u0641\u062E\u0631 \u0644\u0623\u0646\u0646\u064A \u0623\u0646\u0647\u064A\u062A \u0639\u0645\u0644\u064A \u0641\u064A \u0648\u0642\u062A\u0647.",
+        "\u064A\u0648\u0645 \u0647\u0627\u062F\u0626 \u0648\u062C\u0645\u064A\u0644.",
+        "\u0637\u0628\u062E\u062A \u0623\u0643\u0644\u0629 \u0623\u062D\u0628\u0647\u0627 \u0648\u0627\u0633\u062A\u0645\u062A\u0639\u062A \u0628\u0647\u0627.",
+        "\u0623\u0634\u0639\u0631 \u0628\u0627\u0644\u0623\u0645\u0644 \u062A\u062C\u0627\u0647 \u0627\u0644\u0623\u0633\u0627\u0628\u064A\u0639 \u0627\u0644\u0642\u0627\u062F\u0645\u0629.",
+        "\u062A\u0645\u0631\u064A\u0646 \u0627\u0644\u062A\u0646\u0641\u0633 \u0633\u0627\u0639\u062F\u0646\u064A \u0641\u0639\u0644\u064B\u0627 \u0627\u0644\u064A\u0648\u0645."
+      ],
+      titles: ["\u0645\u0633\u0627\u0621", "\u0627\u0644\u064A\u0648\u0645", "\u0645\u0644\u0627\u062D\u0638\u0629 \u0633\u0631\u064A\u0639\u0629", "\u0642\u0628\u0644 \u0627\u0644\u0646\u0648\u0645"]
+    }
+  };
+  var PEOPLE = [
+    {
+      id: "sample-sara",
+      name: "Sara Ahmed",
+      email: "sara@example.test",
+      lang: "en",
+      mood: [3, 4, 5, 6, 7],
+      topics: ["Big deadline at work this week.", "My manager asked for another report at 6pm.", "Set myself a rule: no work emails after 7pm.", "The project review went better than I feared."]
+    },
+    {
+      id: "sample-omar",
+      name: "Omar Haddad",
+      email: "omar@example.test",
+      lang: "ar",
+      mood: [6, 5, 3, 4, 6],
+      topics: ["\u0627\u0644\u0648\u0636\u0639 \u0641\u064A \u0627\u0644\u0628\u064A\u062A \u0645\u062A\u0648\u062A\u0631 \u0628\u0633\u0628\u0628 \u0627\u0644\u062E\u0644\u0627\u0641\u0627\u062A.", "\u0648\u0627\u0644\u062F\u064A \u0645\u0631\u064A\u0636 \u0648\u0623\u0646\u0627 \u0642\u0644\u0642 \u0639\u0644\u064A\u0647.", "\u0632\u0631\u062A \u0623\u0647\u0644\u064A \u0641\u064A \u0646\u0647\u0627\u064A\u0629 \u0627\u0644\u0623\u0633\u0628\u0648\u0639.", "\u062A\u0643\u0644\u0645\u062A \u0645\u0639 \u0632\u0648\u062C\u062A\u064A \u0628\u0647\u062F\u0648\u0621 \u0639\u0646 \u0627\u0644\u0645\u0634\u0643\u0644\u0629."]
+    },
+    {
+      id: "sample-lina",
+      name: "Lina Karim",
+      email: "lina@example.test",
+      lang: "en",
+      mood: [5, 3, 6, 4, 7],
+      topics: ["Had that racing-heart feeling again at the bus stop.", "Meeting new people at the course made me nervous.", "I think I am getting better at noticing the anxiety early.", "My sister came to visit and we went to the market."]
+    },
+    {
+      id: "sample-yusuf",
+      name: "Yusuf Nasser",
+      email: "yusuf@example.test",
+      lang: "ar",
+      mood: [4, 4, 5, 5, 6],
+      topics: ["\u0627\u0644\u0627\u0645\u062A\u062D\u0627\u0646\u0627\u062A \u0642\u0631\u064A\u0628\u0629 \u0648\u0623\u0646\u0627 \u0645\u062A\u0648\u062A\u0631.", "\u0630\u0627\u0643\u0631\u062A \u0641\u064A \u0627\u0644\u0645\u0643\u062A\u0628\u0629 \u0645\u0639 \u0632\u0645\u0644\u0627\u0626\u064A.", "\u0623\u062D\u0627\u0648\u0644 \u0623\u0646 \u0623\u0646\u0627\u0645 \u0641\u064A \u0648\u0642\u062A \u062B\u0627\u0628\u062A \u0643\u0644 \u0644\u064A\u0644\u0629.", "\u0642\u062F\u0645\u062A \u0639\u0631\u0636\u064B\u0627 \u0641\u064A \u0627\u0644\u062C\u0627\u0645\u0639\u0629 \u0648\u0645\u0631 \u0628\u0634\u0643\u0644 \u062C\u064A\u062F."]
+    }
+  ];
+  function rng(seed) {
+    return () => {
+      seed |= 0;
+      seed = seed + 1831565813 | 0;
+      let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+  function addSamplePeople(db, weekOf2, newId2) {
+    const rand = rng(20261026);
+    const pick = (list) => list[Math.floor(rand() * list.length)];
+    const pickSome = (list, n) => [...list].sort(() => rand() - 0.5).slice(0, n);
+    const thisMonday = /* @__PURE__ */ new Date();
+    thisMonday.setHours(0, 0, 0, 0);
+    thisMonday.setDate(thisMonday.getDate() - (thisMonday.getDay() + 6) % 7);
+    for (const person of PEOPLE) {
+      if (db.accounts.some((a) => a.id === person.id)) continue;
+      const joined = new Date(thisMonday);
+      joined.setDate(joined.getDate() - 7 * 6);
+      db.accounts.push({ id: person.id, email: person.email, password: "debug1234", name: person.name, createdAt: joined.toISOString() });
+      const pool = POOLS[person.lang];
+      person.mood.forEach((mood, i) => {
+        const monday = new Date(thisMonday);
+        monday.setDate(monday.getDate() - 7 * (5 - i));
+        const days = pickSome([0, 1, 2, 3, 4, 5, 6], 3 + Math.floor(rand() * 4)).sort((a, b) => a - b);
+        const shared = new Set(pickSome(days, Math.min(days.length, 1 + Math.floor(rand() * 3))));
+        days.forEach((day) => {
+          const d = new Date(monday);
+          d.setDate(d.getDate() + day);
+          d.setHours(19 + Math.floor(rand() * 4), Math.floor(rand() * 60));
+          const m = mood + Math.round(rand() * 2 - 1);
+          const band = m <= 4 ? pool.low : m >= 7 ? pool.high : pool.mid;
+          const parts = [rand() < 0.6 ? pick(person.topics) : null, pick(band), rand() < 0.5 ? pick(band) : null].filter(Boolean);
+          const text = [...new Set(parts)].join(" ");
+          const created = d.toISOString();
+          db.journals.push({ id: newId2(), userId: person.id, title: rand() < 0.3 ? pick(pool.titles) : "", text, shared: shared.has(day), created, week: weekOf2(created) });
+          db.queue[`${person.id}/${weekOf2(created)}`] = Date.now();
+        });
+      });
+    }
+    if (!db.bookings.some((b) => b.userId?.startsWith("sample-"))) {
+      const at = (daysAgo) => new Date(Date.now() - daysAgo * 864e5).toISOString();
+      db.bookings.push(
+        { id: newId2(), userId: "sample-lina", accountEmail: "lina@example.test", name: "Lina Karim", email: "lina@example.test", session: "Online session", date: "", message: "Evenings work best for me.", status: "new", note: "", created: at(1) },
+        { id: newId2(), userId: "sample-omar", accountEmail: "omar@example.test", name: "Omar Haddad", email: "omar@example.test", session: "Individual session", date: "", message: "", status: "contacted", note: "Offered Tuesday or Thursday.", created: at(6) }
+      );
+    }
+  }
+
   // assets/dev-backend.js
   function readLiveFlag() {
     try {
@@ -1038,7 +1191,15 @@
     } catch {
     }
   };
-  var loadDb = () => ({ accounts: [], journals: [], bookings: [], affirmations: null, summaries: [], ...read(DB_KEY, {}) });
+  function loadDb() {
+    const db = { accounts: [], journals: [], bookings: [], affirmations: null, summaries: [], queue: {}, job: null, ...read(DB_KEY, {}) };
+    if (!db.seeded) {
+      addSamplePeople(db, weekOf, newId);
+      db.seeded = true;
+      saveDb(db);
+    }
+    return db;
+  }
   var saveDb = (db) => write(DB_KEY, db);
   var newId = () => `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
   var fail = (status, message) => Object.assign(new Error(message), { status });
@@ -1060,12 +1221,12 @@
     }
   }
   var isDoctor = (u) => u?.roles?.includes("doctor");
-  var weekOf = (iso) => {
+  function weekOf(iso) {
     const d = new Date(iso);
     d.setHours(0, 0, 0, 0);
     d.setDate(d.getDate() - (d.getDay() + 6) % 7);
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-  };
+  }
   async function devApi(path, { method = "GET", body } = {}) {
     const url = new URL(path, "http://dev.local");
     const route = url.pathname;
@@ -1096,6 +1257,7 @@
         const created = body.created || (/* @__PURE__ */ new Date()).toISOString();
         const entry2 = { id: newId(), userId: user.id, title: (body.title || "").trim(), text: body.text.trim(), shared: body.shared === true, created, week: body.week || weekOf(created) };
         db.journals.push(entry2);
+        db.queue[`${user.id}/${entry2.week}`] = Date.now();
         saveDb(db);
         return { entry: clone(entry2) };
       }
@@ -1106,11 +1268,13 @@
         if (typeof body?.title === "string") entry.title = body.title.trim();
         if (body?.text?.trim()) entry.text = body.text.trim();
         entry.updated = (/* @__PURE__ */ new Date()).toISOString();
+        if (typeof body?.text === "string" || typeof body?.title === "string") db.queue[`${user.id}/${entry.week}`] = Date.now();
         saveDb(db);
         return { entry: clone(entry) };
       }
       if (method === "DELETE") {
         db.journals = db.journals.filter((e) => e !== entry);
+        db.queue[`${user.id}/${entry.week}`] = Date.now();
         saveDb(db);
         return { ok: true };
       }
@@ -1135,22 +1299,85 @@
         return { booking: clone(b) };
       }
     }
+    if (route.startsWith("/api/doctor/summaries/")) {
+      if (!isDoctor(user)) throw fail(403, "Doctor access only.");
+      if (route.endsWith("/refresh") && Object.keys(db.queue).length && !db.job) {
+        db.job = { startedAt: Date.now() };
+        saveDb(db);
+      }
+      return debugSummaryStatus(db, body?.clientId || url.searchParams.get("clientId"));
+    }
     if (route.startsWith("/api/doctor/clients")) {
       if (!isDoctor(user)) throw fail(403, "Doctor access only.");
       const people = [DEBUG_PRIVATE, ...db.accounts.map(({ id: pid, email, name, createdAt }) => ({ id: pid, email, name, createdAt }))];
-      const clientId = decodeURIComponent(route.split("/")[4] || "");
+      const parts = route.split("/");
+      const clientId = decodeURIComponent(parts[4] || "");
       if (!clientId) return { clients: clone(people) };
+      db.notes || (db.notes = {});
+      if (parts[5] === "notes" && method === "PUT") {
+        db.notes[clientId] = { symptoms: String(body?.symptoms || ""), updated: (/* @__PURE__ */ new Date()).toISOString() };
+        saveDb(db);
+        return { notes: clone(db.notes[clientId]) };
+      }
       const client = people.find((p) => p.id === clientId);
       if (!client) throw fail(404, "Not found");
+      const waiting = new Set(Object.keys(db.queue).filter((k) => k.startsWith(clientId + "/")).map((k) => k.split("/")[1]));
       const weeks = /* @__PURE__ */ new Map();
-      const slot = (w) => weeks.get(w) || weeks.set(w, { week: w, summary: null, shared: [] }).get(w);
+      const slot = (w) => weeks.get(w) || weeks.set(w, { week: w, summary: null, shared: [], waiting: waiting.has(w) }).get(w);
       db.summaries.filter((s) => s.userId === clientId).forEach((s) => slot(s.week).summary = s);
       db.journals.filter((e) => e.userId === clientId && e.shared).forEach(({ id: eid, title, text, created, week }) => slot(week).shared.push({ id: eid, title, text, created, week }));
+      waiting.forEach((w) => slot(w));
       const list = [...weeks.values()].sort((a, b) => b.week.localeCompare(a.week));
       list.forEach((w) => w.shared.sort((a, b) => a.created.localeCompare(b.created)));
-      return clone({ client, weeks: list });
+      return clone({ client, weeks: list, notes: db.notes[clientId] || { symptoms: "" } });
     }
     throw fail(405, "Method not allowed");
+  }
+  var DEBUG_RUN_MS = 4e3;
+  function runDebugSummaries(db) {
+    const minus = (week, n) => {
+      const d = /* @__PURE__ */ new Date(week + "T00:00:00");
+      d.setDate(d.getDate() - 7 * n);
+      return weekOf(d.toISOString());
+    };
+    Object.keys(db.queue).sort((a, b) => a.split("/")[1].localeCompare(b.split("/")[1])).forEach((key) => {
+      const [userId, week] = key.split("/");
+      const entries2 = db.journals.filter((e) => e.userId === userId && e.week === week);
+      db.summaries = db.summaries.filter((s) => !(s.userId === userId && s.week === week));
+      if (!entries2.length) return;
+      const earlier = [1, 2, 3].map((n) => db.summaries.find((s) => s.userId === userId && s.week === minus(week, n))).filter(Boolean);
+      const text = entries2.map((e) => e.text).join(" ");
+      const count = (re) => (text.match(re) || []).length;
+      const mood = Math.max(1, Math.min(10, 5 + 2 * count(/calm|good|better|happy|fine|جيد/gi) - 2 * count(/sad|angry|mad|anxious|tired|low|غاضب/gi)));
+      db.summaries.push({
+        userId,
+        week,
+        entryCount: entries2.length,
+        model: "debug",
+        mood,
+        summary: `(Debug sample, not real AI.) ${entries2.length} ${entries2.length === 1 ? "entry" : "entries"} this week. The real summary of up to 100 words will come from Qwen on your AWS server.`,
+        comparison: earlier.length ? `Mood ${mood}/10 vs ${earlier[0].mood}/10 the week before (sample text).` : "First week with entries.",
+        changes: earlier.length ? [
+          `Mood ${mood >= earlier[0].mood ? "up" : "down"} from ${earlier[0].mood} to ${mood} (sample).`,
+          `${entries2.length} entries this week vs ${Math.round(earlier.reduce((a, s) => a + s.entryCount, 0) / earlier.length)} on average before (sample).`
+        ] : [],
+        generatedAt: (/* @__PURE__ */ new Date()).toISOString()
+      });
+    });
+    db.queue = {};
+  }
+  function debugSummaryStatus(db, clientId) {
+    if (db.job && Date.now() - db.job.startedAt > DEBUG_RUN_MS) {
+      runDebugSummaries(db);
+      db.job = null;
+      saveDb(db);
+    }
+    const keys = Object.keys(db.queue);
+    return {
+      state: db.job ? Date.now() - db.job.startedAt < DEBUG_RUN_MS / 2 ? "starting" : "running" : keys.length ? "waiting" : "idle",
+      pending: keys.length,
+      pendingForClient: clientId ? keys.filter((k) => k.startsWith(clientId + "/")).length : void 0
+    };
   }
   function showDevBanner() {
     if (!DEV || document.getElementById("sstDevBanner")) return;
@@ -1269,6 +1496,67 @@
     return data;
   }
 
+  // netlify/lib/tidy.mjs
+  var SENTENCE_END = /[.!?。…؟\n]$/;
+  var MAX_LOOKBACK = 25;
+  var FILLER_EN = /^(u+h+m*|u+m+|e+r+m*|e+m+|a+h+|h+m+|m{2,})$/;
+  var FILLER_AR = /^([اإأ]?م{2,}|ا{3,}|[اإأ]?ه{2,}م*)$/;
+  var DELETE_VERBS = /* @__PURE__ */ new Set(["delete", "scratch", "strike", "cut", "ignore", "erase", "remove", "\u0627\u062D\u0630\u0641", "\u0627\u0645\u0633\u062D", "\u062A\u062C\u0627\u0647\u0644", "\u0634\u064A\u0644"]);
+  var DELETE_OBJECTS = /* @__PURE__ */ new Set(["that", "this", "it", "\u0630\u0644\u0643", "\u0647\u0630\u0627", "\u0647\u0630\u0647", "\u0647\u0630\u064A", "\u0630\u0627\u0643"]);
+  var LEAD_INS = /* @__PURE__ */ new Set(["no", "wait", "oh", "actually", "sorry", "ok", "okay", "\u0644\u0627", "\u0644\u062D\u0638\u0629", "\u0639\u0641\u0648\u0627", "\u0622\u0633\u0641", "\u0627\u0633\u0641", "\u0637\u064A\u0628"]);
+  var tokenize = (text) => String(text || "").trim().match(/\S+\s*/g) || [];
+  var core = (token) => token.trim().toLowerCase().replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu, "").replace(/[ً-ْـ]/g, "");
+  function ruleDeletions(tokens) {
+    const words = tokens.map(core);
+    const out = [];
+    words.forEach((w, i) => {
+      if (w && (FILLER_EN.test(w) || FILLER_AR.test(w))) out.push({ from: i, to: i, type: "filler", reason: "Filler sound" });
+    });
+    for (let i = 0; i < words.length - 1; i++) {
+      if (!DELETE_VERBS.has(words[i]) || !DELETE_OBJECTS.has(words[i + 1])) continue;
+      let cmdStart = i;
+      while (cmdStart > 0 && LEAD_INS.has(words[cmdStart - 1])) cmdStart--;
+      const cmdEnd = i + 1;
+      let start2 = cmdStart;
+      if (cmdStart > 0) {
+        start2 = cmdStart - 1;
+        while (start2 > 0 && cmdStart - start2 < MAX_LOOKBACK && !SENTENCE_END.test(tokens[start2 - 1].trim())) start2--;
+      }
+      out.push({ from: start2, to: cmdEnd, type: "correction", reason: start2 < cmdStart ? "\u201CDelete that\u201D and what it refers to" : "Spoken command" });
+      i = cmdEnd;
+    }
+    return out;
+  }
+  function mergeDeletions(list, count) {
+    const clean = list.filter((d) => Number.isInteger(d?.from) && Number.isInteger(d?.to)).map((d) => ({ from: Math.max(0, Math.min(d.from, d.to)), to: Math.min(count - 1, Math.max(d.from, d.to)), type: d.type || "other", reason: String(d.reason || "").slice(0, 160) })).filter((d) => d.from <= d.to && d.from < count).sort((a, b) => a.from - b.from || b.to - a.to);
+    const merged = [];
+    for (const d of clean) {
+      const last = merged[merged.length - 1];
+      if (last && d.from <= last.to) {
+        last.to = Math.max(last.to, d.to);
+        if (last.type === "filler" && d.type !== "filler") Object.assign(last, { type: d.type, reason: d.reason });
+      } else merged.push({ ...d });
+    }
+    return merged;
+  }
+  function applyDeletions(tokens, deletions) {
+    const drop = /* @__PURE__ */ new Set();
+    deletions.forEach((d) => {
+      for (let i = d.from; i <= d.to; i++) drop.add(i);
+    });
+    const kept = [];
+    let afterRemoval = false;
+    tokens.forEach((token, i) => {
+      if (drop.has(i)) return void (afterRemoval = true);
+      const prev = kept[kept.length - 1];
+      const sentenceStart = !prev || SENTENCE_END.test(prev.trim());
+      const looksLikeLink = /^(https?:|www\.|\S+@\S+)/i.test(token);
+      kept.push(afterRemoval && sentenceStart && !looksLikeLink ? token.replace(/^([^\p{L}]*)(\p{Ll})/u, (_, lead, letter) => lead + letter.toUpperCase()) : token);
+      afterRemoval = false;
+    });
+    return kept.join("").replace(/[ \t]+([,.!?;:،؛؟])/g, "$1").replace(/[ \t]{2,}/g, " ").trim().replace(/^[,.;:،؛\s]+/, "");
+  }
+
   // assets/private.js
   var $ = (id) => document.getElementById(id);
   var el = (tag, props = {}, ...kids) => {
@@ -1286,7 +1574,7 @@
     const nav = $("navlinks");
     if (!nav) return;
     const style = document.createElement("style");
-    style.textContent = ".account{display:flex;align-items:center;gap:8px;padding-left:8px;border-left:1px solid var(--line,#e8dfed)}.account span{font-size:12px;color:#8a7fa0;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}@media(max-width:650px){.account{border-left:0;padding:8px 5px}}";
+    style.textContent = ".account{display:flex;align-items:center;gap:8px;padding-left:8px;border-left:1px solid var(--line,#e8dfed)}.account span{font-size:12px;color:#8a7fa0;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}@media(max-width:650px){.account{border-left:0;padding:8px 5px}}.section,.about-page,footer{overflow-wrap:break-word}.grid2>*,.two-fields>*,.about-grid>*{min-width:0}.result,.saved-item,.tidy-text,.affirmation-text,#journalEntries,#bookingStatus,#journalStatus{overflow-wrap:anywhere}";
     document.head.append(style);
     const out = el("button", { className: "btn secondary small", type: "button", textContent: "Sign out" });
     out.onclick = async () => {
@@ -1310,10 +1598,10 @@
     }
     const sub = $("journalEntries")?.previousElementSibling;
     if (sub?.classList.contains("sub")) sub.textContent = "Your saved reflections, on every device you sign in to.";
-    $("saveJournal").onclick = async () => {
-      const text = $("journalText").value.trim();
-      if (!text) return status("Write a little note before saving.");
-      $("saveJournal").disabled = true;
+    setupDictationTip();
+    const review = setupReview();
+    async function saveEntry(text, button) {
+      button.disabled = true;
       status("Saving\u2026");
       try {
         const { entry } = await api("/api/journals", { method: "POST", body: { title: $("journalTitle").value.trim(), text, shared: share.checked, week: localWeek(), created: (/* @__PURE__ */ new Date()).toISOString() } });
@@ -1321,16 +1609,121 @@
         $("journalTitle").value = "";
         $("journalText").value = "";
         share.checked = false;
+        review.close();
         status(entry.shared ? "Saved and shared with your therapist." : "Saved to your account.");
         renderJournalList();
       } catch (err) {
         status(handleApiError(err, "Could not save. Please try again."));
       } finally {
-        $("saveJournal").disabled = false;
+        button.disabled = false;
       }
+    }
+    $("saveJournal").textContent = "Tidy up & review";
+    $("saveJournal").onclick = () => {
+      const text = $("journalText").value.trim();
+      if (!text) return status("Write or dictate a little note first.");
+      status("");
+      const tokens = tokenize(text);
+      review.open({ tokens, deletions: mergeDeletions(ruleDeletions(tokens), tokens.length) });
     };
+    const asIs = el("button", { className: "btn secondary", type: "button", textContent: "Save as written" });
+    asIs.onclick = () => {
+      const text = $("journalText").value.trim();
+      if (!text) return status("Write a little note before saving.");
+      saveEntry(text, asIs);
+    };
+    $("saveJournal").after(asIs);
+    review.onRecord = (text, button) => saveEntry(text, button);
     window.renderJournals = renderJournalList;
     loadJournals();
+  }
+  function setupDictationTip() {
+    const tip = el(
+      "div",
+      { className: "dictate-tip" },
+      el("span", { className: "dictate-icon", textContent: "\u{1F399}\uFE0F", ariaHidden: "true" }),
+      el(
+        "span",
+        {},
+        el("strong", { textContent: "Prefer to talk? " }),
+        "Tap the microphone on your phone keyboard and just speak, in English or Arabic. Don\u2019t worry about \u201Cum\u201Ds or changing your mind (\u201Cwait, delete that\u201D). Press \u201CTidy up & review\u201D: we strike through the bits that look like fillers or take-backs, and you decide what stays. You can also edit the text yourself before saving."
+      )
+    );
+    const label = document.querySelector('label[for="journalText"]');
+    (label || $("journalText")).before(tip);
+    $("journalText").setAttribute("dir", "auto");
+    $("journalTitle")?.setAttribute("dir", "auto");
+  }
+  function setupReview() {
+    const style = document.createElement("style");
+    style.textContent = `
+.dictate-tip{display:flex;gap:10px;align-items:flex-start;background:#f6f0fc;border:1px solid #e6dcf2;border-radius:14px;padding:11px 13px;margin:4px 0 14px;font-size:13.5px;color:#5b5677;line-height:1.5}
+.dictate-icon{font-size:18px;line-height:1.2}
+.tidy-review{border:1px solid #d9cde8;background:#fff;border-radius:16px;padding:16px;margin-top:14px}
+.tidy-review h3{margin:0 0 4px;font-size:17px}
+.tidy-text{font-size:16px;line-height:1.8;white-space:pre-wrap;border:1px solid var(--line,#e8dfed);border-radius:12px;padding:12px 14px;margin:10px 0;background:#fffdfd;max-height:55vh;overflow:auto}
+.tidy-del{all:unset;cursor:pointer;color:#c4548c;background:#fde8f2;text-decoration:line-through;text-decoration-color:#ec7fb2;text-decoration-thickness:2px;border-radius:5px;padding:0 2px}
+.tidy-del.kept{color:inherit;background:#eef5ec;text-decoration:none;outline:1px dashed #9cbf98}
+.tidy-del:focus-visible{outline:2px solid #7866a8}
+.tidy-legend{font-size:13px;color:#77718a;margin:0}
+.tidy-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}`;
+    document.head.append(style);
+    const panel = el("div", { className: "tidy-review hidden", ariaLive: "polite" });
+    ($("journalStatus") || $("saveJournal").parentElement).after(panel);
+    const ctl = { onRecord: null };
+    let tokens = [];
+    let deletions = [];
+    const finalText = () => applyDeletions(tokens, deletions.filter((d) => !d.kept));
+    ctl.close = () => {
+      panel.classList.add("hidden");
+      panel.innerHTML = "";
+      $("journalText").readOnly = false;
+    };
+    ctl.open = (result) => {
+      tokens = result.tokens;
+      deletions = result.deletions.map((d) => ({ ...d, kept: false }));
+      panel.innerHTML = "";
+      const text = el("div", { className: "tidy-text", dir: "auto" });
+      let i = 0;
+      deletions.forEach((d) => {
+        if (d.from > i) text.append(tokens.slice(i, d.from).join(""));
+        const b = el("button", { type: "button", className: "tidy-del", title: (d.reason || "Suggested removal") + " \xB7 tap to keep", textContent: tokens.slice(d.from, d.to + 1).join("") });
+        b.setAttribute("aria-pressed", "false");
+        b.setAttribute("aria-label", `Will be removed: ${b.textContent.trim()}. Tap to keep.`);
+        b.onclick = () => {
+          d.kept = !d.kept;
+          b.classList.toggle("kept", d.kept);
+          b.setAttribute("aria-pressed", String(d.kept));
+          b.setAttribute("aria-label", `${d.kept ? "Kept" : "Will be removed"}: ${b.textContent.trim()}. Tap to ${d.kept ? "remove" : "keep"}.`);
+        };
+        text.append(b);
+        i = d.to + 1;
+      });
+      if (i < tokens.length) text.append(tokens.slice(i).join(""));
+      const legend = deletions.length ? "Struck-through parts will be removed. Tap any of them to keep it, or choose \u201CEdit text\u201D to change anything yourself." : "Nothing to remove. You can save it, or choose \u201CEdit text\u201D to change anything yourself.";
+      const record = el("button", { className: "btn", type: "button", textContent: "Record entry" });
+      record.onclick = () => {
+        const out = finalText();
+        if (!out) return $("journalStatus").textContent = "Everything was removed. Tap a struck-through part to keep it, or go back to editing.";
+        ctl.onRecord?.(out, record);
+      };
+      const edit = el("button", { className: "btn secondary", type: "button", textContent: "Edit text" });
+      edit.onclick = () => {
+        const out = finalText();
+        ctl.close();
+        $("journalText").value = out;
+        $("journalText").focus();
+        $("journalStatus").textContent = "Edit as you like, then press \u201CTidy up & review\u201D again or \u201CSave as written\u201D.";
+      };
+      const back = el("button", { className: "btn secondary", type: "button", textContent: "Cancel" });
+      back.onclick = () => ctl.close();
+      panel.append(el("h3", { textContent: "Review before saving" }), el("p", { className: "tidy-legend", textContent: legend }), text, el("div", { className: "tidy-actions" }, record, edit, back));
+      panel.classList.remove("hidden");
+      $("journalText").readOnly = true;
+      panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      record.focus({ preventScroll: true });
+    };
+    return ctl;
   }
   async function loadJournals() {
     $("journalEntries").innerHTML = '<p class="empty">Loading your journal\u2026</p>';

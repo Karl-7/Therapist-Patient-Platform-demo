@@ -4,7 +4,7 @@
 //   PATCH  /api/journals?id=...     update { shared } (and/or title, text)
 //   DELETE /api/journals?id=...     delete one entry
 // Blob key: "<userId>/<entryId>" in the "journals" store.
-import { cleanText, currentUser, fail, isDoctor, json, listJSON, newId, readJson, sameOrigin, store, weekStart } from '../lib/common.mjs'
+import { cleanText, currentUser, fail, isDoctor, json, listJSON, markForSummary, newId, readJson, sameOrigin, store, weekStart } from '../lib/common.mjs'
 
 const WEEK_RE = /^\d{4}-\d{2}-\d{2}$/
 
@@ -39,6 +39,7 @@ export default async (req) => {
       week: WEEK_RE.test(body?.week) ? body.week : weekStart(created),
     }
     await journals.setJSON(`${user.id}/${entry.id}`, entry)
+    await markForSummary(user.id, entry.week)
     return json({ entry }, 201)
   }
 
@@ -53,11 +54,13 @@ export default async (req) => {
     if (typeof body.title === 'string') entry.title = cleanText(body.title, 200)
     if (typeof body.text === 'string' && body.text.trim()) entry.text = cleanText(body.text, 20000)
     await journals.setJSON(key, entry)
+    if (entry.text !== existing.text || entry.title !== existing.title) await markForSummary(user.id, entry.week)
     return json({ entry })
   }
 
   if (req.method === 'DELETE') {
     await journals.delete(key)
+    await markForSummary(user.id, existing.week)
     return json({ ok: true })
   }
 

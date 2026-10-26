@@ -55,6 +55,12 @@ export function weekStart(iso) {
 
 export const newId = () => `${Date.now().toString(36)}-${crypto.randomUUID().slice(0, 8)}`
 
+// Weeks whose journal changed since their AI summary was written.
+// Key "<userId>/<week>" in the "summary-queue" store. The AI worker empties it.
+export async function markForSummary(userId, week) {
+  await store('summary-queue').setJSON(`${userId}/${week}`, { userId, week, changedAt: new Date().toISOString() })
+}
+
 // Reads every JSON blob under a prefix.
 export async function listJSON(s, prefix) {
   const { blobs } = await s.list({ prefix })

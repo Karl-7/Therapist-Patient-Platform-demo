@@ -1227,6 +1227,159 @@
     }
   };
 
+  // assets/dev-sample-people.js
+  var POOLS = {
+    en: {
+      low: [
+        "Woke up at 4am again and could not get back to sleep.",
+        "Felt heavy all day, like everything took twice the effort.",
+        "Snapped at someone I care about and felt guilty afterwards.",
+        "Skipped lunch, too wound up to eat.",
+        "Cried in the car before going inside.",
+        "Kept replaying a conversation from yesterday in my head.",
+        "Cancelled plans because I did not have the energy.",
+        "My chest felt tight most of the afternoon."
+      ],
+      mid: [
+        "An ordinary day. Nothing great, nothing terrible.",
+        "Got through most of my to-do list.",
+        "Had a short walk at lunch, which helped a bit.",
+        "Still tired, but less tense than last week.",
+        "Talked to a friend on the phone for a while.",
+        "Tried the breathing exercise before bed.",
+        "A bit restless in the evening but managed to read.",
+        "Some worry in the morning that faded by the afternoon."
+      ],
+      high: [
+        "Slept through the night for the first time in ages.",
+        "Laughed a lot at dinner. Felt like myself.",
+        "Went for a long walk and noticed the trees changing colour.",
+        "Felt proud that I said no to extra work.",
+        "A calm, easy day. I want more of these.",
+        "Cooked a proper meal and enjoyed it.",
+        "Felt hopeful about the next few weeks.",
+        "Did the breathing exercise and it actually helped."
+      ],
+      titles: ["Evening", "Today", "Quick note", "Before bed"]
+    },
+    ar: {
+      low: [
+        "\u0627\u0633\u062A\u064A\u0642\u0638\u062A \u0641\u064A \u0627\u0644\u0631\u0627\u0628\u0639\u0629 \u0641\u062C\u0631\u064B\u0627 \u0648\u0644\u0645 \u0623\u0633\u062A\u0637\u0639 \u0627\u0644\u0646\u0648\u0645 \u0645\u0631\u0629 \u0623\u062E\u0631\u0649.",
+        "\u0634\u0639\u0631\u062A \u0628\u062B\u0642\u0644 \u0637\u0648\u0627\u0644 \u0627\u0644\u064A\u0648\u0645\u060C \u0648\u0643\u0644 \u0634\u064A\u0621 \u0643\u0627\u0646 \u064A\u062D\u062A\u0627\u062C \u062C\u0647\u062F\u064B\u0627 \u0645\u0636\u0627\u0639\u0641\u064B\u0627.",
+        "\u062A\u0634\u0627\u062C\u0631\u062A \u0645\u0639 \u0623\u062E\u064A \u0639\u0644\u0649 \u0634\u064A\u0621 \u0635\u063A\u064A\u0631 \u0648\u0646\u062F\u0645\u062A \u0628\u0639\u062F\u0647\u0627.",
+        "\u0644\u0645 \u0622\u0643\u0644 \u0634\u064A\u0626\u064B\u0627 \u062A\u0642\u0631\u064A\u0628\u064B\u0627 \u0627\u0644\u064A\u0648\u0645.",
+        "\u0628\u0642\u064A\u062A \u0641\u064A \u063A\u0631\u0641\u062A\u064A \u0645\u0639\u0638\u0645 \u0627\u0644\u064A\u0648\u0645 \u0648\u0644\u0645 \u0623\u0631\u062F \u0639\u0644\u0649 \u0627\u0644\u0647\u0627\u062A\u0641.",
+        "\u0623\u0641\u0643\u0627\u0631 \u0643\u062B\u064A\u0631\u0629 \u0641\u064A \u0631\u0623\u0633\u064A \u0648\u0644\u0627 \u0623\u0633\u062A\u0637\u064A\u0639 \u0625\u064A\u0642\u0627\u0641\u0647\u0627.",
+        "\u0623\u0644\u063A\u064A\u062A \u0645\u0648\u0639\u062F\u064B\u0627 \u0645\u0639 \u0635\u062F\u064A\u0642 \u0644\u0623\u0646\u0646\u064A \u0644\u0645 \u0623\u0643\u0646 \u0642\u0627\u062F\u0631\u064B\u0627.",
+        "\u0634\u0639\u0631\u062A \u0628\u0636\u064A\u0642 \u0641\u064A \u0635\u062F\u0631\u064A \u0628\u0639\u062F \u0627\u0644\u0638\u0647\u0631."
+      ],
+      mid: [
+        "\u064A\u0648\u0645 \u0639\u0627\u062F\u064A\u060C \u0644\u0627 \u0634\u064A\u0621 \u0645\u0645\u064A\u0632.",
+        "\u0623\u0646\u062C\u0632\u062A \u0645\u0639\u0638\u0645 \u0645\u0627 \u0643\u0627\u0646 \u0639\u0644\u064A \u0641\u0639\u0644\u0647.",
+        "\u0645\u0634\u064A\u062A \u0642\u0644\u064A\u0644\u064B\u0627 \u0628\u0639\u062F \u0627\u0644\u0639\u0635\u0631 \u0648\u0633\u0627\u0639\u062F\u0646\u064A \u0630\u0644\u0643.",
+        "\u0645\u0627 \u0632\u0644\u062A \u0645\u062A\u0639\u0628\u064B\u0627 \u0644\u0643\u0646 \u0623\u0642\u0644 \u062A\u0648\u062A\u0631\u064B\u0627 \u0645\u0646 \u0627\u0644\u0623\u0633\u0628\u0648\u0639 \u0627\u0644\u0645\u0627\u0636\u064A.",
+        "\u062A\u062D\u062F\u062B\u062A \u0645\u0639 \u0635\u062F\u064A\u0642 \u0639\u0644\u0649 \u0627\u0644\u0647\u0627\u062A\u0641 \u0644\u0628\u0639\u0636 \u0627\u0644\u0648\u0642\u062A.",
+        "\u062C\u0631\u0628\u062A \u062A\u0645\u0631\u064A\u0646 \u0627\u0644\u062A\u0646\u0641\u0633 \u0642\u0628\u0644 \u0627\u0644\u0646\u0648\u0645.",
+        "\u0642\u0644\u0642 \u062E\u0641\u064A\u0641 \u0641\u064A \u0627\u0644\u0635\u0628\u0627\u062D \u062B\u0645 \u0647\u062F\u0623\u062A.",
+        "\u0642\u0631\u0623\u062A \u0642\u0644\u064A\u0644\u064B\u0627 \u0641\u064A \u0627\u0644\u0645\u0633\u0627\u0621."
+      ],
+      high: [
+        "\u0646\u0645\u062A \u062C\u064A\u062F\u064B\u0627 \u0644\u0623\u0648\u0644 \u0645\u0631\u0629 \u0645\u0646\u0630 \u0645\u062F\u0629 \u0637\u0648\u064A\u0644\u0629.",
+        "\u0636\u062D\u0643\u0646\u0627 \u0643\u062B\u064A\u0631\u064B\u0627 \u0639\u0644\u0649 \u0627\u0644\u0639\u0634\u0627\u0621 \u0645\u0639 \u0627\u0644\u0639\u0627\u0626\u0644\u0629.",
+        "\u062E\u0631\u062C\u062A \u0641\u064A \u0646\u0632\u0647\u0629 \u0637\u0648\u064A\u0644\u0629 \u0648\u0634\u0639\u0631\u062A \u0628\u0627\u0644\u0631\u0627\u062D\u0629.",
+        "\u0634\u0639\u0631\u062A \u0628\u0627\u0644\u0641\u062E\u0631 \u0644\u0623\u0646\u0646\u064A \u0623\u0646\u0647\u064A\u062A \u0639\u0645\u0644\u064A \u0641\u064A \u0648\u0642\u062A\u0647.",
+        "\u064A\u0648\u0645 \u0647\u0627\u062F\u0626 \u0648\u062C\u0645\u064A\u0644.",
+        "\u0637\u0628\u062E\u062A \u0623\u0643\u0644\u0629 \u0623\u062D\u0628\u0647\u0627 \u0648\u0627\u0633\u062A\u0645\u062A\u0639\u062A \u0628\u0647\u0627.",
+        "\u0623\u0634\u0639\u0631 \u0628\u0627\u0644\u0623\u0645\u0644 \u062A\u062C\u0627\u0647 \u0627\u0644\u0623\u0633\u0627\u0628\u064A\u0639 \u0627\u0644\u0642\u0627\u062F\u0645\u0629.",
+        "\u062A\u0645\u0631\u064A\u0646 \u0627\u0644\u062A\u0646\u0641\u0633 \u0633\u0627\u0639\u062F\u0646\u064A \u0641\u0639\u0644\u064B\u0627 \u0627\u0644\u064A\u0648\u0645."
+      ],
+      titles: ["\u0645\u0633\u0627\u0621", "\u0627\u0644\u064A\u0648\u0645", "\u0645\u0644\u0627\u062D\u0638\u0629 \u0633\u0631\u064A\u0639\u0629", "\u0642\u0628\u0644 \u0627\u0644\u0646\u0648\u0645"]
+    }
+  };
+  var PEOPLE = [
+    {
+      id: "sample-sara",
+      name: "Sara Ahmed",
+      email: "sara@example.test",
+      lang: "en",
+      mood: [3, 4, 5, 6, 7],
+      topics: ["Big deadline at work this week.", "My manager asked for another report at 6pm.", "Set myself a rule: no work emails after 7pm.", "The project review went better than I feared."]
+    },
+    {
+      id: "sample-omar",
+      name: "Omar Haddad",
+      email: "omar@example.test",
+      lang: "ar",
+      mood: [6, 5, 3, 4, 6],
+      topics: ["\u0627\u0644\u0648\u0636\u0639 \u0641\u064A \u0627\u0644\u0628\u064A\u062A \u0645\u062A\u0648\u062A\u0631 \u0628\u0633\u0628\u0628 \u0627\u0644\u062E\u0644\u0627\u0641\u0627\u062A.", "\u0648\u0627\u0644\u062F\u064A \u0645\u0631\u064A\u0636 \u0648\u0623\u0646\u0627 \u0642\u0644\u0642 \u0639\u0644\u064A\u0647.", "\u0632\u0631\u062A \u0623\u0647\u0644\u064A \u0641\u064A \u0646\u0647\u0627\u064A\u0629 \u0627\u0644\u0623\u0633\u0628\u0648\u0639.", "\u062A\u0643\u0644\u0645\u062A \u0645\u0639 \u0632\u0648\u062C\u062A\u064A \u0628\u0647\u062F\u0648\u0621 \u0639\u0646 \u0627\u0644\u0645\u0634\u0643\u0644\u0629."]
+    },
+    {
+      id: "sample-lina",
+      name: "Lina Karim",
+      email: "lina@example.test",
+      lang: "en",
+      mood: [5, 3, 6, 4, 7],
+      topics: ["Had that racing-heart feeling again at the bus stop.", "Meeting new people at the course made me nervous.", "I think I am getting better at noticing the anxiety early.", "My sister came to visit and we went to the market."]
+    },
+    {
+      id: "sample-yusuf",
+      name: "Yusuf Nasser",
+      email: "yusuf@example.test",
+      lang: "ar",
+      mood: [4, 4, 5, 5, 6],
+      topics: ["\u0627\u0644\u0627\u0645\u062A\u062D\u0627\u0646\u0627\u062A \u0642\u0631\u064A\u0628\u0629 \u0648\u0623\u0646\u0627 \u0645\u062A\u0648\u062A\u0631.", "\u0630\u0627\u0643\u0631\u062A \u0641\u064A \u0627\u0644\u0645\u0643\u062A\u0628\u0629 \u0645\u0639 \u0632\u0645\u0644\u0627\u0626\u064A.", "\u0623\u062D\u0627\u0648\u0644 \u0623\u0646 \u0623\u0646\u0627\u0645 \u0641\u064A \u0648\u0642\u062A \u062B\u0627\u0628\u062A \u0643\u0644 \u0644\u064A\u0644\u0629.", "\u0642\u062F\u0645\u062A \u0639\u0631\u0636\u064B\u0627 \u0641\u064A \u0627\u0644\u062C\u0627\u0645\u0639\u0629 \u0648\u0645\u0631 \u0628\u0634\u0643\u0644 \u062C\u064A\u062F."]
+    }
+  ];
+  function rng(seed) {
+    return () => {
+      seed |= 0;
+      seed = seed + 1831565813 | 0;
+      let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+  function addSamplePeople(db, weekOf2, newId2) {
+    const rand = rng(20261026);
+    const pick = (list) => list[Math.floor(rand() * list.length)];
+    const pickSome = (list, n) => [...list].sort(() => rand() - 0.5).slice(0, n);
+    const thisMonday = /* @__PURE__ */ new Date();
+    thisMonday.setHours(0, 0, 0, 0);
+    thisMonday.setDate(thisMonday.getDate() - (thisMonday.getDay() + 6) % 7);
+    for (const person of PEOPLE) {
+      if (db.accounts.some((a) => a.id === person.id)) continue;
+      const joined = new Date(thisMonday);
+      joined.setDate(joined.getDate() - 7 * 6);
+      db.accounts.push({ id: person.id, email: person.email, password: "debug1234", name: person.name, createdAt: joined.toISOString() });
+      const pool = POOLS[person.lang];
+      person.mood.forEach((mood, i) => {
+        const monday = new Date(thisMonday);
+        monday.setDate(monday.getDate() - 7 * (5 - i));
+        const days = pickSome([0, 1, 2, 3, 4, 5, 6], 3 + Math.floor(rand() * 4)).sort((a, b) => a - b);
+        const shared = new Set(pickSome(days, Math.min(days.length, 1 + Math.floor(rand() * 3))));
+        days.forEach((day) => {
+          const d = new Date(monday);
+          d.setDate(d.getDate() + day);
+          d.setHours(19 + Math.floor(rand() * 4), Math.floor(rand() * 60));
+          const m = mood + Math.round(rand() * 2 - 1);
+          const band = m <= 4 ? pool.low : m >= 7 ? pool.high : pool.mid;
+          const parts = [rand() < 0.6 ? pick(person.topics) : null, pick(band), rand() < 0.5 ? pick(band) : null].filter(Boolean);
+          const text = [...new Set(parts)].join(" ");
+          const created = d.toISOString();
+          db.journals.push({ id: newId2(), userId: person.id, title: rand() < 0.3 ? pick(pool.titles) : "", text, shared: shared.has(day), created, week: weekOf2(created) });
+          db.queue[`${person.id}/${weekOf2(created)}`] = Date.now();
+        });
+      });
+    }
+    if (!db.bookings.some((b) => b.userId?.startsWith("sample-"))) {
+      const at = (daysAgo) => new Date(Date.now() - daysAgo * 864e5).toISOString();
+      db.bookings.push(
+        { id: newId2(), userId: "sample-lina", accountEmail: "lina@example.test", name: "Lina Karim", email: "lina@example.test", session: "Online session", date: "", message: "Evenings work best for me.", status: "new", note: "", created: at(1) },
+        { id: newId2(), userId: "sample-omar", accountEmail: "omar@example.test", name: "Omar Haddad", email: "omar@example.test", session: "Individual session", date: "", message: "", status: "contacted", note: "Offered Tuesday or Thursday.", created: at(6) }
+      );
+    }
+  }
+
   // assets/dev-backend.js
   function readLiveFlag() {
     try {
@@ -1267,7 +1420,15 @@
     } catch {
     }
   };
-  var loadDb = () => ({ accounts: [], journals: [], bookings: [], affirmations: null, summaries: [], ...read(DB_KEY, {}) });
+  function loadDb() {
+    const db = { accounts: [], journals: [], bookings: [], affirmations: null, summaries: [], queue: {}, job: null, ...read(DB_KEY, {}) };
+    if (!db.seeded) {
+      addSamplePeople(db, weekOf, newId);
+      db.seeded = true;
+      saveDb(db);
+    }
+    return db;
+  }
   var saveDb = (db) => write(DB_KEY, db);
   var newId = () => `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
   var fail = (status, message) => Object.assign(new Error(message), { status });
@@ -1311,6 +1472,12 @@
       localStorage.removeItem(SESSION_KEY);
     } catch {
     }
+  }
+  function weekOf(iso) {
+    const d = new Date(iso);
+    d.setHours(0, 0, 0, 0);
+    d.setDate(d.getDate() - (d.getDay() + 6) % 7);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
   }
   function showDevBanner() {
     if (!DEV || document.getElementById("sstDevBanner")) return;
@@ -1498,6 +1665,7 @@
   };
   $("authForm").addEventListener("submit", async (e) => {
     e.preventDefault();
+    if (debugUnlockClick()) return;
     const email = $("email").value.trim();
     const password = $("password").value;
     if (mode !== "invite" && mode !== "recovery" && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return setStatus("Please enter a valid email.", "error");
@@ -1533,7 +1701,7 @@
   });
   async function start() {
     render();
-    if (DEV) setupDebugBox();
+    if (DEV && sessionUnlocked()) setupDebugBox();
     if (reasons[params.get("reason")]) setStatus(reasons[params.get("reason")], params.get("reason") === "signed-out" ? "ok" : "error");
     if (/_token=/.test(location.hash)) {
       try {
@@ -1565,7 +1733,38 @@
     }
   }
   start();
+  var UNLOCK_WORD = "steffiroshan";
+  var UNLOCK_CLICKS = 5;
+  var unlockClicks = 0;
+  var sessionUnlocked = () => {
+    try {
+      return sessionStorage.getItem("sst_debug_unlocked") === "1";
+    } catch {
+      return false;
+    }
+  };
+  function debugUnlockClick() {
+    if (!DEV || $("password").value !== UNLOCK_WORD) {
+      unlockClicks = 0;
+      return false;
+    }
+    unlockClicks++;
+    if (unlockClicks < UNLOCK_CLICKS) {
+      setStatus("Email or password is incorrect.", "error");
+      return true;
+    }
+    unlockClicks = 0;
+    try {
+      sessionStorage.setItem("sst_debug_unlocked", "1");
+    } catch {
+    }
+    $("password").value = "";
+    setStatus("");
+    setupDebugBox();
+    return true;
+  }
   function setupDebugBox() {
+    if (document.querySelector(".debug-box")) return;
     showDevBanner();
     const box = document.createElement("div");
     box.className = "debug-box";

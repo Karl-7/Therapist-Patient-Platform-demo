@@ -1,0 +1,23 @@
+[Unit]
+Description=Safe Space weekly AI summaries (runs once at boot, then powers off if a doctor asked for it)
+Wants=network-online.target ollama.service
+After=network-online.target ollama.service
+
+[Service]
+Type=oneshot
+EnvironmentFile=/etc/safespace-worker.env
+ExecStart=/usr/bin/node /opt/safespace-worker/worker.mjs
+# "+" runs this as root. Powers off only if the worker set the flag (i.e. a doctor started the server).
+ExecStopPost=+/bin/sh -c 'if [ -f /run/safespace-worker/poweroff ]; then rm -f /run/safespace-worker/poweroff; /usr/bin/systemctl poweroff; fi'
+# Safety net: never run (and bill) for more than 2 hours.
+TimeoutStartSec=2h
+DynamicUser=yes
+RuntimeDirectory=safespace-worker
+RuntimeDirectoryPreserve=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+NoNewPrivileges=yes
+
+[Install]
+WantedBy=multi-user.target

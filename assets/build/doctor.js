@@ -1000,6 +1000,159 @@
     { id: "a16", category: "Self-Compassion", tags: ["low", "tired", "enough"], text: "Even on a difficult day, I am still worthy of tenderness and care." }
   ];
 
+  // assets/dev-sample-people.js
+  var POOLS = {
+    en: {
+      low: [
+        "Woke up at 4am again and could not get back to sleep.",
+        "Felt heavy all day, like everything took twice the effort.",
+        "Snapped at someone I care about and felt guilty afterwards.",
+        "Skipped lunch, too wound up to eat.",
+        "Cried in the car before going inside.",
+        "Kept replaying a conversation from yesterday in my head.",
+        "Cancelled plans because I did not have the energy.",
+        "My chest felt tight most of the afternoon."
+      ],
+      mid: [
+        "An ordinary day. Nothing great, nothing terrible.",
+        "Got through most of my to-do list.",
+        "Had a short walk at lunch, which helped a bit.",
+        "Still tired, but less tense than last week.",
+        "Talked to a friend on the phone for a while.",
+        "Tried the breathing exercise before bed.",
+        "A bit restless in the evening but managed to read.",
+        "Some worry in the morning that faded by the afternoon."
+      ],
+      high: [
+        "Slept through the night for the first time in ages.",
+        "Laughed a lot at dinner. Felt like myself.",
+        "Went for a long walk and noticed the trees changing colour.",
+        "Felt proud that I said no to extra work.",
+        "A calm, easy day. I want more of these.",
+        "Cooked a proper meal and enjoyed it.",
+        "Felt hopeful about the next few weeks.",
+        "Did the breathing exercise and it actually helped."
+      ],
+      titles: ["Evening", "Today", "Quick note", "Before bed"]
+    },
+    ar: {
+      low: [
+        "\u0627\u0633\u062A\u064A\u0642\u0638\u062A \u0641\u064A \u0627\u0644\u0631\u0627\u0628\u0639\u0629 \u0641\u062C\u0631\u064B\u0627 \u0648\u0644\u0645 \u0623\u0633\u062A\u0637\u0639 \u0627\u0644\u0646\u0648\u0645 \u0645\u0631\u0629 \u0623\u062E\u0631\u0649.",
+        "\u0634\u0639\u0631\u062A \u0628\u062B\u0642\u0644 \u0637\u0648\u0627\u0644 \u0627\u0644\u064A\u0648\u0645\u060C \u0648\u0643\u0644 \u0634\u064A\u0621 \u0643\u0627\u0646 \u064A\u062D\u062A\u0627\u062C \u062C\u0647\u062F\u064B\u0627 \u0645\u0636\u0627\u0639\u0641\u064B\u0627.",
+        "\u062A\u0634\u0627\u062C\u0631\u062A \u0645\u0639 \u0623\u062E\u064A \u0639\u0644\u0649 \u0634\u064A\u0621 \u0635\u063A\u064A\u0631 \u0648\u0646\u062F\u0645\u062A \u0628\u0639\u062F\u0647\u0627.",
+        "\u0644\u0645 \u0622\u0643\u0644 \u0634\u064A\u0626\u064B\u0627 \u062A\u0642\u0631\u064A\u0628\u064B\u0627 \u0627\u0644\u064A\u0648\u0645.",
+        "\u0628\u0642\u064A\u062A \u0641\u064A \u063A\u0631\u0641\u062A\u064A \u0645\u0639\u0638\u0645 \u0627\u0644\u064A\u0648\u0645 \u0648\u0644\u0645 \u0623\u0631\u062F \u0639\u0644\u0649 \u0627\u0644\u0647\u0627\u062A\u0641.",
+        "\u0623\u0641\u0643\u0627\u0631 \u0643\u062B\u064A\u0631\u0629 \u0641\u064A \u0631\u0623\u0633\u064A \u0648\u0644\u0627 \u0623\u0633\u062A\u0637\u064A\u0639 \u0625\u064A\u0642\u0627\u0641\u0647\u0627.",
+        "\u0623\u0644\u063A\u064A\u062A \u0645\u0648\u0639\u062F\u064B\u0627 \u0645\u0639 \u0635\u062F\u064A\u0642 \u0644\u0623\u0646\u0646\u064A \u0644\u0645 \u0623\u0643\u0646 \u0642\u0627\u062F\u0631\u064B\u0627.",
+        "\u0634\u0639\u0631\u062A \u0628\u0636\u064A\u0642 \u0641\u064A \u0635\u062F\u0631\u064A \u0628\u0639\u062F \u0627\u0644\u0638\u0647\u0631."
+      ],
+      mid: [
+        "\u064A\u0648\u0645 \u0639\u0627\u062F\u064A\u060C \u0644\u0627 \u0634\u064A\u0621 \u0645\u0645\u064A\u0632.",
+        "\u0623\u0646\u062C\u0632\u062A \u0645\u0639\u0638\u0645 \u0645\u0627 \u0643\u0627\u0646 \u0639\u0644\u064A \u0641\u0639\u0644\u0647.",
+        "\u0645\u0634\u064A\u062A \u0642\u0644\u064A\u0644\u064B\u0627 \u0628\u0639\u062F \u0627\u0644\u0639\u0635\u0631 \u0648\u0633\u0627\u0639\u062F\u0646\u064A \u0630\u0644\u0643.",
+        "\u0645\u0627 \u0632\u0644\u062A \u0645\u062A\u0639\u0628\u064B\u0627 \u0644\u0643\u0646 \u0623\u0642\u0644 \u062A\u0648\u062A\u0631\u064B\u0627 \u0645\u0646 \u0627\u0644\u0623\u0633\u0628\u0648\u0639 \u0627\u0644\u0645\u0627\u0636\u064A.",
+        "\u062A\u062D\u062F\u062B\u062A \u0645\u0639 \u0635\u062F\u064A\u0642 \u0639\u0644\u0649 \u0627\u0644\u0647\u0627\u062A\u0641 \u0644\u0628\u0639\u0636 \u0627\u0644\u0648\u0642\u062A.",
+        "\u062C\u0631\u0628\u062A \u062A\u0645\u0631\u064A\u0646 \u0627\u0644\u062A\u0646\u0641\u0633 \u0642\u0628\u0644 \u0627\u0644\u0646\u0648\u0645.",
+        "\u0642\u0644\u0642 \u062E\u0641\u064A\u0641 \u0641\u064A \u0627\u0644\u0635\u0628\u0627\u062D \u062B\u0645 \u0647\u062F\u0623\u062A.",
+        "\u0642\u0631\u0623\u062A \u0642\u0644\u064A\u0644\u064B\u0627 \u0641\u064A \u0627\u0644\u0645\u0633\u0627\u0621."
+      ],
+      high: [
+        "\u0646\u0645\u062A \u062C\u064A\u062F\u064B\u0627 \u0644\u0623\u0648\u0644 \u0645\u0631\u0629 \u0645\u0646\u0630 \u0645\u062F\u0629 \u0637\u0648\u064A\u0644\u0629.",
+        "\u0636\u062D\u0643\u0646\u0627 \u0643\u062B\u064A\u0631\u064B\u0627 \u0639\u0644\u0649 \u0627\u0644\u0639\u0634\u0627\u0621 \u0645\u0639 \u0627\u0644\u0639\u0627\u0626\u0644\u0629.",
+        "\u062E\u0631\u062C\u062A \u0641\u064A \u0646\u0632\u0647\u0629 \u0637\u0648\u064A\u0644\u0629 \u0648\u0634\u0639\u0631\u062A \u0628\u0627\u0644\u0631\u0627\u062D\u0629.",
+        "\u0634\u0639\u0631\u062A \u0628\u0627\u0644\u0641\u062E\u0631 \u0644\u0623\u0646\u0646\u064A \u0623\u0646\u0647\u064A\u062A \u0639\u0645\u0644\u064A \u0641\u064A \u0648\u0642\u062A\u0647.",
+        "\u064A\u0648\u0645 \u0647\u0627\u062F\u0626 \u0648\u062C\u0645\u064A\u0644.",
+        "\u0637\u0628\u062E\u062A \u0623\u0643\u0644\u0629 \u0623\u062D\u0628\u0647\u0627 \u0648\u0627\u0633\u062A\u0645\u062A\u0639\u062A \u0628\u0647\u0627.",
+        "\u0623\u0634\u0639\u0631 \u0628\u0627\u0644\u0623\u0645\u0644 \u062A\u062C\u0627\u0647 \u0627\u0644\u0623\u0633\u0627\u0628\u064A\u0639 \u0627\u0644\u0642\u0627\u062F\u0645\u0629.",
+        "\u062A\u0645\u0631\u064A\u0646 \u0627\u0644\u062A\u0646\u0641\u0633 \u0633\u0627\u0639\u062F\u0646\u064A \u0641\u0639\u0644\u064B\u0627 \u0627\u0644\u064A\u0648\u0645."
+      ],
+      titles: ["\u0645\u0633\u0627\u0621", "\u0627\u0644\u064A\u0648\u0645", "\u0645\u0644\u0627\u062D\u0638\u0629 \u0633\u0631\u064A\u0639\u0629", "\u0642\u0628\u0644 \u0627\u0644\u0646\u0648\u0645"]
+    }
+  };
+  var PEOPLE = [
+    {
+      id: "sample-sara",
+      name: "Sara Ahmed",
+      email: "sara@example.test",
+      lang: "en",
+      mood: [3, 4, 5, 6, 7],
+      topics: ["Big deadline at work this week.", "My manager asked for another report at 6pm.", "Set myself a rule: no work emails after 7pm.", "The project review went better than I feared."]
+    },
+    {
+      id: "sample-omar",
+      name: "Omar Haddad",
+      email: "omar@example.test",
+      lang: "ar",
+      mood: [6, 5, 3, 4, 6],
+      topics: ["\u0627\u0644\u0648\u0636\u0639 \u0641\u064A \u0627\u0644\u0628\u064A\u062A \u0645\u062A\u0648\u062A\u0631 \u0628\u0633\u0628\u0628 \u0627\u0644\u062E\u0644\u0627\u0641\u0627\u062A.", "\u0648\u0627\u0644\u062F\u064A \u0645\u0631\u064A\u0636 \u0648\u0623\u0646\u0627 \u0642\u0644\u0642 \u0639\u0644\u064A\u0647.", "\u0632\u0631\u062A \u0623\u0647\u0644\u064A \u0641\u064A \u0646\u0647\u0627\u064A\u0629 \u0627\u0644\u0623\u0633\u0628\u0648\u0639.", "\u062A\u0643\u0644\u0645\u062A \u0645\u0639 \u0632\u0648\u062C\u062A\u064A \u0628\u0647\u062F\u0648\u0621 \u0639\u0646 \u0627\u0644\u0645\u0634\u0643\u0644\u0629."]
+    },
+    {
+      id: "sample-lina",
+      name: "Lina Karim",
+      email: "lina@example.test",
+      lang: "en",
+      mood: [5, 3, 6, 4, 7],
+      topics: ["Had that racing-heart feeling again at the bus stop.", "Meeting new people at the course made me nervous.", "I think I am getting better at noticing the anxiety early.", "My sister came to visit and we went to the market."]
+    },
+    {
+      id: "sample-yusuf",
+      name: "Yusuf Nasser",
+      email: "yusuf@example.test",
+      lang: "ar",
+      mood: [4, 4, 5, 5, 6],
+      topics: ["\u0627\u0644\u0627\u0645\u062A\u062D\u0627\u0646\u0627\u062A \u0642\u0631\u064A\u0628\u0629 \u0648\u0623\u0646\u0627 \u0645\u062A\u0648\u062A\u0631.", "\u0630\u0627\u0643\u0631\u062A \u0641\u064A \u0627\u0644\u0645\u0643\u062A\u0628\u0629 \u0645\u0639 \u0632\u0645\u0644\u0627\u0626\u064A.", "\u0623\u062D\u0627\u0648\u0644 \u0623\u0646 \u0623\u0646\u0627\u0645 \u0641\u064A \u0648\u0642\u062A \u062B\u0627\u0628\u062A \u0643\u0644 \u0644\u064A\u0644\u0629.", "\u0642\u062F\u0645\u062A \u0639\u0631\u0636\u064B\u0627 \u0641\u064A \u0627\u0644\u062C\u0627\u0645\u0639\u0629 \u0648\u0645\u0631 \u0628\u0634\u0643\u0644 \u062C\u064A\u062F."]
+    }
+  ];
+  function rng(seed) {
+    return () => {
+      seed |= 0;
+      seed = seed + 1831565813 | 0;
+      let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+  function addSamplePeople(db, weekOf2, newId2) {
+    const rand = rng(20261026);
+    const pick = (list) => list[Math.floor(rand() * list.length)];
+    const pickSome = (list, n) => [...list].sort(() => rand() - 0.5).slice(0, n);
+    const thisMonday = /* @__PURE__ */ new Date();
+    thisMonday.setHours(0, 0, 0, 0);
+    thisMonday.setDate(thisMonday.getDate() - (thisMonday.getDay() + 6) % 7);
+    for (const person of PEOPLE) {
+      if (db.accounts.some((a) => a.id === person.id)) continue;
+      const joined = new Date(thisMonday);
+      joined.setDate(joined.getDate() - 7 * 6);
+      db.accounts.push({ id: person.id, email: person.email, password: "debug1234", name: person.name, createdAt: joined.toISOString() });
+      const pool = POOLS[person.lang];
+      person.mood.forEach((mood, i) => {
+        const monday2 = new Date(thisMonday);
+        monday2.setDate(monday2.getDate() - 7 * (5 - i));
+        const days = pickSome([0, 1, 2, 3, 4, 5, 6], 3 + Math.floor(rand() * 4)).sort((a, b) => a - b);
+        const shared = new Set(pickSome(days, Math.min(days.length, 1 + Math.floor(rand() * 3))));
+        days.forEach((day) => {
+          const d = new Date(monday2);
+          d.setDate(d.getDate() + day);
+          d.setHours(19 + Math.floor(rand() * 4), Math.floor(rand() * 60));
+          const m = mood + Math.round(rand() * 2 - 1);
+          const band = m <= 4 ? pool.low : m >= 7 ? pool.high : pool.mid;
+          const parts = [rand() < 0.6 ? pick(person.topics) : null, pick(band), rand() < 0.5 ? pick(band) : null].filter(Boolean);
+          const text = [...new Set(parts)].join(" ");
+          const created = d.toISOString();
+          db.journals.push({ id: newId2(), userId: person.id, title: rand() < 0.3 ? pick(pool.titles) : "", text, shared: shared.has(day), created, week: weekOf2(created) });
+          db.queue[`${person.id}/${weekOf2(created)}`] = Date.now();
+        });
+      });
+    }
+    if (!db.bookings.some((b) => b.userId?.startsWith("sample-"))) {
+      const at2 = (daysAgo) => new Date(Date.now() - daysAgo * 864e5).toISOString();
+      db.bookings.push(
+        { id: newId2(), userId: "sample-lina", accountEmail: "lina@example.test", name: "Lina Karim", email: "lina@example.test", session: "Online session", date: "", message: "Evenings work best for me.", status: "new", note: "", created: at2(1) },
+        { id: newId2(), userId: "sample-omar", accountEmail: "omar@example.test", name: "Omar Haddad", email: "omar@example.test", session: "Individual session", date: "", message: "", status: "contacted", note: "Offered Tuesday or Thursday.", created: at2(6) }
+      );
+    }
+  }
+
   // assets/dev-backend.js
   function readLiveFlag() {
     try {
@@ -1038,7 +1191,15 @@
     } catch {
     }
   };
-  var loadDb = () => ({ accounts: [], journals: [], bookings: [], affirmations: null, summaries: [], ...read(DB_KEY, {}) });
+  function loadDb() {
+    const db = { accounts: [], journals: [], bookings: [], affirmations: null, summaries: [], queue: {}, job: null, ...read(DB_KEY, {}) };
+    if (!db.seeded) {
+      addSamplePeople(db, weekOf, newId);
+      db.seeded = true;
+      saveDb(db);
+    }
+    return db;
+  }
   var saveDb = (db) => write(DB_KEY, db);
   var newId = () => `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
   var fail = (status, message) => Object.assign(new Error(message), { status });
@@ -1060,12 +1221,12 @@
     }
   }
   var isDoctor = (u) => u?.roles?.includes("doctor");
-  var weekOf = (iso) => {
+  function weekOf(iso) {
     const d = new Date(iso);
     d.setHours(0, 0, 0, 0);
     d.setDate(d.getDate() - (d.getDay() + 6) % 7);
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-  };
+  }
   async function devApi(path, { method = "GET", body } = {}) {
     const url = new URL(path, "http://dev.local");
     const route = url.pathname;
@@ -1096,6 +1257,7 @@
         const created = body.created || (/* @__PURE__ */ new Date()).toISOString();
         const entry2 = { id: newId(), userId: user.id, title: (body.title || "").trim(), text: body.text.trim(), shared: body.shared === true, created, week: body.week || weekOf(created) };
         db.journals.push(entry2);
+        db.queue[`${user.id}/${entry2.week}`] = Date.now();
         saveDb(db);
         return { entry: clone(entry2) };
       }
@@ -1106,11 +1268,13 @@
         if (typeof body?.title === "string") entry.title = body.title.trim();
         if (body?.text?.trim()) entry.text = body.text.trim();
         entry.updated = (/* @__PURE__ */ new Date()).toISOString();
+        if (typeof body?.text === "string" || typeof body?.title === "string") db.queue[`${user.id}/${entry.week}`] = Date.now();
         saveDb(db);
         return { entry: clone(entry) };
       }
       if (method === "DELETE") {
         db.journals = db.journals.filter((e) => e !== entry);
+        db.queue[`${user.id}/${entry.week}`] = Date.now();
         saveDb(db);
         return { ok: true };
       }
@@ -1135,37 +1299,85 @@
         return { booking: clone(b) };
       }
     }
+    if (route.startsWith("/api/doctor/summaries/")) {
+      if (!isDoctor(user)) throw fail(403, "Doctor access only.");
+      if (route.endsWith("/refresh") && Object.keys(db.queue).length && !db.job) {
+        db.job = { startedAt: Date.now() };
+        saveDb(db);
+      }
+      return debugSummaryStatus(db, body?.clientId || url.searchParams.get("clientId"));
+    }
     if (route.startsWith("/api/doctor/clients")) {
       if (!isDoctor(user)) throw fail(403, "Doctor access only.");
       const people = [DEBUG_PRIVATE, ...db.accounts.map(({ id: pid, email, name, createdAt }) => ({ id: pid, email, name, createdAt }))];
-      const clientId = decodeURIComponent(route.split("/")[4] || "");
+      const parts = route.split("/");
+      const clientId = decodeURIComponent(parts[4] || "");
       if (!clientId) return { clients: clone(people) };
+      db.notes || (db.notes = {});
+      if (parts[5] === "notes" && method === "PUT") {
+        db.notes[clientId] = { symptoms: String(body?.symptoms || ""), updated: (/* @__PURE__ */ new Date()).toISOString() };
+        saveDb(db);
+        return { notes: clone(db.notes[clientId]) };
+      }
       const client = people.find((p) => p.id === clientId);
       if (!client) throw fail(404, "Not found");
+      const waiting = new Set(Object.keys(db.queue).filter((k) => k.startsWith(clientId + "/")).map((k) => k.split("/")[1]));
       const weeks = /* @__PURE__ */ new Map();
-      const slot = (w) => weeks.get(w) || weeks.set(w, { week: w, summary: null, shared: [] }).get(w);
+      const slot = (w) => weeks.get(w) || weeks.set(w, { week: w, summary: null, shared: [], waiting: waiting.has(w) }).get(w);
       db.summaries.filter((s) => s.userId === clientId).forEach((s) => slot(s.week).summary = s);
       db.journals.filter((e) => e.userId === clientId && e.shared).forEach(({ id: eid, title, text, created, week }) => slot(week).shared.push({ id: eid, title, text, created, week }));
+      waiting.forEach((w) => slot(w));
       const list = [...weeks.values()].sort((a, b) => b.week.localeCompare(a.week));
       list.forEach((w) => w.shared.sort((a, b) => a.created.localeCompare(b.created)));
-      return clone({ client, weeks: list });
+      return clone({ client, weeks: list, notes: db.notes[clientId] || { symptoms: "" } });
     }
     throw fail(405, "Method not allowed");
   }
-  function devAddSampleSummary(userId) {
-    const db = loadDb();
-    const week = weekOf((/* @__PURE__ */ new Date()).toISOString());
-    const count = db.journals.filter((e) => e.userId === userId && e.week === week).length;
-    db.summaries = db.summaries.filter((s) => !(s.userId === userId && s.week === week));
-    db.summaries.push({
-      userId,
-      week,
-      entryCount: count,
-      summary: `(Sample text, written by debug mode, not by AI.) ${count} ${count === 1 ? "entry" : "entries"} this week.`,
-      comparison: "Your AI service will compare this week with the previous one here.",
-      generatedAt: (/* @__PURE__ */ new Date()).toISOString()
+  var DEBUG_RUN_MS = 4e3;
+  function runDebugSummaries(db) {
+    const minus = (week, n) => {
+      const d = /* @__PURE__ */ new Date(week + "T00:00:00");
+      d.setDate(d.getDate() - 7 * n);
+      return weekOf(d.toISOString());
+    };
+    Object.keys(db.queue).sort((a, b) => a.split("/")[1].localeCompare(b.split("/")[1])).forEach((key) => {
+      const [userId, week] = key.split("/");
+      const entries = db.journals.filter((e) => e.userId === userId && e.week === week);
+      db.summaries = db.summaries.filter((s) => !(s.userId === userId && s.week === week));
+      if (!entries.length) return;
+      const earlier = [1, 2, 3].map((n) => db.summaries.find((s) => s.userId === userId && s.week === minus(week, n))).filter(Boolean);
+      const text = entries.map((e) => e.text).join(" ");
+      const count = (re) => (text.match(re) || []).length;
+      const mood = Math.max(1, Math.min(10, 5 + 2 * count(/calm|good|better|happy|fine|جيد/gi) - 2 * count(/sad|angry|mad|anxious|tired|low|غاضب/gi)));
+      db.summaries.push({
+        userId,
+        week,
+        entryCount: entries.length,
+        model: "debug",
+        mood,
+        summary: `(Debug sample, not real AI.) ${entries.length} ${entries.length === 1 ? "entry" : "entries"} this week. The real summary of up to 100 words will come from Qwen on your AWS server.`,
+        comparison: earlier.length ? `Mood ${mood}/10 vs ${earlier[0].mood}/10 the week before (sample text).` : "First week with entries.",
+        changes: earlier.length ? [
+          `Mood ${mood >= earlier[0].mood ? "up" : "down"} from ${earlier[0].mood} to ${mood} (sample).`,
+          `${entries.length} entries this week vs ${Math.round(earlier.reduce((a, s) => a + s.entryCount, 0) / earlier.length)} on average before (sample).`
+        ] : [],
+        generatedAt: (/* @__PURE__ */ new Date()).toISOString()
+      });
     });
-    saveDb(db);
+    db.queue = {};
+  }
+  function debugSummaryStatus(db, clientId) {
+    if (db.job && Date.now() - db.job.startedAt > DEBUG_RUN_MS) {
+      runDebugSummaries(db);
+      db.job = null;
+      saveDb(db);
+    }
+    const keys = Object.keys(db.queue);
+    return {
+      state: db.job ? Date.now() - db.job.startedAt < DEBUG_RUN_MS / 2 ? "starting" : "running" : keys.length ? "waiting" : "idle",
+      pending: keys.length,
+      pendingForClient: clientId ? keys.filter((k) => k.startsWith(clientId + "/")).length : void 0
+    };
   }
   function showDevBanner() {
     if (!DEV || document.getElementById("sstDevBanner")) return;
@@ -1300,37 +1512,43 @@
     { id: "c1", name: "Alex Morgan", email: "alex@example.com", createdAt: at(3, 0, 10) },
     { id: "c2", name: "", email: "river@example.com", createdAt: at(1, 4, 18) }
   ];
-  var details = {
-    c1: {
-      client: clients[0],
-      weeks: [
-        {
-          week: ymd(monday(1)),
-          summary: {
-            week: ymd(monday(1)),
-            entryCount: 5,
-            summary: "Wrote on five days. Early in the week the entries focus on pressure at work and trouble sleeping. From Thursday the tone becomes calmer; they mention a walk with a friend and using a breathing exercise before bed.",
-            comparison: "Compared with last week: fewer mentions of feeling overwhelmed (2 vs 5) and sleep described as slightly better. Work stress remains the main theme.",
-            generatedAt: at(1, 6, 20)
-          },
-          shared: [
-            { id: "e5", title: "A better day", text: "Went for a long walk with Maya after work. I noticed I was breathing more slowly afterwards. I want to keep doing this.", created: at(1, 4, 21), week: ymd(monday(1)) }
-          ]
-        },
-        {
-          week: ymd(monday(2)),
-          summary: {
-            week: ymd(monday(2)),
-            entryCount: 4,
-            summary: "Four entries, mostly about deadlines, feeling behind and waking up at night. One entry mentions skipping meals on busy days.",
-            comparison: "First week with entries, so there is nothing to compare yet.",
-            generatedAt: at(2, 6, 20)
-          },
-          shared: []
-        }
-      ]
+  var ALEX_WEEKS = [
+    { ago: 6, mood: 4, summary: "Wrote about feeling behind at work and waking up at night. Mentions skipping lunch on busy days and feeling irritable with family.", comparison: "First week with entries." },
+    { ago: 5, mood: 3, summary: "A hard week. Several entries about deadlines, poor sleep and feeling alone with the workload. One entry mentions crying after a meeting.", comparison: "Lower mood than the week before; sleep described as worse." },
+    { ago: 4, mood: 5, summary: "Mixed week. Work stress continues but they describe a good weekend with a friend and trying a breathing exercise before bed.", comparison: "Somewhat better; first mention of a coping strategy." },
+    { ago: 3, mood: 6, summary: "Steadier. Talks about setting a limit on evening emails and sleeping a little better. Still worried about an upcoming review.", comparison: "Improvement continues; fewer entries about sleep." },
+    { ago: 2, mood: 5, summary: "The performance review went less well than hoped. Frustration and self-criticism, but they also note reaching out to a colleague for support.", comparison: "A small dip after the review, but less overwhelmed than four weeks ago." },
+    { ago: 1, mood: 7, summary: "Calmer week. Long walks, dinner with a friend, and using the breathing exercise most nights. Work is still busy but described as manageable.", comparison: "Best week so far; sleep and mood both described as better." }
+  ];
+  var alexWeeks = ALEX_WEEKS.map((w) => ({
+    week: ymd(monday(w.ago)),
+    waiting: false,
+    summary: {
+      week: ymd(monday(w.ago)),
+      mood: w.mood,
+      summary: w.summary,
+      comparison: w.comparison,
+      entryCount: 4 + w.ago % 3,
+      generatedAt: at(w.ago, 6, 20),
+      changes: w.ago === 1 ? [
+        "Mood highest so far (7/10), up from 5\u20136 in the previous three weeks.",
+        "Sleep described as better on most nights; no night waking mentioned.",
+        "Uses the breathing exercise regularly now, not just occasionally.",
+        "Work stress still present but no longer the main theme."
+      ] : []
     },
-    c2: { client: clients[1], weeks: [{ week: ymd(monday(0)), summary: null, shared: [{ id: "e9", title: "", text: "First time writing here. Not sure what to say yet, but it feels good to start.", created: at(0, 2, 22), week: ymd(monday(0)) }] }] }
+    shared: w.ago === 1 ? [
+      { id: "e1", title: "Monday", text: "Long walk after work. I noticed I was breathing more slowly afterwards.", created: at(1, 0, 21), week: ymd(monday(1)) },
+      { id: "e2", title: "", text: "Dinner with Maya. Laughed a lot. Felt like myself again.", created: at(1, 3, 22), week: ymd(monday(1)) },
+      { id: "e3", title: "Sunday", text: "Did the breathing exercise before bed five nights this week.", created: at(1, 6, 19), week: ymd(monday(1)) }
+    ] : w.ago === 3 ? [
+      { id: "e4", title: "", text: "Turned off email after 7pm. Slept better.", created: at(3, 2, 21), week: ymd(monday(3)) }
+    ] : []
+  })).reverse();
+  var notes = { c1: { symptoms: "Work-related stress and insomnia (since spring). No previous therapy.\nFollow up: sleep routine, boundaries at work.", updated: at(2, 1, 10) }, c2: { symptoms: "" } };
+  var details = {
+    c1: { client: clients[0], weeks: [{ week: ymd(monday(0)), waiting: true, summary: null, shared: [] }, ...alexWeeks] },
+    c2: { client: clients[1], weeks: [{ week: ymd(monday(0)), waiting: true, summary: null, shared: [{ id: "e9", title: "", text: "First time writing here. Not sure what to say yet, but it feels good to start.", created: at(0, 2, 22), week: ymd(monday(0)) }] }] }
   };
   var affirmations = null;
   var clone2 = (x) => JSON.parse(JSON.stringify(x));
@@ -1346,7 +1564,14 @@
       return { bookings: clone2(bookings) };
     }
     if (url.pathname === "/api/doctor/clients") return { clients: clone2(clients) };
-    if (url.pathname.startsWith("/api/doctor/clients/")) return clone2(details[url.pathname.split("/").pop()]);
+    if (url.pathname.startsWith("/api/doctor/clients/")) {
+      const [, , , , id, sub] = url.pathname.split("/");
+      if (sub === "notes") {
+        notes[id] = { symptoms: body?.symptoms || "", updated: (/* @__PURE__ */ new Date()).toISOString() };
+        return { notes: clone2(notes[id]) };
+      }
+      return clone2({ ...details[id], notes: notes[id] });
+    }
     if (url.pathname === "/api/affirmations") {
       if (method === "PUT") {
         affirmations = clone2(body.items);
@@ -1374,13 +1599,6 @@
   var DEMO = new URLSearchParams(location.search).has("demo");
   var call = DEMO ? demoApi : api;
   var fmtDate = (iso, opts = { dateStyle: "medium", timeStyle: "short" }) => iso ? new Date(iso).toLocaleString(void 0, opts) : "";
-  function weekLabel(monday2) {
-    const start2 = /* @__PURE__ */ new Date(monday2 + "T00:00:00");
-    const end = new Date(start2);
-    end.setDate(end.getDate() + 6);
-    const o = { month: "short", day: "numeric" };
-    return `Week of ${start2.toLocaleDateString(void 0, o)} \u2013 ${end.toLocaleDateString(void 0, { ...o, year: "numeric" })}`;
-  }
   function onError(err, target) {
     if (err?.status === 401) return location.replace(loginUrl("doctor", "expired"));
     if (err?.status === 403) return location.replace(loginUrl("doctor", "not-doctor"));
@@ -1494,62 +1712,330 @@
       list.append(b);
     });
   }
-  async function openClient(id) {
+  var detail = null;
+  var openWeek = null;
+  async function openClient(id, { keepView = false } = {}) {
+    if (activeClient !== id) openWeek = null;
     activeClient = id;
     renderClientList();
     const box = $("clientDetail");
-    box.innerHTML = '<p class="empty">Loading\u2026</p>';
+    if (!keepView) {
+      openWeek = null;
+      box.innerHTML = '<p class="empty">Loading\u2026</p>';
+    }
     try {
-      const { client, weeks } = await call(`/api/doctor/clients/${encodeURIComponent(id)}`);
+      const data = await call(`/api/doctor/clients/${encodeURIComponent(id)}`);
       if (activeClient !== id) return;
-      box.innerHTML = "";
-      box.append(
-        el("h3", { textContent: client.name || client.email, style: "margin:0;font-size:20px" }),
-        el("div", { className: "meta", textContent: `${client.email}${client.createdAt ? " \xB7 joined " + fmtDate(client.createdAt, { dateStyle: "medium" }) : ""}` })
-      );
-      if (DEV && !DEMO) {
-        const sample = el("button", { className: "btn secondary small", type: "button", textContent: "Debug: add sample AI summary for this week", style: "margin-top:10px" });
-        sample.onclick = () => {
-          devAddSampleSummary(id);
-          openClient(id);
-        };
-        box.append(sample);
-      }
-      if (!weeks.length) {
-        box.append(el("p", { className: "empty", textContent: "No weekly summaries or shared entries yet." }));
-        return;
-      }
-      weeks.forEach((w) => box.append(renderWeek(w)));
-      if (window.innerWidth < 800) box.scrollIntoView({ behavior: "smooth", block: "start" });
+      detail = data;
+      renderDetail();
+      if (!keepView && window.innerWidth < 800) box.scrollIntoView({ behavior: "smooth", block: "start" });
     } catch (err) {
       onError(err, box);
     }
+    if (!keepView) checkSummaries(id);
   }
-  function renderWeek(w) {
-    const s = w.summary;
-    const ai = s ? el(
-      "div",
-      { className: "ai" },
-      el("div", { className: "label", textContent: "AI WEEKLY SUMMARY" + (s.entryCount ? ` \xB7 ${s.entryCount} ${s.entryCount === 1 ? "entry" : "entries"}` : "") }),
-      el("p", { textContent: s.summary || "" }),
-      s.comparison ? el("div", { className: "compare" }, el("div", { className: "label", textContent: "COMPARED WITH THE PREVIOUS WEEK" }), el("p", { textContent: s.comparison })) : null,
-      s.generatedAt ? el("div", { className: "notice", textContent: "Generated " + fmtDate(s.generatedAt) }) : null
-    ) : el("div", { className: "ai missing", textContent: "The AI summary for this week has not been generated yet." });
-    const shared = w.shared.length ? w.shared.map((e) => el(
-      "div",
-      { className: "entry" },
-      el("strong", { textContent: e.title || "Reflection" }),
-      el("span", { className: "meta", textContent: " \xB7 " + fmtDate(e.created, { weekday: "long", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) }),
-      el("p", { textContent: e.text })
-    )) : [el("p", { className: "meta", textContent: "No entries shared this week.", style: "margin:12px 0 0" })];
-    return el(
-      "section",
-      { className: "week" },
-      el("h3", { textContent: weekLabel(w.week) }),
-      ai,
-      el("div", { className: "label meta", textContent: `Shared entries (${w.shared.length})`, style: "margin-top:14px;font-weight:700" }),
-      ...shared
+  var weekRange = (monday2, withYear = true) => {
+    const start2 = /* @__PURE__ */ new Date(monday2 + "T00:00:00");
+    const end = new Date(start2);
+    end.setDate(end.getDate() + 6);
+    const o = { day: "numeric", month: "short" };
+    return `${start2.toLocaleDateString(void 0, o)} \u2013 ${end.toLocaleDateString(void 0, withYear ? { ...o, year: "numeric" } : o)}`;
+  };
+  function renderDetail() {
+    const box = $("clientDetail");
+    const { client, weeks, notes: notes2 } = detail;
+    box.innerHTML = "";
+    const summarize = el("button", { className: "btn small", type: "button", id: "summarizeBtn", textContent: "Summarize recent journals" });
+    summarize.onclick = () => startSummaries(client.id);
+    const symptomsBtn = el("button", { className: "btn secondary small", type: "button", textContent: notes2?.symptoms ? "Symptoms \u2022" : "Symptoms" });
+    symptomsBtn.setAttribute("aria-expanded", "false");
+    const symptoms = renderSymptoms(client.id, notes2, symptomsBtn);
+    symptomsBtn.onclick = () => {
+      const open = symptoms.classList.toggle("hidden") === false;
+      symptomsBtn.setAttribute("aria-expanded", String(open));
+      if (open) symptoms.querySelector("textarea").focus();
+    };
+    box.append(
+      el(
+        "div",
+        { className: "client-head" },
+        el(
+          "div",
+          {},
+          el("h3", { textContent: client.name || client.email }),
+          el("div", { className: "meta", textContent: `${client.email}${client.createdAt ? " \xB7 joined " + fmtDate(client.createdAt, { dateStyle: "medium" }) : ""}` })
+        ),
+        el("div", { className: "client-actions" }, summarize, symptomsBtn)
+      ),
+      symptoms,
+      summaryBar
     );
+    applySummaryState();
+    if (openWeek) {
+      const w = weeks.find((x) => x.week === openWeek);
+      if (w) return box.append(renderWeekPage(w));
+      openWeek = null;
+    }
+    const summarized = weeks.filter((w) => w.summary);
+    if (!weeks.length) return box.append(el("p", { className: "empty", textContent: "No journal entries yet." }));
+    const latest = summarized[0];
+    const changes = latest?.summary?.changes || [];
+    box.append(el(
+      "section",
+      { className: "panel-box changes" },
+      el("h4", { textContent: "What changed recently" }),
+      el("p", { className: "meta", textContent: latest ? `Week of ${weekRange(latest.week)} compared with the three weeks before` : "Not summarized yet" }),
+      changes.length ? el("ul", {}, ...changes.map((c) => el("li", { textContent: c }))) : el("p", { className: "meta", textContent: latest ? "Shown once at least two weeks are summarized." : "Press \u201CSummarize recent journals\u201D to create the first summaries." })
+    ));
+    box.append(renderMoodChart(summarized.filter((w) => Number.isFinite(w.summary.mood)).map((w) => ({ week: w.week, mood: w.summary.mood })).reverse()));
+    const list = el("div", { className: "week-list" });
+    weeks.forEach((w) => {
+      const s = w.summary;
+      const card = el(
+        "button",
+        { type: "button", className: "week-card" },
+        el("span", { className: "week-date", textContent: `Week of ${weekRange(w.week)}` }),
+        s ? el("span", { className: "week-summary", textContent: s.summary }) : el("span", { className: "week-summary muted", textContent: "Not summarized yet." }),
+        s?.comparison ? el("span", { className: "week-compare", textContent: "Compared with the week before: " + s.comparison }) : null,
+        el("span", { className: "week-foot", textContent: `${w.shared.length} shared ${w.shared.length === 1 ? "entry" : "entries"}${s && w.waiting ? " \xB7 new writing since this summary" : ""} \u203A` })
+      );
+      card.onclick = () => {
+        openWeek = w.week;
+        renderDetail();
+        $("clientDetail").scrollIntoView({ behavior: "smooth", block: "start" });
+      };
+      list.append(card);
+    });
+    box.append(list);
+  }
+  function renderSymptoms(clientId, notes2, button) {
+    const area = el("textarea", { className: "field", value: notes2?.symptoms || "", placeholder: "Presenting symptoms, background, things to follow up\u2026", ariaLabel: "Symptoms and notes" });
+    const saved = el("span", { className: "meta", textContent: notes2?.updated ? "Saved " + fmtDate(notes2.updated) : "Only doctors can see this." });
+    let timer = null;
+    const save = async () => {
+      clearTimeout(timer);
+      saved.textContent = "Saving\u2026";
+      try {
+        const res = await call(`/api/doctor/clients/${encodeURIComponent(clientId)}/notes`, { method: "PUT", body: { symptoms: area.value } });
+        detail.notes = res.notes;
+        saved.textContent = "Saved " + fmtDate(res.notes.updated);
+        button.textContent = area.value.trim() ? "Symptoms \u2022" : "Symptoms";
+      } catch (err) {
+        saved.textContent = "Not saved: " + err.message;
+        onError(err);
+      }
+    };
+    area.oninput = () => {
+      saved.textContent = "Editing\u2026";
+      clearTimeout(timer);
+      timer = setTimeout(save, 900);
+    };
+    area.onblur = () => timer && save();
+    return el("div", { className: "symptoms hidden" }, el("label", { className: "symptoms-label", textContent: "Symptoms" }), area, saved);
+  }
+  function renderWeekPage(w) {
+    const back = el("button", { type: "button", className: "linkish", textContent: "\u2190 All weeks" });
+    back.onclick = () => {
+      openWeek = null;
+      renderDetail();
+    };
+    const s = w.summary;
+    const page = el(
+      "section",
+      { className: "week-page" },
+      back,
+      el("h4", { className: "week-date big", textContent: `Week of ${weekRange(w.week)}` }),
+      s ? el(
+        "div",
+        { className: "ai" },
+        el("div", { className: "label", textContent: `AI WEEKLY SUMMARY${Number.isFinite(s.mood) ? ` \xB7 MOOD ${s.mood}/10` : ""}` }),
+        el("p", { textContent: s.summary }),
+        s.comparison ? el("div", { className: "compare" }, el("div", { className: "label", textContent: "COMPARED WITH THE WEEK BEFORE" }), el("p", { textContent: s.comparison })) : null
+      ) : el("div", { className: "ai missing", textContent: "This week is not summarized yet." }),
+      el("h4", { className: "shared-title", textContent: "Entries shared with you" })
+    );
+    if (!w.shared.length) {
+      page.append(el("p", { className: "meta", textContent: "No entries were shared this week." }));
+      return page;
+    }
+    const byDay = /* @__PURE__ */ new Map();
+    w.shared.forEach((e) => {
+      const d = new Date(e.created);
+      const key = d.toDateString();
+      if (!byDay.has(key)) byDay.set(key, { date: d, items: [] });
+      byDay.get(key).items.push(e);
+    });
+    [...byDay.values()].sort((a, b) => a.date - b.date).forEach(({ date, items }) => {
+      page.append(el(
+        "div",
+        { className: "day" },
+        el("div", { className: "day-name", textContent: date.toLocaleDateString(void 0, { weekday: "long", day: "numeric", month: "short" }) }),
+        ...items.map((e) => el("div", { className: "day-entry", dir: "auto" }, e.title ? el("div", { className: "day-entry-title", textContent: e.title, dir: "auto" }) : null, el("p", { textContent: e.text, dir: "auto" })))
+      ));
+    });
+    return page;
+  }
+  function renderMoodChart(points) {
+    const wrap = el(
+      "section",
+      { className: "panel-box mood" },
+      el("h4", { textContent: "Mood by week" }),
+      el("p", { className: "meta", textContent: "AI estimate from everything the person wrote that week \xB7 1 = very low, 10 = very good" })
+    );
+    if (!points.length) {
+      wrap.append(el("p", { className: "meta", textContent: "No summarized weeks yet." }));
+      return wrap;
+    }
+    const plot = el("div", { className: "mood-plot" });
+    const tip = el("div", { className: "mood-tip hidden", role: "status" });
+    plot.append(tip);
+    const table = el(
+      "table",
+      { className: "sr-only" },
+      el("caption", { textContent: "Mood by week" }),
+      el("tr", {}, el("th", { textContent: "Week" }), el("th", { textContent: "Mood (1\u201310)" })),
+      ...points.map((p) => el("tr", {}, el("td", { textContent: weekRange(p.week) }), el("td", { textContent: String(p.mood) })))
+    );
+    wrap.append(plot, table);
+    const NS = "http://www.w3.org/2000/svg";
+    const svgEl = (tag, attrs = {}) => {
+      const n = document.createElementNS(NS, tag);
+      Object.entries(attrs).forEach(([k, v]) => n.setAttribute(k, v));
+      return n;
+    };
+    const draw = () => {
+      const W = Math.max(260, plot.clientWidth || 600);
+      const H = 190;
+      const pad = { l: 30, r: 16, t: 12, b: 28 };
+      const x = (i) => pad.l + (points.length === 1 ? (W - pad.l - pad.r) / 2 : i * (W - pad.l - pad.r) / (points.length - 1));
+      const y = (v) => pad.t + (10 - v) * (H - pad.t - pad.b) / 9;
+      plot.querySelector("svg")?.remove();
+      const svg = svgEl("svg", { width: W, height: H, viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": `Mood by week, ${points.length} weeks, latest ${points[points.length - 1].mood} out of 10` });
+      [1, 4, 7, 10].forEach((v) => {
+        svg.append(svgEl("line", { x1: pad.l, x2: W - pad.r, y1: y(v), y2: y(v), class: "grid" }));
+        const t = svgEl("text", { x: pad.l - 8, y: y(v) + 4, class: "axis", "text-anchor": "end" });
+        t.textContent = v;
+        svg.append(t);
+      });
+      const last = points[points.length - 1];
+      const xl = svgEl("text", { x: x(points.length - 1), y: H - 8, class: "axis", "text-anchor": points.length === 1 ? "middle" : "end" });
+      xl.textContent = (/* @__PURE__ */ new Date(last.week + "T00:00:00")).toLocaleDateString(void 0, { day: "numeric", month: "short", year: "numeric" });
+      svg.append(xl);
+      if (points.length > 1) svg.append(svgEl("polyline", { points: points.map((p, i) => `${x(i)},${y(p.mood)}`).join(" "), class: "line" }));
+      const cross = svgEl("line", { y1: pad.t, y2: H - pad.b, class: "cross", visibility: "hidden" });
+      svg.append(cross);
+      const dots = points.map((p, i) => {
+        const c = svgEl("circle", { cx: x(i), cy: y(p.mood), r: 4.5, class: "dot" });
+        svg.append(c);
+        return c;
+      });
+      const hit = svgEl("rect", { x: pad.l - 10, y: 0, width: W - pad.l - pad.r + 20, height: H, fill: "transparent" });
+      const show = (evt) => {
+        const r = svg.getBoundingClientRect();
+        const px = evt.clientX - r.left;
+        let i = 0;
+        points.forEach((_, k) => {
+          if (Math.abs(x(k) - px) < Math.abs(x(i) - px)) i = k;
+        });
+        cross.setAttribute("x1", x(i));
+        cross.setAttribute("x2", x(i));
+        cross.setAttribute("visibility", "visible");
+        dots.forEach((d, k) => d.setAttribute("r", k === i ? 6 : 4.5));
+        tip.textContent = `Week of ${weekRange(points[i].week, false)} \xB7 mood ${points[i].mood}/10`;
+        tip.classList.remove("hidden");
+        tip.style.left = Math.min(Math.max(x(i) - tip.offsetWidth / 2, 0), W - tip.offsetWidth) + "px";
+        tip.style.top = Math.max(y(points[i].mood) - 40, 0) + "px";
+      };
+      const hide = () => {
+        cross.setAttribute("visibility", "hidden");
+        dots.forEach((d) => d.setAttribute("r", 4.5));
+        tip.classList.add("hidden");
+      };
+      hit.addEventListener("pointermove", show);
+      hit.addEventListener("pointerdown", show);
+      hit.addEventListener("pointerleave", hide);
+      svg.append(hit);
+      plot.prepend(svg);
+    };
+    setTimeout(draw, 0);
+    if ("ResizeObserver" in window) {
+      let lastW = 0;
+      new ResizeObserver(() => {
+        if (plot.clientWidth && plot.clientWidth !== lastW) {
+          lastW = plot.clientWidth;
+          draw();
+        }
+      }).observe(plot);
+    }
+    return wrap;
+  }
+  var summaryBar = el("div", { className: "ai-status hidden", role: "status", ariaLive: "polite" });
+  var pollTimer = null;
+  var lastPendingForClient = null;
+  var summaryState = null;
+  async function checkSummaries(clientId) {
+    if (DEMO) return;
+    clearTimeout(pollTimer);
+    lastPendingForClient = null;
+    try {
+      showSummaryStatus(await call(`/api/doctor/summaries/status?clientId=${encodeURIComponent(clientId)}`), clientId);
+    } catch (err) {
+      onError(err);
+    }
+  }
+  async function startSummaries(clientId) {
+    if (DEMO) {
+      summaryState = { state: "demo" };
+      return applySummaryState();
+    }
+    clearTimeout(pollTimer);
+    const btn = $("summarizeBtn");
+    if (btn) btn.disabled = true;
+    try {
+      showSummaryStatus(await call("/api/doctor/summaries/refresh", { method: "POST", body: { clientId } }), clientId, true);
+    } catch (err) {
+      if (btn) btn.disabled = false;
+      onError(err);
+    }
+  }
+  function showSummaryStatus(s, clientId, pressed = false) {
+    if (clientId !== activeClient) return;
+    summaryState = { ...s, pressed };
+    applySummaryState();
+    const forThem = s.pendingForClient || 0;
+    if (lastPendingForClient !== null && forThem < lastPendingForClient) openClient(clientId, { keepView: true });
+    lastPendingForClient = forThem;
+    if (s.state === "starting" || s.state === "running") pollTimer = setTimeout(() => pollSummaries(clientId), DEV ? 1500 : 15e3);
+  }
+  async function pollSummaries(clientId) {
+    try {
+      showSummaryStatus(await call(`/api/doctor/summaries/status?clientId=${encodeURIComponent(clientId)}`), clientId);
+    } catch (err) {
+      onError(err);
+    }
+  }
+  function applySummaryState() {
+    const s = summaryState;
+    const btn = $("summarizeBtn");
+    if (!s) return summaryBar.classList.add("hidden");
+    const forThem = s.pendingForClient || 0;
+    const weeks = (n) => `${n} week${n === 1 ? "" : "s"}`;
+    const busy = s.state === "starting" || s.state === "running";
+    const text = {
+      demo: "Sample preview: summarizing is not available here.",
+      "not-configured": "The AI server is not connected yet, so summaries cannot be made.",
+      idle: s.pressed ? "Everything is already summarized." : "All weeks are summarized.",
+      waiting: forThem ? `${weeks(forThem)} not summarized yet. Press \u201CSummarize recent journals\u201D.` : `This person is up to date. ${weeks(s.pending)} for other people not summarized yet.`,
+      starting: "Starting the AI server. This usually takes 2\u20134 minutes; the page updates by itself.",
+      running: `Writing summaries\u2026 ${forThem ? `${weeks(forThem)} left for this person, ` : "this person is done, "}${weeks(s.pending)} left in total.`,
+      error: `The last run had a problem: ${s.lastError || "unknown error"}`
+    }[s.state] || "";
+    summaryBar.textContent = text;
+    summaryBar.className = `ai-status ${s.state}` + (text ? "" : " hidden");
+    if (btn) {
+      btn.disabled = busy || s.state === "not-configured" || s.state === "demo";
+      btn.textContent = busy ? "Summarizing\u2026" : "Summarize recent journals";
+    }
   }
   var affirmations2 = [];
   var dirty = false;

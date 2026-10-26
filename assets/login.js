@@ -82,6 +82,7 @@ $('forgotBtn').onclick = () => { mode = mode === 'forgot' ? 'signin' : 'forgot';
 
 $('authForm').addEventListener('submit', async (e) => {
   e.preventDefault()
+  if (debugUnlockClick()) return
   const email = $('email').value.trim()
   const password = $('password').value
   if (mode !== 'invite' && mode !== 'recovery' && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return setStatus('Please enter a valid email.', 'error')
@@ -119,7 +120,7 @@ $('authForm').addEventListener('submit', async (e) => {
 
 async function start() {
   render()
-  if (DEV) setupDebugBox()
+  if (DEV && sessionUnlocked()) setupDebugBox()
   if (reasons[params.get('reason')]) setStatus(reasons[params.get('reason')], params.get('reason') === 'signed-out' ? 'ok' : 'error')
 
   // Finish links from Identity emails (invite, confirm, password reset).
@@ -157,7 +158,34 @@ async function start() {
 start()
 
 // Debug mode only (local / GitHub Pages): one account that signs in as Private or Doctor.
+// The box is hidden until someone types the unlock word in the password field and presses
+// "Sign in" 5 times in a row. This only tidies the screen; it is not a security feature
+// (debug mode never runs on the Netlify site, and its data never leaves the browser).
+const UNLOCK_WORD = 'steffiroshan'
+const UNLOCK_CLICKS = 5
+let unlockClicks = 0
+const sessionUnlocked = () => { try { return sessionStorage.getItem('sst_debug_unlocked') === '1' } catch { return false } }
+
+function debugUnlockClick() {
+  if (!DEV || $('password').value !== UNLOCK_WORD) {
+    unlockClicks = 0
+    return false
+  }
+  unlockClicks++
+  if (unlockClicks < UNLOCK_CLICKS) {
+    setStatus('Email or password is incorrect.', 'error')
+    return true
+  }
+  unlockClicks = 0
+  try { sessionStorage.setItem('sst_debug_unlocked', '1') } catch {}
+  $('password').value = ''
+  setStatus('')
+  setupDebugBox()
+  return true
+}
+
 function setupDebugBox() {
+  if (document.querySelector('.debug-box')) return
   showDevBanner()
   const box = document.createElement('div')
   box.className = 'debug-box'

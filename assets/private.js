@@ -4,6 +4,7 @@
 // The page's own script runs first, so this file replaces its handlers.
 import { api, currentUser, forwardAuthLinks, isDoctor, loginUrl, signOut } from './auth.js'
 import { showDevBanner } from './dev-backend.js'
+import { applyDeletions, mergeDeletions, ruleDeletions, tokenize } from '../netlify/lib/tidy.mjs'
 
 const $ = (id) => document.getElementById(id)
 const el = (tag, props = {}, ...kids) => {
@@ -25,7 +26,10 @@ function addAccountMenu(user) {
   const nav = $('navlinks')
   if (!nav) return
   const style = document.createElement('style')
-  style.textContent = '.account{display:flex;align-items:center;gap:8px;padding-left:8px;border-left:1px solid var(--line,#e8dfed)}.account span{font-size:12px;color:#8a7fa0;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}@media(max-width:650px){.account{border-left:0;padding:8px 5px}}'
+  style.textContent = '.account{display:flex;align-items:center;gap:8px;padding-left:8px;border-left:1px solid var(--line,#e8dfed)}.account span{font-size:12px;color:#8a7fa0;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}@media(max-width:650px){.account{border-left:0;padding:8px 5px}}' +
+    // Long words and links wrap instead of pushing the page wider than the phone.
+    '.section,.about-page,footer{overflow-wrap:break-word}.grid2>*,.two-fields>*,.about-grid>*{min-width:0}' +
+    '.result,.saved-item,.tidy-text,.affirmation-text,#journalEntries,#bookingStatus,#journalStatus{overflow-wrap:anywhere}'
   document.head.append(style)
   const out = el('button', { className: 'btn secondary small', type: 'button', textContent: 'Sign out' })
   out.onclick = async () => { await signOut(); location.replace(loginUrl('private', 'signed-out')) }
@@ -53,10 +57,11 @@ function setupJournal() {
   const sub = $('journalEntries')?.previousElementSibling
   if (sub?.classList.contains('sub')) sub.textContent = 'Your saved reflections, on every device you sign in to.'
 
-  $('saveJournal').onclick = async () => {
-    const text = $('journalText').value.trim()
-    if (!text) return status('Write a little note before saving.')
-    $('saveJournal').disabled = true
+  setupDictationTip()
+  const review = setupReview()
+
+  async function saveEntry(text, button) {
+    button.disabled = true
     status('Saving…')
     try {
       const { entry } = await api('/api/journals', { method: 'POST', body: { title: $('journalTitle').value.trim(), text, shared: share.checked, week: localWeek(), created: new Date().toISOString() } })
@@ -64,18 +69,140 @@ function setupJournal() {
       $('journalTitle').value = ''
       $('journalText').value = ''
       share.checked = false
+      review.close()
       status(entry.shared ? 'Saved and shared with your therapist.' : 'Saved to your account.')
       renderJournalList()
     } catch (err) {
       status(handleApiError(err, 'Could not save. Please try again.'))
     } finally {
-      $('saveJournal').disabled = false
+      button.disabled = false
     }
   }
+
+  // Step 1: tidy up and show what would be removed.
+  $('saveJournal').textContent = 'Tidy up & review'
+  // Runs in the browser with simple rules; nothing is sent anywhere until "Record entry".
+  $('saveJournal').onclick = () => {
+    const text = $('journalText').value.trim()
+    if (!text) return status('Write or dictate a little note first.')
+    status('')
+    const tokens = tokenize(text)
+    review.open({ tokens, deletions: mergeDeletions(ruleDeletions(tokens), tokens.length) })
+  }
+
+  // Skip tidying.
+  const asIs = el('button', { className: 'btn secondary', type: 'button', textContent: 'Save as written' })
+  asIs.onclick = () => {
+    const text = $('journalText').value.trim()
+    if (!text) return status('Write a little note before saving.')
+    saveEntry(text, asIs)
+  }
+  $('saveJournal').after(asIs)
+
+  // Step 2: "Record entry" saves the reviewed text.
+  review.onRecord = (text, button) => saveEntry(text, button)
 
   // The page script calls renderJournals(); point it at the account copy.
   window.renderJournals = renderJournalList
   loadJournals()
+}
+
+// Tells people they can dictate with their phone keyboard.
+function setupDictationTip() {
+  const tip = el('div', { className: 'dictate-tip' },
+    el('span', { className: 'dictate-icon', textContent: '🎙️', ariaHidden: 'true' }),
+    el('span', {},
+      el('strong', { textContent: 'Prefer to talk? ' }),
+      'Tap the microphone on your phone keyboard and just speak, in English or Arabic. Don’t worry about “um”s or changing your mind (“wait, delete that”). Press “Tidy up & review”: we strike through the bits that look like fillers or take-backs, and you decide what stays. You can also edit the text yourself before saving.'))
+  const label = document.querySelector('label[for="journalText"]')
+  ;(label || $('journalText')).before(tip)
+  $('journalText').setAttribute('dir', 'auto')
+  $('journalTitle')?.setAttribute('dir', 'auto')
+}
+
+// Review panel: shows the text with suggested deletions struck through. Tap one to keep it.
+function setupReview() {
+  const style = document.createElement('style')
+  style.textContent = `
+.dictate-tip{display:flex;gap:10px;align-items:flex-start;background:#f6f0fc;border:1px solid #e6dcf2;border-radius:14px;padding:11px 13px;margin:4px 0 14px;font-size:13.5px;color:#5b5677;line-height:1.5}
+.dictate-icon{font-size:18px;line-height:1.2}
+.tidy-review{border:1px solid #d9cde8;background:#fff;border-radius:16px;padding:16px;margin-top:14px}
+.tidy-review h3{margin:0 0 4px;font-size:17px}
+.tidy-text{font-size:16px;line-height:1.8;white-space:pre-wrap;border:1px solid var(--line,#e8dfed);border-radius:12px;padding:12px 14px;margin:10px 0;background:#fffdfd;max-height:55vh;overflow:auto}
+.tidy-del{all:unset;cursor:pointer;color:#c4548c;background:#fde8f2;text-decoration:line-through;text-decoration-color:#ec7fb2;text-decoration-thickness:2px;border-radius:5px;padding:0 2px}
+.tidy-del.kept{color:inherit;background:#eef5ec;text-decoration:none;outline:1px dashed #9cbf98}
+.tidy-del:focus-visible{outline:2px solid #7866a8}
+.tidy-legend{font-size:13px;color:#77718a;margin:0}
+.tidy-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}`
+  document.head.append(style)
+
+  const panel = el('div', { className: 'tidy-review hidden', ariaLive: 'polite' })
+  ;($('journalStatus') || $('saveJournal').parentElement).after(panel)
+  const ctl = { onRecord: null }
+  let tokens = []
+  let deletions = []
+
+  const finalText = () => applyDeletions(tokens, deletions.filter((d) => !d.kept))
+
+  ctl.close = () => {
+    panel.classList.add('hidden')
+    panel.innerHTML = ''
+    $('journalText').readOnly = false
+  }
+
+  ctl.open = (result) => {
+    tokens = result.tokens
+    deletions = result.deletions.map((d) => ({ ...d, kept: false }))
+    panel.innerHTML = ''
+
+    const text = el('div', { className: 'tidy-text', dir: 'auto' })
+    let i = 0
+    deletions.forEach((d) => {
+      if (d.from > i) text.append(tokens.slice(i, d.from).join(''))
+      const b = el('button', { type: 'button', className: 'tidy-del', title: (d.reason || 'Suggested removal') + ' · tap to keep', textContent: tokens.slice(d.from, d.to + 1).join('') })
+      b.setAttribute('aria-pressed', 'false')
+      b.setAttribute('aria-label', `Will be removed: ${b.textContent.trim()}. Tap to keep.`)
+      b.onclick = () => {
+        d.kept = !d.kept
+        b.classList.toggle('kept', d.kept)
+        b.setAttribute('aria-pressed', String(d.kept))
+        b.setAttribute('aria-label', `${d.kept ? 'Kept' : 'Will be removed'}: ${b.textContent.trim()}. Tap to ${d.kept ? 'remove' : 'keep'}.`)
+      }
+      text.append(b)
+      i = d.to + 1
+    })
+    if (i < tokens.length) text.append(tokens.slice(i).join(''))
+
+    const legend = deletions.length
+      ? 'Struck-through parts will be removed. Tap any of them to keep it, or choose “Edit text” to change anything yourself.'
+      : 'Nothing to remove. You can save it, or choose “Edit text” to change anything yourself.'
+
+    const record = el('button', { className: 'btn', type: 'button', textContent: 'Record entry' })
+    record.onclick = () => {
+      const out = finalText()
+      if (!out) return ($('journalStatus').textContent = 'Everything was removed. Tap a struck-through part to keep it, or go back to editing.')
+      ctl.onRecord?.(out, record)
+    }
+    // Puts the tidied text (with the person's choices) back in the box to edit by hand.
+    const edit = el('button', { className: 'btn secondary', type: 'button', textContent: 'Edit text' })
+    edit.onclick = () => {
+      const out = finalText()
+      ctl.close()
+      $('journalText').value = out
+      $('journalText').focus()
+      $('journalStatus').textContent = 'Edit as you like, then press “Tidy up & review” again or “Save as written”.'
+    }
+    const back = el('button', { className: 'btn secondary', type: 'button', textContent: 'Cancel' })
+    back.onclick = () => ctl.close()
+
+    panel.append(el('h3', { textContent: 'Review before saving' }), el('p', { className: 'tidy-legend', textContent: legend }), text, el('div', { className: 'tidy-actions' }, record, edit, back))
+    panel.classList.remove('hidden')
+    $('journalText').readOnly = true
+    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+    record.focus({ preventScroll: true })
+  }
+
+  return ctl
 }
 
 async function loadJournals() {

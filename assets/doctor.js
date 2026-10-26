@@ -1,7 +1,7 @@
 // Doctor page: booking enquiries, clients (weekly AI summary + shared entries), affirmation library.
 // Open doctor.html?demo=1 to preview the layout with sample data (no sign-in, nothing saved).
 import { DEV, api, currentUser, isDoctor, loginUrl, signOut } from './auth.js'
-import { devAddSampleSummary, showDevBanner } from './dev-backend.js'
+import { showDevBanner } from './dev-backend.js'
 import { demoApi } from './doctor-demo.js'
 
 const $ = (id) => document.getElementById(id)
@@ -134,56 +134,331 @@ function renderClientList() {
   })
 }
 
-async function openClient(id) {
+// One person's page: header (name, Summarize, Symptoms), changes, mood chart, week boxes, week page.
+// Summaries are only made when the doctor presses "Summarize recent journals".
+let detail = null // { client, weeks, notes }
+let openWeek = null // week shown on its own page, or null for the overview
+
+async function openClient(id, { keepView = false } = {}) {
+  if (activeClient !== id) openWeek = null
   activeClient = id
   renderClientList()
   const box = $('clientDetail')
-  box.innerHTML = '<p class="empty">Loading…</p>'
+  if (!keepView) {
+    openWeek = null
+    box.innerHTML = '<p class="empty">Loading…</p>'
+  }
   try {
-    const { client, weeks } = await call(`/api/doctor/clients/${encodeURIComponent(id)}`)
+    const data = await call(`/api/doctor/clients/${encodeURIComponent(id)}`)
     if (activeClient !== id) return
-    box.innerHTML = ''
-    box.append(
-      el('h3', { textContent: client.name || client.email, style: 'margin:0;font-size:20px' }),
-      el('div', { className: 'meta', textContent: `${client.email}${client.createdAt ? ' · joined ' + fmtDate(client.createdAt, { dateStyle: 'medium' }) : ''}` }))
-    if (DEV && !DEMO) {
-      const sample = el('button', { className: 'btn secondary small', type: 'button', textContent: 'Debug: add sample AI summary for this week', style: 'margin-top:10px' })
-      sample.onclick = () => { devAddSampleSummary(id); openClient(id) }
-      box.append(sample)
-    }
-    if (!weeks.length) {
-      box.append(el('p', { className: 'empty', textContent: 'No weekly summaries or shared entries yet.' }))
-      return
-    }
-    weeks.forEach((w) => box.append(renderWeek(w)))
-    if (window.innerWidth < 800) box.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    detail = data
+    renderDetail()
+    if (!keepView && window.innerWidth < 800) box.scrollIntoView({ behavior: 'smooth', block: 'start' })
   } catch (err) {
     onError(err, box)
   }
+  if (!keepView) checkSummaries(id)
 }
 
-function renderWeek(w) {
+const weekRange = (monday, withYear = true) => {
+  const start = new Date(monday + 'T00:00:00')
+  const end = new Date(start)
+  end.setDate(end.getDate() + 6)
+  const o = { day: 'numeric', month: 'short' }
+  return `${start.toLocaleDateString(undefined, o)} – ${end.toLocaleDateString(undefined, withYear ? { ...o, year: 'numeric' } : o)}`
+}
+
+function renderDetail() {
+  const box = $('clientDetail')
+  const { client, weeks, notes } = detail
+  box.innerHTML = ''
+
+  // Header: name, summarize, symptoms.
+  const summarize = el('button', { className: 'btn small', type: 'button', id: 'summarizeBtn', textContent: 'Summarize recent journals' })
+  summarize.onclick = () => startSummaries(client.id)
+  const symptomsBtn = el('button', { className: 'btn secondary small', type: 'button', textContent: notes?.symptoms ? 'Symptoms •' : 'Symptoms' })
+  symptomsBtn.setAttribute('aria-expanded', 'false')
+  const symptoms = renderSymptoms(client.id, notes, symptomsBtn)
+  symptomsBtn.onclick = () => {
+    const open = symptoms.classList.toggle('hidden') === false
+    symptomsBtn.setAttribute('aria-expanded', String(open))
+    if (open) symptoms.querySelector('textarea').focus()
+  }
+  box.append(
+    el('div', { className: 'client-head' },
+      el('div', {},
+        el('h3', { textContent: client.name || client.email }),
+        el('div', { className: 'meta', textContent: `${client.email}${client.createdAt ? ' · joined ' + fmtDate(client.createdAt, { dateStyle: 'medium' }) : ''}` })),
+      el('div', { className: 'client-actions' }, summarize, symptomsBtn)),
+    symptoms,
+    summaryBar)
+  applySummaryState()
+
+  if (openWeek) {
+    const w = weeks.find((x) => x.week === openWeek)
+    if (w) return box.append(renderWeekPage(w))
+    openWeek = null
+  }
+
+  const summarized = weeks.filter((w) => w.summary)
+  if (!weeks.length) return box.append(el('p', { className: 'empty', textContent: 'No journal entries yet.' }))
+
+  // What changed: latest summarised week vs the three before it.
+  const latest = summarized[0]
+  const changes = latest?.summary?.changes || []
+  box.append(el('section', { className: 'panel-box changes' },
+    el('h4', { textContent: 'What changed recently' }),
+    el('p', { className: 'meta', textContent: latest ? `Week of ${weekRange(latest.week)} compared with the three weeks before` : 'Not summarized yet' }),
+    changes.length
+      ? el('ul', {}, ...changes.map((c) => el('li', { textContent: c })))
+      : el('p', { className: 'meta', textContent: latest ? 'Shown once at least two weeks are summarized.' : 'Press “Summarize recent journals” to create the first summaries.' })))
+
+  // Mood over all summarised weeks.
+  box.append(renderMoodChart(summarized.filter((w) => Number.isFinite(w.summary.mood)).map((w) => ({ week: w.week, mood: w.summary.mood })).reverse()))
+
+  // One box per week, newest first. Tap to see that week's shared entries.
+  const list = el('div', { className: 'week-list' })
+  weeks.forEach((w) => {
+    const s = w.summary
+    const card = el('button', { type: 'button', className: 'week-card' },
+      el('span', { className: 'week-date', textContent: `Week of ${weekRange(w.week)}` }),
+      s ? el('span', { className: 'week-summary', textContent: s.summary }) : el('span', { className: 'week-summary muted', textContent: 'Not summarized yet.' }),
+      s?.comparison ? el('span', { className: 'week-compare', textContent: 'Compared with the week before: ' + s.comparison }) : null,
+      el('span', { className: 'week-foot', textContent: `${w.shared.length} shared ${w.shared.length === 1 ? 'entry' : 'entries'}${s && w.waiting ? ' · new writing since this summary' : ''} ›` }))
+    card.onclick = () => {
+      openWeek = w.week
+      renderDetail()
+      $('clientDetail').scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+    list.append(card)
+  })
+  box.append(list)
+}
+
+// Doctor's own notes. Saved automatically, visible only to doctors.
+function renderSymptoms(clientId, notes, button) {
+  const area = el('textarea', { className: 'field', value: notes?.symptoms || '', placeholder: 'Presenting symptoms, background, things to follow up…', ariaLabel: 'Symptoms and notes' })
+  const saved = el('span', { className: 'meta', textContent: notes?.updated ? 'Saved ' + fmtDate(notes.updated) : 'Only doctors can see this.' })
+  let timer = null
+  const save = async () => {
+    clearTimeout(timer)
+    saved.textContent = 'Saving…'
+    try {
+      const res = await call(`/api/doctor/clients/${encodeURIComponent(clientId)}/notes`, { method: 'PUT', body: { symptoms: area.value } })
+      detail.notes = res.notes
+      saved.textContent = 'Saved ' + fmtDate(res.notes.updated)
+      button.textContent = area.value.trim() ? 'Symptoms •' : 'Symptoms'
+    } catch (err) {
+      saved.textContent = 'Not saved: ' + err.message
+      onError(err)
+    }
+  }
+  area.oninput = () => { saved.textContent = 'Editing…'; clearTimeout(timer); timer = setTimeout(save, 900) }
+  area.onblur = () => timer && save()
+  return el('div', { className: 'symptoms hidden' }, el('label', { className: 'symptoms-label', textContent: 'Symptoms' }), area, saved)
+}
+
+// Week page: summary, then every entry the person shared, Monday to Sunday.
+function renderWeekPage(w) {
+  const back = el('button', { type: 'button', className: 'linkish', textContent: '← All weeks' })
+  back.onclick = () => { openWeek = null; renderDetail() }
   const s = w.summary
-  const ai = s
-    ? el('div', { className: 'ai' },
-        el('div', { className: 'label', textContent: 'AI WEEKLY SUMMARY' + (s.entryCount ? ` · ${s.entryCount} ${s.entryCount === 1 ? 'entry' : 'entries'}` : '') }),
-        el('p', { textContent: s.summary || '' }),
-        s.comparison ? el('div', { className: 'compare' }, el('div', { className: 'label', textContent: 'COMPARED WITH THE PREVIOUS WEEK' }), el('p', { textContent: s.comparison })) : null,
-        s.generatedAt ? el('div', { className: 'notice', textContent: 'Generated ' + fmtDate(s.generatedAt) }) : null)
-    : el('div', { className: 'ai missing', textContent: 'The AI summary for this week has not been generated yet.' })
+  const page = el('section', { className: 'week-page' },
+    back,
+    el('h4', { className: 'week-date big', textContent: `Week of ${weekRange(w.week)}` }),
+    s
+      ? el('div', { className: 'ai' },
+          el('div', { className: 'label', textContent: `AI WEEKLY SUMMARY${Number.isFinite(s.mood) ? ` · MOOD ${s.mood}/10` : ''}` }),
+          el('p', { textContent: s.summary }),
+          s.comparison ? el('div', { className: 'compare' }, el('div', { className: 'label', textContent: 'COMPARED WITH THE WEEK BEFORE' }), el('p', { textContent: s.comparison })) : null)
+      : el('div', { className: 'ai missing', textContent: 'This week is not summarized yet.' }),
+    el('h4', { className: 'shared-title', textContent: 'Entries shared with you' }))
 
-  const shared = w.shared.length
-    ? w.shared.map((e) => el('div', { className: 'entry' },
-        el('strong', { textContent: e.title || 'Reflection' }),
-        el('span', { className: 'meta', textContent: ' · ' + fmtDate(e.created, { weekday: 'long', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) }),
-        el('p', { textContent: e.text })))
-    : [el('p', { className: 'meta', textContent: 'No entries shared this week.', style: 'margin:12px 0 0' })]
+  if (!w.shared.length) {
+    page.append(el('p', { className: 'meta', textContent: 'No entries were shared this week.' }))
+    return page
+  }
+  const byDay = new Map()
+  w.shared.forEach((e) => {
+    const d = new Date(e.created)
+    const key = d.toDateString()
+    if (!byDay.has(key)) byDay.set(key, { date: d, items: [] })
+    byDay.get(key).items.push(e)
+  })
+  ;[...byDay.values()].sort((a, b) => a.date - b.date).forEach(({ date, items }) => {
+    page.append(el('div', { className: 'day' },
+      el('div', { className: 'day-name', textContent: date.toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'short' }) }),
+      ...items.map((e) => el('div', { className: 'day-entry', dir: 'auto' }, e.title ? el('div', { className: 'day-entry-title', textContent: e.title, dir: 'auto' }) : null, el('p', { textContent: e.text, dir: 'auto' })))))
+  })
+  return page
+}
 
-  return el('section', { className: 'week' },
-    el('h3', { textContent: weekLabel(w.week) }),
-    ai,
-    el('div', { className: 'label meta', textContent: `Shared entries (${w.shared.length})`, style: 'margin-top:14px;font-weight:700' }),
-    ...shared)
+/* ---------- mood chart ---------- */
+// Single series line, 1–10. Only the latest week's date is written on the x axis.
+function renderMoodChart(points) {
+  const wrap = el('section', { className: 'panel-box mood' },
+    el('h4', { textContent: 'Mood by week' }),
+    el('p', { className: 'meta', textContent: 'AI estimate from everything the person wrote that week · 1 = very low, 10 = very good' }))
+  if (!points.length) {
+    wrap.append(el('p', { className: 'meta', textContent: 'No summarized weeks yet.' }))
+    return wrap
+  }
+  const plot = el('div', { className: 'mood-plot' })
+  const tip = el('div', { className: 'mood-tip hidden', role: 'status' })
+  plot.append(tip)
+  // Same data as a table, for screen readers.
+  const table = el('table', { className: 'sr-only' },
+    el('caption', { textContent: 'Mood by week' }),
+    el('tr', {}, el('th', { textContent: 'Week' }), el('th', { textContent: 'Mood (1–10)' })),
+    ...points.map((p) => el('tr', {}, el('td', { textContent: weekRange(p.week) }), el('td', { textContent: String(p.mood) }))))
+  wrap.append(plot, table)
+
+  const NS = 'http://www.w3.org/2000/svg'
+  const svgEl = (tag, attrs = {}) => {
+    const n = document.createElementNS(NS, tag)
+    Object.entries(attrs).forEach(([k, v]) => n.setAttribute(k, v))
+    return n
+  }
+
+  const draw = () => {
+    const W = Math.max(260, plot.clientWidth || 600)
+    const H = 190
+    const pad = { l: 30, r: 16, t: 12, b: 28 }
+    const x = (i) => pad.l + (points.length === 1 ? (W - pad.l - pad.r) / 2 : (i * (W - pad.l - pad.r)) / (points.length - 1))
+    const y = (v) => pad.t + ((10 - v) * (H - pad.t - pad.b)) / 9
+    plot.querySelector('svg')?.remove()
+    const svg = svgEl('svg', { width: W, height: H, viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': `Mood by week, ${points.length} weeks, latest ${points[points.length - 1].mood} out of 10` })
+
+    // Recessive grid and y labels.
+    ;[1, 4, 7, 10].forEach((v) => {
+      svg.append(svgEl('line', { x1: pad.l, x2: W - pad.r, y1: y(v), y2: y(v), class: 'grid' }))
+      const t = svgEl('text', { x: pad.l - 8, y: y(v) + 4, class: 'axis', 'text-anchor': 'end' })
+      t.textContent = v
+      svg.append(t)
+    })
+    // Only the latest week's date on the x axis.
+    const last = points[points.length - 1]
+    const xl = svgEl('text', { x: x(points.length - 1), y: H - 8, class: 'axis', 'text-anchor': points.length === 1 ? 'middle' : 'end' })
+    xl.textContent = new Date(last.week + 'T00:00:00').toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })
+    svg.append(xl)
+
+    if (points.length > 1) svg.append(svgEl('polyline', { points: points.map((p, i) => `${x(i)},${y(p.mood)}`).join(' '), class: 'line' }))
+    const cross = svgEl('line', { y1: pad.t, y2: H - pad.b, class: 'cross', visibility: 'hidden' })
+    svg.append(cross)
+    const dots = points.map((p, i) => {
+      const c = svgEl('circle', { cx: x(i), cy: y(p.mood), r: 4.5, class: 'dot' })
+      svg.append(c)
+      return c
+    })
+
+    // Hover / touch: nearest week gets a crosshair and a tooltip.
+    const hit = svgEl('rect', { x: pad.l - 10, y: 0, width: W - pad.l - pad.r + 20, height: H, fill: 'transparent' })
+    const show = (evt) => {
+      const r = svg.getBoundingClientRect()
+      const px = evt.clientX - r.left
+      let i = 0
+      points.forEach((_, k) => { if (Math.abs(x(k) - px) < Math.abs(x(i) - px)) i = k })
+      cross.setAttribute('x1', x(i)); cross.setAttribute('x2', x(i)); cross.setAttribute('visibility', 'visible')
+      dots.forEach((d, k) => d.setAttribute('r', k === i ? 6 : 4.5))
+      tip.textContent = `Week of ${weekRange(points[i].week, false)} · mood ${points[i].mood}/10`
+      tip.classList.remove('hidden')
+      tip.style.left = Math.min(Math.max(x(i) - tip.offsetWidth / 2, 0), W - tip.offsetWidth) + 'px'
+      tip.style.top = Math.max(y(points[i].mood) - 40, 0) + 'px'
+    }
+    const hide = () => { cross.setAttribute('visibility', 'hidden'); dots.forEach((d) => d.setAttribute('r', 4.5)); tip.classList.add('hidden') }
+    hit.addEventListener('pointermove', show)
+    hit.addEventListener('pointerdown', show)
+    hit.addEventListener('pointerleave', hide)
+    svg.append(hit)
+    plot.prepend(svg)
+  }
+  // Draw once it is on the page, and again when the width changes.
+  setTimeout(draw, 0)
+  if ('ResizeObserver' in window) {
+    let lastW = 0
+    new ResizeObserver(() => { if (plot.clientWidth && plot.clientWidth !== lastW) { lastW = plot.clientWidth; draw() } }).observe(plot)
+  }
+  return wrap
+}
+
+/* ---------- AI summary progress ---------- */
+const summaryBar = el('div', { className: 'ai-status hidden', role: 'status', ariaLive: 'polite' })
+let pollTimer = null
+let lastPendingForClient = null
+let summaryState = null
+
+// Status only; never starts the server.
+async function checkSummaries(clientId) {
+  if (DEMO) return
+  clearTimeout(pollTimer)
+  lastPendingForClient = null
+  try {
+    showSummaryStatus(await call(`/api/doctor/summaries/status?clientId=${encodeURIComponent(clientId)}`), clientId)
+  } catch (err) {
+    onError(err)
+  }
+}
+
+// "Summarize recent journals": starts the AI server if anything is waiting.
+async function startSummaries(clientId) {
+  if (DEMO) {
+    summaryState = { state: 'demo' }
+    return applySummaryState()
+  }
+  clearTimeout(pollTimer)
+  const btn = $('summarizeBtn')
+  if (btn) btn.disabled = true
+  try {
+    showSummaryStatus(await call('/api/doctor/summaries/refresh', { method: 'POST', body: { clientId } }), clientId, true)
+  } catch (err) {
+    if (btn) btn.disabled = false
+    onError(err)
+  }
+}
+
+function showSummaryStatus(s, clientId, pressed = false) {
+  if (clientId !== activeClient) return
+  summaryState = { ...s, pressed }
+  applySummaryState()
+  const forThem = s.pendingForClient || 0
+  // When this person's weeks are done, reload their page.
+  if (lastPendingForClient !== null && forThem < lastPendingForClient) openClient(clientId, { keepView: true })
+  lastPendingForClient = forThem
+  if (s.state === 'starting' || s.state === 'running') pollTimer = setTimeout(() => pollSummaries(clientId), DEV ? 1500 : 15000)
+}
+
+async function pollSummaries(clientId) {
+  try {
+    showSummaryStatus(await call(`/api/doctor/summaries/status?clientId=${encodeURIComponent(clientId)}`), clientId)
+  } catch (err) {
+    onError(err)
+  }
+}
+
+function applySummaryState() {
+  const s = summaryState
+  const btn = $('summarizeBtn')
+  if (!s) return summaryBar.classList.add('hidden')
+  const forThem = s.pendingForClient || 0
+  const weeks = (n) => `${n} week${n === 1 ? '' : 's'}`
+  const busy = s.state === 'starting' || s.state === 'running'
+  const text = {
+    demo: 'Sample preview: summarizing is not available here.',
+    'not-configured': 'The AI server is not connected yet, so summaries cannot be made.',
+    idle: s.pressed ? 'Everything is already summarized.' : 'All weeks are summarized.',
+    waiting: forThem
+      ? `${weeks(forThem)} not summarized yet. Press “Summarize recent journals”.`
+      : `This person is up to date. ${weeks(s.pending)} for other people not summarized yet.`,
+    starting: 'Starting the AI server. This usually takes 2–4 minutes; the page updates by itself.',
+    running: `Writing summaries… ${forThem ? `${weeks(forThem)} left for this person, ` : 'this person is done, '}${weeks(s.pending)} left in total.`,
+    error: `The last run had a problem: ${s.lastError || 'unknown error'}`,
+  }[s.state] || ''
+  summaryBar.textContent = text
+  summaryBar.className = `ai-status ${s.state}` + (text ? '' : ' hidden')
+  if (btn) {
+    btn.disabled = busy || s.state === 'not-configured' || s.state === 'demo'
+    btn.textContent = busy ? 'Summarizing…' : 'Summarize recent journals'
+  }
 }
 
 /* ---------- affirmations ---------- */
