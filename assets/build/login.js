@@ -1364,11 +1364,259 @@
       [["parent", "tired", "kindness"], "Being tired does not make me a bad parent. I am doing a lot."]
     ]
   };
+  var MORE_2 = {
+    "Stress & Anxiety": [
+      [["anxious", "body", "calm"], "My body is trying to protect me. I can thank it and let it settle."],
+      [["worry", "what if", "present"], 'I can answer "what if" with "even if": even if it is hard, I will find a way.'],
+      [["stress", "priorities", "enough"], "I can choose what matters most today and let the rest wait."],
+      [["nervous", "meeting", "breathing"], "Before I walk in, I can take three slow breaths and remember I belong here."],
+      [["anxious", "thoughts", "facts"], "A thought is not a fact. I can notice it without believing it."],
+      [["overwhelmed", "list", "one step"], "I do not have to carry the whole list at once. I can pick up one thing."]
+    ],
+    "Self-Compassion": [
+      [["kindness", "inner voice", "gentle"], "I am learning to be on my own side."],
+      [["hard day", "rest", "kind"], "Today I will treat myself like someone I am caring for."],
+      [["shame", "worth", "human"], "I am human. Struggling does not make me less worthy."],
+      [["tired", "enough", "effort"], "The effort I make counts, even when no one sees it."],
+      [["comparison", "gentle", "own pace"], "Other people\u2019s progress does not take away from mine."],
+      [["regret", "growth", "learning"], "I can look back with understanding, not punishment."]
+    ],
+    "Mindfulness": [
+      [["senses", "grounding", "sound"], "I can listen to the sounds around me and let them bring me back."],
+      [["walk", "present", "body"], "With each step, I can feel the ground holding me up."],
+      [["tea", "slow", "moment"], "I can do one simple thing slowly and give it my full attention."],
+      [["thoughts", "space", "calm"], "There is space around my thoughts. I am the sky, not the weather."],
+      [["breathing", "count", "calm"], "Breathing in for four and out for six, my body learns it is safe."],
+      [["notice", "feelings", "curious"], "I can notice where I feel this in my body, with curiosity instead of fear."]
+    ],
+    "ADHD Support": [
+      [["adhd", "timer", "start"], "A timer and a small task are a good team. I can begin now."],
+      [["adhd", "messy", "enough"], "A messy room or a messy day does not mean I am failing."],
+      [["adhd", "interest", "strength"], "When something lights me up, I can trust that energy."],
+      [["adhd", "breaks", "rest"], "Taking breaks helps my brain do its best work."],
+      [["adhd", "compare", "different"], "I do not need to work the way others do. I can find my own way."],
+      [["adhd", "kindness", "reminders"], "Needing reminders is not a flaw. It is how I look after what matters."]
+    ],
+    "Confidence": [
+      [["confidence", "try", "learn"], "I do not need to feel ready to begin. I can grow into it."],
+      [["speak up", "voice", "brave"], "My ideas are worth sharing, even if my voice shakes."],
+      [["mistakes", "growth", "confidence"], "Every mistake is proof that I am trying."],
+      [["strengths", "notice", "proud"], "I can name one thing I did well today."],
+      [["doubt", "evidence", "trust"], "When doubt speaks up, I can remember the times I managed."],
+      [["new", "brave", "growth"], "New things feel uncomfortable before they feel familiar."]
+    ],
+    "Relationships": [
+      [["communication", "calm", "honest"], "I can say what I need clearly and kindly."],
+      [["support", "ask for help", "connection"], "Asking for help lets the people who care about me show up."],
+      [["boundaries", "love", "respect"], "Loving someone does not mean I have to agree with everything."],
+      [["conflict", "repair", "patience"], "Disagreements can be repaired. One hard talk is not the end."],
+      [["friendship", "reach out", "lonely"], "A short message can open a door. I can send one today."],
+      [["trust", "time", "healing"], "Trust can be rebuilt slowly, at a pace that feels safe."]
+    ],
+    "Sleep & Rest": [
+      [["sleep", "routine", "calm"], "A calm evening routine tells my body it is time to rest."],
+      [["screens", "night", "rest"], "I can put the day and my phone down and let my mind slow."],
+      [["tired", "nap", "permission"], "If I need rest, resting is the right choice."],
+      [["night", "worry", "writing"], "I can write my worries down and leave them on the page until morning."],
+      [["body", "relax", "sleep"], "From my forehead to my toes, I can let each part of my body grow heavy."],
+      [["morning", "rested", "gentle"], "However I slept, I can begin this day gently."]
+    ],
+    "Grief & Loss": [
+      [["grief", "waves", "allowed"], "Grief comes in waves. I can let this one pass through me."],
+      [["anniversary", "memory", "gentle"], "Hard dates may bring the pain back. I can plan something kind for myself."],
+      [["loss", "support", "talk"], "Talking about the person I lost keeps their story alive."],
+      [["grief", "laugh", "allowed"], "Laughing again does not mean I have forgotten."],
+      [["loss", "change", "identity"], "I am still learning who I am after this loss, and that takes time."],
+      [["grief", "body", "tired"], "Grief is tiring. My body needs extra care right now."]
+    ],
+    "Anger & Frustration": [
+      [["angry", "body", "cool down"], "I can notice the heat in my body and give it time to cool."],
+      [["frustrated", "patience", "progress"], "This is frustrating, and I can still keep going."],
+      [["anger", "needs", "listen"], "Under my anger there may be hurt or fear. I can listen to both."],
+      [["angry", "words", "pause"], "I can wait before I speak, so my words match what I really mean."],
+      [["frustration", "walk", "release"], "Moving my body can help the frustration leave it."],
+      [["resentment", "letting go", "peace"], "Holding on to anger hurts me most. I can loosen my grip a little."]
+    ],
+    "Motivation": [
+      [["start", "tiny", "habit"], "A tiny habit done often beats a big plan never started."],
+      [["progress", "celebrate", "small wins"], "I can celebrate small wins. They are how big changes begin."],
+      [["tired", "gentle", "enough"], "Some days, doing a little is doing my best."],
+      [["purpose", "why", "meaning"], "Remembering why this matters to me gives me energy to continue."],
+      [["restart", "fresh start", "try again"], "I can start again at any moment, not only on Mondays."],
+      [["focus", "one thing", "now"], "Right now I only need to do the next small thing."]
+    ],
+    "Body & Health": [
+      [["body", "listen", "needs"], "My body sends me messages. I can listen with kindness."],
+      [["stretch", "tension", "care"], "A gentle stretch can help me let go of some of the day."],
+      [["outside", "fresh air", "light"], "A few minutes outside can change how I feel."],
+      [["illness", "patience", "rest"], "Getting better takes time. I can be patient with my body."],
+      [["eating", "kindness", "no guilt"], "Food is fuel and comfort, not something to feel guilty about."],
+      [["body", "gratitude", "strength"], "I can thank my body for one thing it did for me today."]
+    ],
+    "Work & Study": [
+      [["focus", "study", "breaks"], "Short focused sessions with breaks help me learn more."],
+      [["work", "worth", "grades"], "I am more than my job title or my grades."],
+      [["presentation", "nervous", "prepared"], "I know more than I think. I can share it one sentence at a time."],
+      [["overworked", "rest", "limits"], "I can do good work and still have limits."],
+      [["learning", "slow", "patience"], "Learning slowly is still learning."],
+      [["colleagues", "support", "ask"], "It is okay not to know. I can ask."]
+    ],
+    "Parenting": [
+      [["parent", "presence", "enough"], "My child needs my presence more than my perfection."],
+      [["parent", "guilt", "kindness"], "Parent guilt does not mean I am doing it wrong. It means I care."],
+      [["parent", "boundaries", "calm"], "Setting a calm limit is a loving thing to do."],
+      [["parent", "alone", "support"], "Other parents struggle too. I am not alone in this."],
+      [["parent", "play", "connection"], "Ten minutes of play can mean a lot to my child, and to me."],
+      [["parent", "teen", "patience"], "I can stay steady while my child learns who they are."]
+    ],
+    "Gratitude": [
+      [["gratitude", "small things", "notice"], "Today I can find three small things to be thankful for."],
+      [["gratitude", "people", "connection"], "I am grateful for the people who make life a little easier."],
+      [["gratitude", "body", "breathing"], "I am grateful for every breath my body takes without being asked."],
+      [["gratitude", "home", "safe"], "I can appreciate the places where I feel safe."],
+      [["gratitude", "hard times", "growth"], "Even hard times have taught me something I value."],
+      [["gratitude", "nature", "beauty"], "The sky, the trees, a bird singing: there is beauty around me."],
+      [["gratitude", "myself", "effort"], "I am grateful to myself for getting through every day so far."],
+      [["gratitude", "food", "care"], "A warm meal is a small gift I can enjoy fully."],
+      [["gratitude", "kindness", "strangers"], "I notice the kindness of strangers, and I can pass it on."],
+      [["gratitude", "today", "curious"], "Today is a day I have not lived before. I can be curious about it."],
+      [["gratitude", "journal", "reflection"], "Writing down what went well helps me see it more often."],
+      [["gratitude", "enough", "contentment"], "Right now, in this moment, I have enough."],
+      [["gratitude", "morning", "start"], "I can start the day by thanking myself for waking up and trying."]
+    ],
+    "Hope": [
+      [["hope", "future", "possible"], "Things can change, and so can I."],
+      [["hope", "dark", "light"], "Even on dark days, a little light gets through."],
+      [["hope", "small steps", "future"], "Every small step I take moves me toward a better day."],
+      [["hope", "help", "support"], "Help exists, and I deserve to receive it."],
+      [["hope", "change", "seasons"], "Like the seasons, hard times change."],
+      [["hope", "dreams", "allowed"], "I am allowed to want good things for my life."],
+      [["hope", "tomorrow", "try"], "Tomorrow brings a new chance to try."],
+      [["hope", "healing", "again"], "I have healed before. I can heal again."],
+      [["hope", "stuck", "possible"], "Feeling stuck now does not mean I will always be stuck."],
+      [["hope", "people", "understood"], "There are people who will understand me. I can keep looking."],
+      [["hope", "strength", "keep going"], "I have made it this far, and that counts."],
+      [["hope", "future self", "care"], "My future self will thank me for the care I give today."],
+      [["hope", "kindness", "world"], "There is still kindness in the world, and I can be part of it."]
+    ],
+    "Boundaries": [
+      [["boundaries", "no", "respect"], '"No" is a complete sentence.'],
+      [["boundaries", "guilt", "kind"], "I can set a boundary and still be a kind person."],
+      [["boundaries", "time", "energy"], "My time and energy are worth protecting."],
+      [["boundaries", "family", "privacy"], "I can love my family and still decide what I share."],
+      [["boundaries", "work", "switch off"], "When my workday ends, I am allowed to switch off."],
+      [["boundaries", "people pleasing", "needs"], "Keeping others happy should not cost me my wellbeing."],
+      [["boundaries", "phone", "reply"], "I do not have to reply right away."],
+      [["boundaries", "change", "update"], "I can change my mind and update my boundaries."],
+      [["boundaries", "respect", "relationships"], "The right people will respect my limits."],
+      [["boundaries", "calm", "explain"], "I can state my boundary calmly, without over-explaining."],
+      [["boundaries", "body", "comfort"], "I decide what feels comfortable for my body."],
+      [["boundaries", "space", "healthy"], "Taking space for myself is healthy, not selfish."]
+    ],
+    "Self-Worth": [
+      [["self worth", "enough", "earn"], "My worth is not something I have to earn."],
+      [["self worth", "love", "hard days"], "I am worthy of love on my good days and my hard days."],
+      [["self worth", "achievement", "matter"], "I matter, apart from anything I achieve."],
+      [["self worth", "opinions", "others"], "Other people\u2019s opinions do not decide my value."],
+      [["self worth", "voice", "listened"], "I deserve to be listened to."],
+      [["self worth", "care", "deserve"], "I deserve the same care I give to others."],
+      [["self worth", "looks", "acceptance"], "I am more than how I look."],
+      [["self worth", "past", "deserve"], "My past does not decide what I deserve now."],
+      [["self worth", "rejection", "value"], "Being rejected by someone does not lower my worth."],
+      [["self worth", "strengths", "good"], "There are things about me that are good and true."],
+      [["self worth", "belong", "space"], "I belong here as much as anyone else."],
+      [["self worth", "self talk", "respect"], "I can talk about myself with respect."]
+    ],
+    "Change & Uncertainty": [
+      [["change", "adapt", "before"], "I have adapted to change before. I can do it again."],
+      [["uncertainty", "unknown", "discomfort"], "Not knowing is uncomfortable, and I can live with it for now."],
+      [["change", "new", "curious"], "I can meet this change with curiosity as well as fear."],
+      [["moving", "new place", "home"], "A new place can slowly become home."],
+      [["change", "loss", "mixed feelings"], "Even good changes can bring a sense of loss. Both feelings are okay."],
+      [["uncertainty", "control", "focus"], "I can focus on what I can control today."],
+      [["change", "routine", "steady"], "Small routines can keep me steady when things are changing."],
+      [["decision", "choice", "trust"], "I can make the best choice I can with what I know now."],
+      [["change", "growth", "hard"], "Change is how I grow, even when it is hard."],
+      [["uncertainty", "future", "today"], "I only need to handle today."],
+      [["transition", "settling in", "patience"], "Settling in takes time. I can be patient with myself."],
+      [["change", "letting go", "expectations"], "I can let go of how I thought things would be."]
+    ],
+    "Healing": [
+      [["healing", "time", "little by little"], "Healing happens a little at a time."],
+      [["healing", "trauma", "safe now"], "I am safe now, even when my body remembers."],
+      [["healing", "setback", "normal"], "A setback is part of healing, not the end of it."],
+      [["healing", "support", "therapy"], "Getting support is a sign of strength."],
+      [["healing", "feelings", "allowed"], "I can feel what I need to feel in order to heal."],
+      [["healing", "gentle", "hurting"], "I can be gentle with the parts of me that are still hurting."],
+      [["healing", "progress", "notice"], "I can notice how far I have come."],
+      [["healing", "rest", "mind"], "My body and mind are doing important work. Rest helps."],
+      [["healing", "story", "meaning"], "What happened is part of my story, not all of it."],
+      [["healing", "trust", "self"], "I am learning to trust myself again."],
+      [["healing", "pain", "future"], "There is life beyond this pain."],
+      [["healing", "pace", "no deadline"], "There is no deadline for healing."]
+    ],
+    "Calm & Peace": [
+      [["calm", "breathing", "peace"], "Peace is available to me in this breath."],
+      [["calm", "slow", "quiet"], "I can slow down and let the noise settle."],
+      [["calm", "waves", "imagine"], "I can imagine my thoughts as waves slowly getting smaller."],
+      [["calm", "fix", "peace"], "I do not need to fix everything to feel at peace."],
+      [["calm", "body", "soften"], "My shoulders can drop. My jaw can soften."],
+      [["calm", "safe place", "imagine"], "I can picture a calm place and rest there for a moment."],
+      [["calm", "music", "comfort"], "Gentle music can help me feel calm."],
+      [["calm", "nature", "water"], "Being near trees or water can quiet my mind."],
+      [["calm", "pause", "respond"], "Between what happens and how I respond, there is a pause I can use."],
+      [["peace", "acceptance", "moment"], "I can accept this moment as it is."],
+      [["calm", "evening", "wind down"], "Evenings can be for winding down, not catching up."],
+      [["calm", "hand on heart", "grounding"], "I can place a hand on my chest and feel my breath slow."],
+      [["calm", "counting", "grounding"], "Counting slowly to ten can help me find my calm again."]
+    ],
+    "Courage": [
+      [["courage", "fear", "brave"], "Courage is not the absence of fear; it is moving with it."],
+      [["courage", "small", "counts"], "Small brave acts count."],
+      [["courage", "help", "ask"], "Asking for help takes courage, and I have it."],
+      [["courage", "truth", "honest"], "I can speak my truth with care."],
+      [["courage", "new", "try"], "I can try something new, even if I am not sure how it will go."],
+      [["courage", "change", "good for me"], "I have the courage to make changes that are good for me."],
+      [["courage", "feelings", "face"], "I can face my feelings instead of running from them."],
+      [["courage", "stand up", "myself"], "Standing up for myself is brave."],
+      [["courage", "fail", "grow"], "I am willing to fail sometimes in order to grow."],
+      [["courage", "appointment", "call"], "Making that call or that appointment is a brave step."],
+      [["courage", "strength", "inside"], "There is more strength in me than I can see right now."],
+      [["courage", "show up", "today"], "Showing up today, as I am, is an act of courage."]
+    ],
+    "Joy": [
+      [["joy", "small", "count"], "I can let small joys count."],
+      [["joy", "laugh", "hard times"], "I am allowed to laugh, even in hard seasons."],
+      [["joy", "play", "fun"], "Play is not only for children. I can make time for fun."],
+      [["joy", "music", "dance"], "A favourite song can lift my mood. I can turn it up."],
+      [["joy", "people", "love"], "Time with people I love fills me up."],
+      [["joy", "creativity", "make"], "Making something, however small, can bring me joy."],
+      [["joy", "sunlight", "simple"], "Sunlight on my face is a simple pleasure."],
+      [["joy", "savour", "moment"], "When something good happens, I can pause and savour it."],
+      [["joy", "hobbies", "time"], "I deserve time for things I enjoy."],
+      [["joy", "notice", "more"], "The more I notice joy, the more I find it."],
+      [["joy", "share", "grow"], "Sharing joy makes it grow."],
+      [["joy", "happy", "no reason"], "I do not need a reason to feel happy."],
+      [["joy", "memories", "smile"], "I can remember a moment that made me smile and let it warm me now."]
+    ],
+    "Forgiveness": [
+      [["forgiveness", "self", "learn"], "I can forgive myself and still learn from what happened."],
+      [["forgiveness", "others", "freedom"], "Forgiving does not mean forgetting. It means freeing myself."],
+      [["forgiveness", "not ready", "okay"], "If I am not ready to forgive, that is okay too."],
+      [["forgiveness", "past self", "kindness"], "I can be kind to who I was then."],
+      [["forgiveness", "weight", "release"], "I can let go of some of this weight, a little at a time."],
+      [["forgiveness", "distance", "safe"], "I can forgive someone and still keep my distance."],
+      [["forgiveness", "apology", "sorry"], "Saying sorry and meaning it is a strong thing to do."],
+      [["forgiveness", "imperfect", "human"], "Everyone gets things wrong. I am allowed to be imperfect."],
+      [["forgiveness", "understanding", "harm"], "I can try to understand where others came from, without excusing harm."],
+      [["forgiveness", "peace", "being right"], "Peace in my heart matters more than being right."],
+      [["forgiveness", "second chance", "myself"], "I can give myself a second chance."],
+      [["forgiveness", "journey", "time"], "Forgiveness can be a journey, not a single moment."]
+    ]
+  };
   var n = FIRST.length;
-  var DEFAULT_AFFIRMATIONS = [
-    ...FIRST,
-    ...Object.entries(MORE).flatMap(([category, items]) => items.map(([tags, text]) => ({ id: `a${++n}`, category, tags, text })))
-  ];
+  var build = (groups) => Object.entries(groups).flatMap(([category, items]) => items.map(([tags, text]) => ({ id: `a${++n}`, category, tags, text })));
+  var DEFAULT_AFFIRMATIONS = [...FIRST, ...build(MORE), ...build(MORE_2)];
 
   // assets/dev-sample-people.js
   var POOLS = {

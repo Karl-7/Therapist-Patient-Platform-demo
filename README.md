@@ -17,7 +17,7 @@ Each page has one job:
 
 | Menu | What is on it |
 |---|---|
-| **Home** (`index.html`) | Welcome banner, "How are you feeling today?", and four cards leading to the other pages |
+| **Home** (`index.html`) | Welcome banner, "How are you feeling today?", and three cards leading to Journal, Affirmations and Services & Booking |
 | **Journal** (`journal.html`) | "How are you feeling today?", writing with Tidy up & review, and your saved entries |
 | **Affirmations** (`affirmations.html`) | A featured affirmation, search and topics, and Your Favorites |
 | **Services & Booking** (`booking.html`) | Services & Pricing and the booking enquiry form |
@@ -50,7 +50,7 @@ Each entry can be shared with the therapist, or kept private.
 
 ### Affirmations
 
-More than 100 affirmations in 13 topics. People search or pick a topic, and tap **♡ Save** on any affirmation (including the featured one). Saved affirmations appear under **Your Favorites** with a **Remove** button, and are kept in their account.
+More than 300 affirmations in 23 topics, each with search keywords. A search or a topic shows three random affirmations at a time; **↻** (in the search box, or on the chosen topic) shows three others. Five topics are shown at a time; **↻ More topics** shows five others. People tap **♡ Save** on any affirmation (including the featured one). Saved affirmations appear under **Your Favorites** with a **Remove** button, and are kept in their account.
 
 ### Doctor: booking enquiries
 

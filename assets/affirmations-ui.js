@@ -15,6 +15,10 @@ let featured = null
 let topic = null // topic chosen under "Browse by topic"
 let topicPicks = [] // the three affirmations shown for it
 const PER_TOPIC = 3
+const TOPICS_SHOWN = 5
+let topicView = [] // the five topic buttons on screen
+let searchFor = '' // last search text
+let searchPicks = [] // the three matches shown for it
 let favFilter = 'All'
 let onError = (err) => console.error(err)
 
@@ -31,6 +35,7 @@ export async function setupAffirmations(handleError) {
   window.renderFavorites = renderFavorites
   await loadFavorites()
   setupFeatured()
+  setupSearchRefresh()
   renderTopics()
   renderSearch($('searchInput')?.value || '')
   renderFavorites()
@@ -99,7 +104,7 @@ function updateSaveButtons() {
   })
 }
 
-/* Search: every match, each with a Save button. */
+/* Search: 3 random matches at a time; the ↻ button in the search box shows 3 others. */
 function renderSearch(query = '') {
   const out = $('searchResults')
   if (!out) return
@@ -110,23 +115,82 @@ function renderSearch(query = '') {
   }
   out.innerHTML = ''
   let items
+  let note = ''
   if (q) {
-    items = lib().filter((x) => `${x.text} ${x.category} ${(x.tags || []).join(' ')}`.toLowerCase().includes(q))
-    if (!items.length) return out.append(el('p', { className: 'empty', textContent: 'No match yet. Try another word or topic.' }))
-  } else if (topic) {
-    items = topicPicks
+    const matches = searchMatches(q)
+    if (q !== searchFor) {
+      searchFor = q
+      searchPicks = pickThree(matches, [])
+    }
+    paintSearchRefresh(matches.length)
+    if (!matches.length) return out.append(el('p', { className: 'empty', textContent: 'No match yet. Try another word or topic.' }))
+    items = searchPicks
+    if (matches.length > items.length) note = `Showing ${items.length} of ${matches.length} matches. Tap ↻ for others.`
   } else {
-    return out.append(el('p', { className: 'notice', textContent: `Search above or choose a topic below to explore ${lib().length} affirmations.` }))
+    searchFor = ''
+    paintSearchRefresh(0)
+    if (topic) items = topicPicks
+    else return out.append(el('p', { className: 'notice', textContent: `Search above or choose a topic below to explore ${lib().length} affirmations.` }))
   }
   items.forEach((item) => out.append(el('div', { className: 'result' }, el('small', { textContent: item.category }), el('p', { textContent: `“${item.text}”` }), saveButton(item))))
+  if (note) out.append(el('p', { className: 'notice search-note', textContent: note }))
 }
 
-/* Browse by topic: a topic shows 3 random affirmations; the chosen topic becomes "↻ Topic" to show 3 others. */
+const searchMatches = (q) => lib().filter((x) => `${x.text} ${x.category} ${(x.tags || []).join(' ')}`.toLowerCase().includes(q))
+
+// Up to three random items, avoiding the ones on screen when there are enough others.
+const pickThree = (pool, current) => pickSome(pool, current, PER_TOPIC)
+function pickSome(pool, current, count) {
+  const key = (x) => (typeof x === 'string' ? x : x.id)
+  const fresh = pool.filter((x) => !current.some((p) => key(p) === key(x)))
+  const from = fresh.length >= count ? fresh : pool
+  return [...from].sort(() => Math.random() - 0.5).slice(0, count)
+}
+
+// ↻ inside the right end of the search box. Shown while there is search text.
+function setupSearchRefresh() {
+  const input = $('searchInput')
+  if (!input || document.getElementById('searchRefresh')) return
+  const style = el('style', { textContent: `
+.search-wrap{position:relative}
+.search-wrap .field{padding-right:52px}
+#searchRefresh{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:50%;border:1px solid #dfd4eb;background:#fff;color:#66528f;font-size:18px;line-height:1;cursor:pointer}
+#searchRefresh:hover:not(:disabled){background:#f6f0fc}
+#searchRefresh:disabled{opacity:.4;cursor:default}
+.search-note{margin:8px 0 0}
+.chip.more-topics{border-style:dashed;color:#66528f;font-weight:600;background:transparent}` })
+  document.head.append(style)
+  const wrap = el('div', { className: 'search-wrap' })
+  input.replaceWith(wrap)
+  const btn = el('button', { type: 'button', id: 'searchRefresh', className: 'hidden', textContent: '↻', title: 'Show three other matches', ariaLabel: 'Show three other matches' })
+  btn.onclick = () => {
+    const q = input.value.trim().toLowerCase()
+    searchPicks = pickThree(searchMatches(q), searchPicks)
+    searchFor = q
+    renderSearch(input.value)
+    input.focus()
+  }
+  wrap.append(input, btn)
+}
+
+function paintSearchRefresh(matchCount) {
+  const btn = document.getElementById('searchRefresh')
+  if (!btn) return
+  btn.classList.toggle('hidden', !$('searchInput')?.value.trim())
+  btn.disabled = matchCount <= PER_TOPIC
+  btn.title = btn.disabled ? 'All matches are shown' : 'Show three other matches'
+}
+
+/* Browse by topic: 5 topics at a time, "↻ More topics" shows 5 others.
+   A topic shows 3 random affirmations; the chosen topic becomes "↻ Topic" to show 3 others. */
 function renderTopics() {
   const chips = $('categoryChips')
   if (!chips) return
+  const all = [...new Set(lib().map((x) => x.category).filter(Boolean))]
+  if (!topicView.length || topicView.some((c) => !all.includes(c))) topicView = pickSome(all, [], TOPICS_SHOWN)
+  if (topic && !topicView.includes(topic)) topicView = [topic, ...topicView.filter((c) => c !== topic)].slice(0, TOPICS_SHOWN)
   chips.innerHTML = ''
-  ;[...new Set(lib().map((x) => x.category).filter(Boolean))].forEach((c) => {
+  topicView.forEach((c) => {
     const active = c === topic
     const b = el('button', { type: 'button', className: 'chip' + (active ? ' active' : ''), textContent: active ? `↻ ${c}` : c })
     b.title = active ? `Show three other ${c} affirmations` : `Show three ${c} affirmations`
@@ -141,14 +205,23 @@ function renderTopics() {
     }
     chips.append(b)
   })
+  if (all.length > TOPICS_SHOWN) {
+    const more = el('button', { type: 'button', className: 'chip more-topics', textContent: '↻ More topics', title: 'Show other topics' })
+    more.onclick = () => {
+      // Five others, but keep the topic that is open (if any) in view.
+      const others = all.filter((c) => c !== topic)
+      const fresh = pickSome(others, topicView, topic ? TOPICS_SHOWN - 1 : TOPICS_SHOWN)
+      topicView = topic ? [topic, ...fresh] : fresh
+      renderTopics()
+      chips.querySelector('.more-topics')?.focus()
+    }
+    chips.append(more)
+  }
 }
 
-// Three random affirmations from the topic, avoiding the ones on screen when there are enough others.
+// Three random affirmations from the topic.
 function pickTopic() {
-  const pool = lib().filter((x) => x.category === topic)
-  const fresh = pool.filter((x) => !topicPicks.some((p) => p.id === x.id))
-  const from = fresh.length >= PER_TOPIC ? fresh : pool
-  topicPicks = [...from].sort(() => Math.random() - 0.5).slice(0, PER_TOPIC)
+  topicPicks = pickThree(lib().filter((x) => x.category === topic), topicPicks)
 }
 
 /* Featured card ("A little more encouragement"): shows a random affirmation, with Save. */
