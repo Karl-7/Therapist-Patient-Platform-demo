@@ -6,8 +6,10 @@ WHAT IS IN HERE
 - login.html      Sign in as Private or Doctor. Private people can create an account. Doctor accounts are invite-only.
 - doctor.html     Doctor page: booking enquiries, clients (weekly AI summary + shared journal entries), affirmation library.
                   Open doctor.html?demo=1 to preview it with sample data (no sign-in, nothing saved).
-- assets/         Shared scripts and styles (auth.js, private.js, doctor.js, site.css, vendor/netlify-identity.js).
+- assets/         Page scripts (auth.js, private.js, doctor.js, login.js, dev-backend.js) and site.css.
+- assets/build/   The bundled scripts the pages actually load. Rebuilt by `npm run build` (see below).
 - netlify/functions/  The server side (Netlify Functions). Data is kept in Netlify Blobs.
+- scripts/build.mjs   Bundles assets/*.js into assets/build/, and (on Netlify) copies the site into dist/.
 - affirmations.json   Old reference copy. The live list is now edited on the Doctor page.
 
 WHERE DATA IS STORED (all on Netlify)
@@ -41,10 +43,23 @@ ONE-TIME SETUP ON NETLIFY
    The doctor then signs in on login.html with "Doctor" selected.
 5. Optional: Identity > Emails, to change the invite / confirmation / reset email texts.
 
-LOCAL PREVIEW
-- python3 -m http.server 8765   then open http://localhost:8765/doctor.html?demo=1 for the Doctor preview.
-- Real sign-in and saving only work on the Netlify site (or with "netlify dev" linked to the site).
-- If you change the Identity library version: npm install, then npm run build:vendor.
+DEBUG MODE (opening the site locally or from GitHub)
+- When the site is opened as a file (double-click), from localhost, or from *.github.io, it runs in debug mode.
+  On the Netlify site and on your own domain, debug mode is always off.
+- Debug account (works as BOTH Private and Doctor; pick the role on the login page):
+      email:    debug@safespace.test
+      password: debug1234
+- In debug mode nothing is sent anywhere: accounts, journals, bookings and affirmations are kept in this
+  browser's localStorage. "Create account" also works, to add more test Private people.
+- A small banner at the bottom shows debug mode is on; "Reset debug data" wipes it.
+- On the Doctor page > Clients, "Debug: add sample AI summary" shows how a weekly summary looks.
+- To test the real Netlify backend on localhost (netlify dev), open any page with ?live=1 (?live=0 to go back).
+- doctor.html?demo=1 still shows the Doctor page filled with sample data.
+
+EDITING THE SCRIPTS
+- Edit the files in assets/*.js, then run:  npm install  (once)  and  npm run build
+  This updates assets/build/, which the pages load. Commit assets/build/ too, so opening the files locally keeps working.
+- Netlify runs `npm run build` on every deploy and publishes the dist/ folder (only the public site files).
 
 BEFORE LAUNCH
 - Confirm fees, services, the therapist bio, qualifications and languages.

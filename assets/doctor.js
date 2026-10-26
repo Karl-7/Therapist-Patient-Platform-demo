@@ -1,6 +1,7 @@
 // Doctor page: booking enquiries, clients (weekly AI summary + shared entries), affirmation library.
 // Open doctor.html?demo=1 to preview the layout with sample data (no sign-in, nothing saved).
-import { api, currentUser, isDoctor, loginUrl, signOut } from './auth.js'
+import { DEV, api, currentUser, isDoctor, loginUrl, signOut } from './auth.js'
+import { devAddSampleSummary, showDevBanner } from './dev-backend.js'
 import { demoApi } from './doctor-demo.js'
 
 const $ = (id) => document.getElementById(id)
@@ -145,6 +146,11 @@ async function openClient(id) {
     box.append(
       el('h3', { textContent: client.name || client.email, style: 'margin:0;font-size:20px' }),
       el('div', { className: 'meta', textContent: `${client.email}${client.createdAt ? ' · joined ' + fmtDate(client.createdAt, { dateStyle: 'medium' }) : ''}` }))
+    if (DEV && !DEMO) {
+      const sample = el('button', { className: 'btn secondary small', type: 'button', textContent: 'Debug: add sample AI summary for this week', style: 'margin-top:10px' })
+      sample.onclick = () => { devAddSampleSummary(id); openClient(id) }
+      box.append(sample)
+    }
     if (!weeks.length) {
       box.append(el('p', { className: 'empty', textContent: 'No weekly summaries or shared entries yet.' }))
       return
@@ -277,6 +283,7 @@ async function start() {
   }
   $('who').textContent = user.name || user.email
   document.documentElement.classList.remove('auth-pending')
+  if (!DEMO) showDevBanner()
   let tab = 'bookings'
   try { tab = sessionStorage.getItem('sst_doctor_tab') || tab } catch {}
   showTab(['bookings', 'clients', 'affirmations'].includes(tab) ? tab : 'bookings')

@@ -3,7 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build:vendor": "esbuild node_modules/@netlify/identity/dist/main.js --bundle --format=esm --minify --target=es2020 --outfile=assets/vendor/netlify-identity.js"
+    "build": "node scripts/build.mjs --dist",
+    "build:assets": "node scripts/build.mjs"
   },
   "dependencies": {
     "@netlify/blobs": "11.1.6",

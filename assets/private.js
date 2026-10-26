@@ -3,6 +3,7 @@
 // affirmations from this browser onto the site's Netlify storage.
 // The page's own script runs first, so this file replaces its handlers.
 import { api, currentUser, forwardAuthLinks, isDoctor, loginUrl, signOut } from './auth.js'
+import { showDevBanner } from './dev-backend.js'
 
 const $ = (id) => document.getElementById(id)
 const el = (tag, props = {}, ...kids) => {
@@ -232,6 +233,7 @@ async function start() {
   if (!user) return location.replace(loginUrl('private'))
   if (isDoctor(user)) return location.replace('doctor.html')
   addAccountMenu(user)
+  showDevBanner()
   setupJournal()
   setupBooking(user)
   reveal()

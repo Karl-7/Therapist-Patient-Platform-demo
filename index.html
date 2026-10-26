@@ -120,5 +120,5 @@ const dailyReminders=[
 const dayNumber=Math.floor(new Date().setHours(0,0,0,0)/86400000);
 $('affirmationText').textContent='“'+dailyReminders[((dayNumber%dailyReminders.length)+dailyReminders.length)%dailyReminders.length]+'”';
 renderMoods();renderCategories();renderSearch();renderFavorites();renderJournals();
-</script><script type="module" src="assets/private.js"></script>
+</script><script src="assets/build/private.js" defer></script>
 </body></html>

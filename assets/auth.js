@@ -1,6 +1,9 @@
 // Sign-in helpers shared by every page (Netlify Identity).
-import * as identity from './vendor/netlify-identity.js'
+// When the site is opened locally or from GitHub Pages, debug mode (dev-backend.js) is used instead.
+import * as identity from '@netlify/identity'
+import { DEV, devApi, devCurrentUser, devSignIn, devSignOut, devSignUp } from './dev-backend.js'
 
+export { DEV }
 export const DOCTOR_ROLE = 'doctor'
 const REMEMBER_KEY = 'sst_remember'
 const KEEP_DAYS = 30
@@ -42,12 +45,15 @@ function restoreCookies() {
   if (token?.refresh_token) writeCookie('nf_refresh', token.refresh_token, KEEP_DAYS)
 }
 
-identity.onAuthChange((event) => {
-  if (event === 'login' || event === 'token_refresh') keepCookies()
-})
+if (!DEV) {
+  identity.onAuthChange((event) => {
+    if (event === 'login' || event === 'token_refresh') keepCookies()
+  })
+}
 
 // Returns the signed-in user with a fresh token, or null.
 export async function currentUser() {
+  if (DEV) return devCurrentUser()
   restoreCookies()
   const user = await identity.getUser()
   if (!user) return null
@@ -60,7 +66,9 @@ export async function currentUser() {
   return user
 }
 
-export async function signIn(email, password, remember) {
+// `role` is only used by the debug account, which can sign in as either role.
+export async function signIn(email, password, remember, role) {
+  if (DEV) return devSignIn(email, password, role)
   setRemember(remember)
   const user = await identity.login(email, password)
   keepCookies()
@@ -68,6 +76,7 @@ export async function signIn(email, password, remember) {
 }
 
 export async function signOut() {
+  if (DEV) return devSignOut()
   setRemember(false)
   try {
     await identity.logout()
@@ -76,9 +85,13 @@ export async function signOut() {
   }
 }
 
-export const signUp = (email, password, name) => identity.signup(email, password, name ? { full_name: name } : undefined)
-export const requestPasswordRecovery = (email) => identity.requestPasswordRecovery(email)
-export const handleAuthCallback = () => identity.handleAuthCallback()
+export const signUp = async (email, password, name) =>
+  DEV ? devSignUp(email, password, name) : identity.signup(email, password, name ? { full_name: name } : undefined)
+export const requestPasswordRecovery = async (email) => {
+  if (DEV) throw new Error('Password reset emails only work on the Netlify site. In debug mode, use the debug account.')
+  return identity.requestPasswordRecovery(email)
+}
+export const handleAuthCallback = async () => (DEV ? null : identity.handleAuthCallback())
 export const acceptInvite = (token, password) => identity.acceptInvite(token, password)
 export const updatePassword = (password) => identity.updateUser({ password })
 
@@ -102,6 +115,7 @@ export const loginUrl = (as, reason) => {
 
 // Fetch wrapper for /api/*. Sends cookies, throws a readable Error on failure.
 export async function api(path, { method = 'GET', body } = {}) {
+  if (DEV) return devApi(path, { method, body })
   const res = await fetch(path, {
     method,
     credentials: 'same-origin',
