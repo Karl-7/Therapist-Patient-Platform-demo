@@ -25,8 +25,11 @@ let onError = (err) => console.error(err)
 const isSaved = (item) => favorites.some((f) => f.id === item.id)
 const lib = () => (typeof library !== 'undefined' && Array.isArray(library) ? library : [])
 
-export async function setupAffirmations(handleError) {
+let guest = false // not signed in: favourites cannot be saved
+
+export async function setupAffirmations(handleError, { guest: isGuest = false } = {}) {
   onError = handleError || onError
+  guest = isGuest
   const hasUi = $('searchResults') || $('favoriteList') || $('featuredQuote')
   if (!hasUi) return
   // Replace the page's versions (which had a "Use this" button that did nothing visible).
@@ -52,6 +55,7 @@ export function refreshAffirmations() {
 }
 
 async function loadFavorites() {
+  if (guest) return
   try {
     favorites = (await api('/api/favorites')).items || []
     // Favourites saved in this browser before accounts existed: move them into the account once.
@@ -67,6 +71,7 @@ async function loadFavorites() {
 }
 
 async function toggleSave(item, button) {
+  if (guest) return onError(Object.assign(new Error('Please sign in first.'), { status: 401 }))
   if (button) button.disabled = true
   try {
     const res = isSaved(item)

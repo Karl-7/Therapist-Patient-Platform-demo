@@ -134,8 +134,8 @@ export async function devApi(path, { method = 'GET', body } = {}) {
     return clone(db.affirmations)
   }
 
-  if (!user) throw fail(401, 'Please sign in.')
-
+  // Booking enquiries can be sent without an account (like on the real site).
+  if (!user && !(route === '/api/bookings' && method === 'POST')) throw fail(401, 'Please sign in.')
 
   if (route === '/api/journals') {
     if (isDoctor(user)) throw fail(403, 'Doctor accounts do not keep a journal.')
@@ -204,7 +204,7 @@ export async function devApi(path, { method = 'GET', body } = {}) {
   if (route === '/api/bookings') {
     if (method === 'POST') {
       if (!body?.name?.trim() || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(body?.email || '')) throw fail(400, 'Please add your name and a valid email.')
-      const booking = { id: newId(), userId: user.id, accountEmail: user.email, name: body.name.trim(), email: body.email.trim(), service: body.service || '', session: body.session || '', date: body.date || '', message: (body.message || '').trim(), status: 'new', note: '', created: new Date().toISOString() }
+      const booking = { id: newId(), userId: user?.id || null, accountEmail: user?.email || '', guest: !user, name: body.name.trim(), email: body.email.trim(), service: body.service || '', session: body.session || '', date: body.date || '', message: (body.message || '').trim(), status: 'new', note: '', created: new Date().toISOString() }
       db.bookings.push(booking)
       saveDb(db)
       return { booking: { id: booking.id, created: booking.created } }

@@ -5,7 +5,7 @@ import { DEBUG_EMAIL, DEBUG_PASSWORD, showDevBanner } from './dev-backend.js'
 const $ = (id) => document.getElementById(id)
 const params = new URLSearchParams(location.search)
 let role = params.get('as') === 'doctor' ? 'doctor' : 'private'
-let mode = 'signin' // signin | signup | forgot | invite | recovery
+let mode = role === 'private' && params.get('mode') === 'signup' ? 'signup' : 'signin' // signin | signup | forgot | invite | recovery
 let inviteToken = null
 
 const reasons = {
@@ -83,7 +83,10 @@ function applyResetCooldown() {
 function destination(user) {
   if (isDoctor(user)) return 'doctor.html'
   const next = params.get('next')
-  return next && /^[a-z-]+\.html$/.test(next) && next !== 'doctor.html' ? next : 'index.html'
+  const page = next && /^[a-z-]+\.html$/.test(next) && next !== 'doctor.html' ? next : 'index.html'
+  // Back to the same part of the page (e.g. booking.html#booking).
+  const hash = params.get('hash')
+  return page + (hash && /^[\w-]+$/.test(hash) ? '#' + hash : '')
 }
 
 // Signs out and explains when the account does not match the chosen role.

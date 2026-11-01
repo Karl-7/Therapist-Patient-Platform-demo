@@ -1990,7 +1990,7 @@
   var $ = (id) => document.getElementById(id);
   var params = new URLSearchParams(location.search);
   var role = params.get("as") === "doctor" ? "doctor" : "private";
-  var mode = "signin";
+  var mode = role === "private" && params.get("mode") === "signup" ? "signup" : "signin";
   var inviteToken = null;
   var reasons = {
     "signed-out": "You have been signed out.",
@@ -2070,7 +2070,9 @@
   function destination(user) {
     if (isDoctor(user)) return "doctor.html";
     const next = params.get("next");
-    return next && /^[a-z-]+\.html$/.test(next) && next !== "doctor.html" ? next : "index.html";
+    const page = next && /^[a-z-]+\.html$/.test(next) && next !== "doctor.html" ? next : "index.html";
+    const hash = params.get("hash");
+    return page + (hash && /^[\w-]+$/.test(hash) ? "#" + hash : "");
   }
   async function enter(user) {
     if (role === "doctor" && !isDoctor(user)) {

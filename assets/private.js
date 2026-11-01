@@ -1,6 +1,7 @@
 // Loaded at the end of every Private page (index, about, booking, affirmations, contact).
-// 1. Requires sign-in.  2. Adds the account menu.  3. Moves journal, booking and
-// affirmations from this browser onto the site's Netlify storage.
+// The pages are public. 1. Adds "Sign in" (or the person's name + Sign out) at the top right.
+// 2. Signed in: journal, booking, favourites and mood check-ins use the site's Netlify storage.
+//    Not signed in: those parts ask the visitor to sign in first.
 // The page's own script runs first, so this file replaces its handlers.
 import { api, currentUser, forwardAuthLinks, isDoctor, loginUrl, signOut } from './auth.js'
 import { showDevBanner } from './dev-backend.js'
@@ -24,9 +25,9 @@ function localWeek(date = new Date()) {
 }
 
 /* ---------- account menu ---------- */
-function addAccountMenu(user) {
-  const nav = $('navlinks')
-  if (!nav) return
+let signedIn = false
+
+function addSharedStyles() {
   const style = document.createElement('style')
   style.textContent = '.account{display:flex;align-items:center;gap:8px;padding-left:8px;border-left:1px solid var(--line,#e8dfed)}.account span{font-size:12px;color:#8a7fa0;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}@media(max-width:650px){.account{border-left:0;padding:8px 5px}}' +
     // Long words and links wrap instead of pushing the page wider than the phone.
@@ -37,11 +38,55 @@ function addAccountMenu(user) {
     // The four "journey" cards are links on every page (only the home page had this style).
     '.step-link{display:block;text-decoration:none;color:inherit;cursor:pointer;transition:transform .18s,box-shadow .18s,border-color .18s}' +
     '.step-link:hover,.step-link:focus-visible{transform:translateY(-3px);border-color:#b7a4d0;box-shadow:0 8px 22px #57466d18}' +
-    '.step-link:focus-visible{outline:2px solid #b7a4d0;outline-offset:2px}'
+    '.step-link:focus-visible{outline:2px solid #b7a4d0;outline-offset:2px}' +
+    // "Please sign in" card and toast for visitors.
+    '.signin-card{text-align:center;padding:30px 20px;border:1px dashed #d9cde8;border-radius:18px;background:#fff}.signin-card h3{margin:0 0 6px;font-size:20px}.signin-card p{color:var(--muted,#73778c);margin:0 auto 16px;max-width:460px}' +
+    '.signin-card .row-actions{justify-content:center}' +
+    '.signin-toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:9998;display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center;max-width:calc(100% - 32px);background:#35405f;color:#fff;font-size:14px;padding:10px 14px;border-radius:14px;box-shadow:0 8px 24px #0003}' +
+    '.signin-toast .btn{padding:7px 14px;font-size:13px}' +
+    // Nav link colours would otherwise turn the "Sign in" button's text grey.
+    '.navlinks .account a.btn{color:#fff}.navlinks .account a.btn:hover{color:#fff}'
   document.head.append(style)
+}
+
+// Where the "Sign in" links go: the login page, coming back to this page afterwards.
+const signInUrl = (mode) => loginUrl('private') + (mode === 'signup' ? '&mode=signup' : '') + (location.hash ? '&hash=' + encodeURIComponent(location.hash.slice(1)) : '')
+
+function addAccountMenu(user) {
+  const nav = $('navlinks')
+  if (!nav) return
+  if (!user) {
+    nav.append(el('div', { className: 'account' }, el('a', { className: 'btn small', href: signInUrl(), textContent: 'Sign in' })))
+    return
+  }
   const out = el('button', { className: 'btn secondary small', type: 'button', textContent: 'Sign out' })
-  out.onclick = async () => { await signOut(); location.replace(loginUrl('private', 'signed-out')) }
+  // The site is public, so signing out just shows this page again as a visitor.
+  out.onclick = async () => { await signOut(); location.reload() }
   nav.append(el('div', { className: 'account' }, el('span', { textContent: user.name || user.email || 'Signed in', title: user.email || '' }), out))
+}
+
+// A small bar at the bottom: "Sign in to …" with a button. Used when a visitor tries something that needs an account.
+function askToSignIn(message, { signup = false } = {}) {
+  document.querySelector('.signin-toast')?.remove()
+  const close = el('button', { type: 'button', className: 'btn secondary small', textContent: 'Not now' })
+  const go = el('a', { className: 'btn small', href: signInUrl(signup ? 'signup' : undefined), textContent: signup ? 'Create account' : 'Sign in' })
+  const toast = el('div', { className: 'signin-toast', role: 'status' }, el('span', { textContent: message }), go, close)
+  close.onclick = () => toast.remove()
+  document.body.append(toast)
+}
+
+// Visitors see an invitation instead of the journal.
+function setupGuestJournal() {
+  const section = $('journal')
+  if (!section || !$('journalText')) return
+  section.querySelector('.grid2')?.classList.add('hidden')
+  section.append(el('div', { className: 'signin-card' },
+    el('div', { className: 'eyebrow', textContent: 'CHECK IN WITH YOURSELF' }),
+    el('h3', { textContent: 'Keep a private journal' }),
+    el('p', { textContent: 'Sign in to write, or talk to your phone keyboard and let us tidy it up. Only you can read your entries, and you choose which ones your therapist sees.' }),
+    el('div', { className: 'row-actions' },
+      el('a', { className: 'btn', href: signInUrl(), textContent: 'Sign in' }),
+      el('a', { className: 'btn secondary', href: signInUrl('signup'), textContent: 'Create an account' }))))
 }
 
 /* ---------- journal ---------- */
@@ -351,15 +396,28 @@ function renderImportBanner(out) {
 }
 
 /* ---------- booking ---------- */
+// Booking enquiries can be sent with or without an account.
+const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/
+
 function setupBooking(user) {
   const form = $('bookingForm')
   if (!form) return
-  if ($('bookName') && !$('bookName').value) $('bookName').value = user.name || ''
-  if ($('bookEmail') && !$('bookEmail').value) $('bookEmail').value = user.email || ''
+  if (user && $('bookName') && !$('bookName').value) $('bookName').value = user.name || ''
+  if (user && $('bookEmail') && !$('bookEmail').value) $('bookEmail').value = user.email || ''
   const notice = form.querySelector('.notice')
-  if (notice) notice.textContent = 'Your enquiry goes straight to the therapist, who will reply by email. Sending it does not confirm an appointment.'
+  if (notice) notice.textContent = 'Your enquiry goes straight to the therapist, who will reply by email. You do not need an account. Sending it does not confirm an appointment.'
   const submitBtn = form.querySelector('[type="submit"]')
   if (submitBtn) submitBtn.textContent = 'Send booking enquiry'
+
+  // Our own gentle reminders instead of the browser's pop-ups.
+  form.noValidate = true
+  // Hidden field that only spam bots fill in (people never see it).
+  const trap = el('input', { type: 'text', name: 'website', tabIndex: -1, autocomplete: 'off' })
+  trap.setAttribute('aria-hidden', 'true')
+  trap.style.cssText = 'position:absolute;left:-9999px;width:1px;height:1px;opacity:0'
+  form.append(trap)
+
+  const status = (t) => ($('bookingStatus').textContent = t)
 
   // Runs before the page's old email-app handler and stops it.
   document.addEventListener('submit', async (e) => {
@@ -367,17 +425,39 @@ function setupBooking(user) {
     e.preventDefault()
     e.stopImmediatePropagation()
     const data = Object.fromEntries(new FormData(form))
-    const status = (t) => ($('bookingStatus').textContent = t)
+
+    // Ask for what is missing first; nothing is sent until name and email are there.
+    const name = (data.name || '').trim()
+    const email = (data.email || '').trim()
+    if (!name || !email) {
+      status(!name && !email
+        ? 'Please add your name and an email address, so the therapist can reply to you.'
+        : !name ? 'Please add your name.' : 'Please add an email address, so the therapist can reply to you.')
+      ;(!name ? $('bookName') : $('bookEmail'))?.focus()
+      return
+    }
+    if (!EMAIL_RE.test(email)) {
+      status('That email address does not look complete. Please check it.')
+      $('bookEmail')?.focus()
+      return
+    }
+
     submitBtn && (submitBtn.disabled = true)
     status('Sending…')
     try {
       await api('/api/bookings', { method: 'POST', body: data })
       form.reset()
-      $('bookName').value = user.name || ''
-      $('bookEmail').value = user.email || ''
+      if (user) {
+        $('bookName').value = user.name || ''
+        $('bookEmail').value = user.email || ''
+      }
       status('Thank you. Your enquiry has been sent. The therapist will reply by email. This is not yet an appointment confirmation.')
+      // Visitors: an optional invitation, they decide whether to click it.
+      if (!user) askToSignIn('Your enquiry is sent. Want a private journal too?', { signup: true })
     } catch (err) {
-      status(handleApiError(err, 'Could not send. Please try again, or email support@safe-spacetherapy.com.'))
+      status(err?.status === 401 && !user
+        ? 'Could not send right now. Please try again, or email support@safe-spacetherapy.com.'
+        : handleApiError(err, 'Could not send. Please try again, or email support@safe-spacetherapy.com.'))
     } finally {
       submitBtn && (submitBtn.disabled = false)
     }
@@ -401,6 +481,10 @@ async function loadAffirmations() {
 
 function handleApiError(err, fallback) {
   if (err?.status === 401) {
+    if (!signedIn) {
+      askToSignIn('Sign in to save this to your account.')
+      return 'Please sign in first.'
+    }
     location.replace(loginUrl('private', 'expired'))
     return 'Your session has ended. Taking you to sign in…'
   }
@@ -424,15 +508,17 @@ async function start() {
   } catch {
     user = null
   }
-  if (!user) return location.replace(loginUrl('private'))
   if (isDoctor(user)) return location.replace('doctor.html')
+  signedIn = !!user
+  addSharedStyles()
   addAccountMenu(user)
   showDevBanner()
-  setupJournal()
-  setupMoodPickers((err) => handleApiError(err, ''))
+  if (user) setupJournal()
+  else setupGuestJournal()
+  setupMoodPickers((err) => handleApiError(err, ''), { guest: !user })
   setupBooking(user)
   reveal()
-  await Promise.all([setupAffirmations((err) => handleApiError(err, '')), loadAffirmations()])
+  await Promise.all([setupAffirmations((err) => handleApiError(err, ''), { guest: !user }), loadAffirmations()])
   refreshAffirmations()
   scrollToHash()
 }

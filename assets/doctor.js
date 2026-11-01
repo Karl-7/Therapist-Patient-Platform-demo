@@ -99,7 +99,7 @@ function renderBookings() {
         el('h3', {}, b.name, el('span', { className: 'pill ' + b.status, textContent: b.status })),
         el('div', { className: 'meta' },
           el('a', { href: replyHref, textContent: b.email }),
-          ` · ${b.service || 'Service not chosen'} · ${b.session || 'Format not chosen'} · Preferred date: ${b.date ? fmtDate(b.date + 'T00:00:00', { dateStyle: 'medium' }) : 'not given'}`),
+          ` · ${b.service || 'Service not chosen'} · ${b.session || 'Format not chosen'} · Preferred date: ${b.date ? fmtDate(b.date + 'T00:00:00', { dateStyle: 'medium' }) : 'not given'}${b.guest ? ' · Sent without an account' : ''}`),
         el('div', { className: 'meta', textContent: 'Sent ' + fmtDate(b.created) }),
         b.message ? el('p', { textContent: b.message }) : el('p', { className: 'meta', textContent: 'No message.' })),
       el('div', {}, el('label', { className: 'meta', textContent: 'Status' }), status, note, saved)))

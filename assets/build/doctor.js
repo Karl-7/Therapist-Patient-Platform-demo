@@ -1642,7 +1642,7 @@
       saveDb(db);
       return clone(db.affirmations);
     }
-    if (!user) throw fail(401, "Please sign in.");
+    if (!user && !(route === "/api/bookings" && method === "POST")) throw fail(401, "Please sign in.");
     if (route === "/api/journals") {
       if (isDoctor(user)) throw fail(403, "Doctor accounts do not keep a journal.");
       const mine = db.journals.filter((e) => e.userId === user.id && e.kind !== "mood");
@@ -1706,7 +1706,7 @@
     if (route === "/api/bookings") {
       if (method === "POST") {
         if (!body?.name?.trim() || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(body?.email || "")) throw fail(400, "Please add your name and a valid email.");
-        const booking = { id: newId(), userId: user.id, accountEmail: user.email, name: body.name.trim(), email: body.email.trim(), service: body.service || "", session: body.session || "", date: body.date || "", message: (body.message || "").trim(), status: "new", note: "", created: (/* @__PURE__ */ new Date()).toISOString() };
+        const booking = { id: newId(), userId: user?.id || null, accountEmail: user?.email || "", guest: !user, name: body.name.trim(), email: body.email.trim(), service: body.service || "", session: body.session || "", date: body.date || "", message: (body.message || "").trim(), status: "new", note: "", created: (/* @__PURE__ */ new Date()).toISOString() };
         db.bookings.push(booking);
         saveDb(db);
         return { booking: { id: booking.id, created: booking.created } };
@@ -2105,7 +2105,7 @@
             "div",
             { className: "meta" },
             el("a", { href: replyHref, textContent: b.email }),
-            ` \xB7 ${b.service || "Service not chosen"} \xB7 ${b.session || "Format not chosen"} \xB7 Preferred date: ${b.date ? fmtDate(b.date + "T00:00:00", { dateStyle: "medium" }) : "not given"}`
+            ` \xB7 ${b.service || "Service not chosen"} \xB7 ${b.session || "Format not chosen"} \xB7 Preferred date: ${b.date ? fmtDate(b.date + "T00:00:00", { dateStyle: "medium" }) : "not given"}${b.guest ? " \xB7 Sent without an account" : ""}`
           ),
           el("div", { className: "meta", textContent: "Sent " + fmtDate(b.created) }),
           b.message ? el("p", { textContent: b.message }) : el("p", { className: "meta", textContent: "No message." })

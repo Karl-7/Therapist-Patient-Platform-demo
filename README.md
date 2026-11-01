@@ -128,7 +128,7 @@ Typing another password resets the count. Once shown, the box stays for the rest
 
 | Path | What it is |
 |---|---|
-| `index.html`, `journal.html`, `affirmations.html`, `booking.html`, `contact.html`, `about.html` | The Private pages (see **Pages** above). Everyone must sign in first. |
+| `index.html`, `journal.html`, `affirmations.html`, `booking.html`, `contact.html`, `about.html` | The public pages (see **Pages** above). Anyone can read them and send a booking enquiry; "Sign in" (top right) is needed for the journal, saved affirmations and mood check-ins. |
 | `login.html` | Sign in as Private or Doctor. |
 | `doctor.html` | The Doctor page. |
 | `assets/` | Page scripts (`auth.js`, `private.js`, `doctor.js`, `login.js`, `dev-backend.js`, …) and `site.css`. |
@@ -193,7 +193,10 @@ Without them, the Doctor page says "the AI server is not connected yet" and noth
 
 1. AWS console, region **Europe (Stockholm) eu-north-1**. Billing → Budgets: create a monthly budget alert (e.g. $10).
 2. EC2 → **Launch instance**:
-   - Name `safespace-ai`, **Ubuntu Server 24.04 LTS, 64-bit (Arm)**, instance type **t4g.large** (8 GB)
+   - Name `safespace-ai`, **Ubuntu Server 24.04 LTS**, an instance type with **8 GB** memory:
+     - AWS **Free plan** account (created after 15 July 2025): **m7i-flex.large** with **64-bit (x86)**. It is marked "Free tier eligible" and is paid from the free credits.
+     - Paid account: **t4g.large** with **64-bit (Arm)** (a little cheaper per hour).
+     - Smaller free types (t3.small, t4g.small, c7i-flex.large) have 2–4 GB, which is not enough for `qwen3.5:4b`.
    - Key pair: create one (ED25519) and download the `.pem` file
    - Network: allow SSH (22) from **My IP** only. No other inbound rules (the server only makes outgoing calls).
    - Auto-assign public IP: Enable (no Elastic IP needed; you only pay for the IP while it runs)

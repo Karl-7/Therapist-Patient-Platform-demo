@@ -1642,7 +1642,7 @@
       saveDb(db);
       return clone(db.affirmations);
     }
-    if (!user) throw fail(401, "Please sign in.");
+    if (!user && !(route === "/api/bookings" && method === "POST")) throw fail(401, "Please sign in.");
     if (route === "/api/journals") {
       if (isDoctor(user)) throw fail(403, "Doctor accounts do not keep a journal.");
       const mine = db.journals.filter((e) => e.userId === user.id && e.kind !== "mood");
@@ -1706,7 +1706,7 @@
     if (route === "/api/bookings") {
       if (method === "POST") {
         if (!body?.name?.trim() || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(body?.email || "")) throw fail(400, "Please add your name and a valid email.");
-        const booking = { id: newId(), userId: user.id, accountEmail: user.email, name: body.name.trim(), email: body.email.trim(), service: body.service || "", session: body.session || "", date: body.date || "", message: (body.message || "").trim(), status: "new", note: "", created: (/* @__PURE__ */ new Date()).toISOString() };
+        const booking = { id: newId(), userId: user?.id || null, accountEmail: user?.email || "", guest: !user, name: body.name.trim(), email: body.email.trim(), service: body.service || "", session: body.session || "", date: body.date || "", message: (body.message || "").trim(), status: "new", note: "", created: (/* @__PURE__ */ new Date()).toISOString() };
         db.bookings.push(booking);
         saveDb(db);
         return { booking: { id: booking.id, created: booking.created } };
@@ -2008,8 +2008,10 @@
   var onError = (err) => console.error(err);
   var isSaved = (item) => favorites.some((f) => f.id === item.id);
   var lib = () => typeof library !== "undefined" && Array.isArray(library) ? library : [];
-  async function setupAffirmations(handleError) {
+  var guest = false;
+  async function setupAffirmations(handleError, { guest: isGuest = false } = {}) {
     onError = handleError || onError;
+    guest = isGuest;
     const hasUi = $("searchResults") || $("favoriteList") || $("featuredQuote");
     if (!hasUi) return;
     window.renderSearch = renderSearch2;
@@ -2031,6 +2033,7 @@
     updateSaveButtons();
   }
   async function loadFavorites() {
+    if (guest) return;
     try {
       favorites = (await api("/api/favorites")).items || [];
       let local = [];
@@ -2050,6 +2053,7 @@
     }
   }
   async function toggleSave(item, button) {
+    if (guest) return onError(Object.assign(new Error("Please sign in first."), { status: 401 }));
     if (button) button.disabled = true;
     try {
       const res = isSaved(item) ? await api(`/api/favorites?id=${encodeURIComponent(item.id)}`, { method: "DELETE" }) : await api("/api/favorites", { method: "POST", body: { id: item.id, text: item.text, category: item.category || "" } });
@@ -2263,8 +2267,11 @@
   var pad = (n2) => String(n2).padStart(2, "0");
   var ymd = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
   var onError2 = (err) => console.error(err);
-  function setupMoodPickers(handleError) {
+  var guest2 = false;
+  var askedGuest = false;
+  function setupMoodPickers(handleError, { guest: isGuest = false } = {}) {
     onError2 = handleError || onError2;
+    guest2 = isGuest;
     addStyles();
     const home = document.getElementById("mood");
     if (home) {
@@ -2316,6 +2323,11 @@
     const now = /* @__PURE__ */ new Date();
     const monday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     monday.setDate(monday.getDate() - (monday.getDay() + 6) % 7);
+    if (guest2) {
+      if (!askedGuest) onError2(Object.assign(new Error("Please sign in first."), { status: 401 }));
+      askedGuest = true;
+      return;
+    }
     try {
       await api("/api/moods", {
         method: "POST",
@@ -2359,6 +2371,8 @@
 .mood-float{position:fixed;pointer-events:none;font-size:34px;transform:translate(-50%,-50%);animation:moodRise .95s ease-out forwards;will-change:transform,opacity}
 #mood h2,#mood .sub,.mood-checkin h2,.mood-checkin .sub{position:relative;z-index:1}
 .mood-controls{position:relative;z-index:2}
+/* The row hides cards that are scrolled out of view; leave room so a lifted or pressed card is never cut off. */
+.mood-controls .moods{padding:6px 3px;margin:-6px -3px}
 @keyframes moodRise{0%{opacity:1;transform:translate(-50%,-50%) scale(1)}70%{opacity:.9}100%{opacity:0;transform:translate(-50%,-150px) scale(1.6)}}
 @keyframes moodPress{0%{transform:scale(1)}40%{transform:scale(.93)}100%{transform:scale(1)}}
 @media (prefers-reduced-motion:reduce){.mood-float{animation-duration:.01s}.mood.tapped{animation:none}}`;
@@ -2378,18 +2392,52 @@
     d.setDate(d.getDate() - (d.getDay() + 6) % 7);
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
   }
+  var signedIn = false;
+  function addSharedStyles() {
+    const style = document.createElement("style");
+    style.textContent = ".account{display:flex;align-items:center;gap:8px;padding-left:8px;border-left:1px solid var(--line,#e8dfed)}.account span{font-size:12px;color:#8a7fa0;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}@media(max-width:650px){.account{border-left:0;padding:8px 5px}}.section,.about-page,footer{overflow-wrap:break-word}.grid2>*,.two-fields>*,.about-grid>*{min-width:0}.result,.saved-item,.tidy-text,.affirmation-text,#journalEntries,#bookingStatus,#journalStatus{overflow-wrap:anywhere}a.btn,a.btn:hover{text-decoration:none}.step-link{display:block;text-decoration:none;color:inherit;cursor:pointer;transition:transform .18s,box-shadow .18s,border-color .18s}.step-link:hover,.step-link:focus-visible{transform:translateY(-3px);border-color:#b7a4d0;box-shadow:0 8px 22px #57466d18}.step-link:focus-visible{outline:2px solid #b7a4d0;outline-offset:2px}.signin-card{text-align:center;padding:30px 20px;border:1px dashed #d9cde8;border-radius:18px;background:#fff}.signin-card h3{margin:0 0 6px;font-size:20px}.signin-card p{color:var(--muted,#73778c);margin:0 auto 16px;max-width:460px}.signin-card .row-actions{justify-content:center}.signin-toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:9998;display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center;max-width:calc(100% - 32px);background:#35405f;color:#fff;font-size:14px;padding:10px 14px;border-radius:14px;box-shadow:0 8px 24px #0003}.signin-toast .btn{padding:7px 14px;font-size:13px}.navlinks .account a.btn{color:#fff}.navlinks .account a.btn:hover{color:#fff}";
+    document.head.append(style);
+  }
+  var signInUrl = (mode) => loginUrl("private") + (mode === "signup" ? "&mode=signup" : "") + (location.hash ? "&hash=" + encodeURIComponent(location.hash.slice(1)) : "");
   function addAccountMenu(user) {
     const nav = $2("navlinks");
     if (!nav) return;
-    const style = document.createElement("style");
-    style.textContent = ".account{display:flex;align-items:center;gap:8px;padding-left:8px;border-left:1px solid var(--line,#e8dfed)}.account span{font-size:12px;color:#8a7fa0;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}@media(max-width:650px){.account{border-left:0;padding:8px 5px}}.section,.about-page,footer{overflow-wrap:break-word}.grid2>*,.two-fields>*,.about-grid>*{min-width:0}.result,.saved-item,.tidy-text,.affirmation-text,#journalEntries,#bookingStatus,#journalStatus{overflow-wrap:anywhere}a.btn,a.btn:hover{text-decoration:none}.step-link{display:block;text-decoration:none;color:inherit;cursor:pointer;transition:transform .18s,box-shadow .18s,border-color .18s}.step-link:hover,.step-link:focus-visible{transform:translateY(-3px);border-color:#b7a4d0;box-shadow:0 8px 22px #57466d18}.step-link:focus-visible{outline:2px solid #b7a4d0;outline-offset:2px}";
-    document.head.append(style);
+    if (!user) {
+      nav.append(el3("div", { className: "account" }, el3("a", { className: "btn small", href: signInUrl(), textContent: "Sign in" })));
+      return;
+    }
     const out = el3("button", { className: "btn secondary small", type: "button", textContent: "Sign out" });
     out.onclick = async () => {
       await signOut();
-      location.replace(loginUrl("private", "signed-out"));
+      location.reload();
     };
     nav.append(el3("div", { className: "account" }, el3("span", { textContent: user.name || user.email || "Signed in", title: user.email || "" }), out));
+  }
+  function askToSignIn(message, { signup: signup2 = false } = {}) {
+    document.querySelector(".signin-toast")?.remove();
+    const close = el3("button", { type: "button", className: "btn secondary small", textContent: "Not now" });
+    const go = el3("a", { className: "btn small", href: signInUrl(signup2 ? "signup" : void 0), textContent: signup2 ? "Create account" : "Sign in" });
+    const toast = el3("div", { className: "signin-toast", role: "status" }, el3("span", { textContent: message }), go, close);
+    close.onclick = () => toast.remove();
+    document.body.append(toast);
+  }
+  function setupGuestJournal() {
+    const section = $2("journal");
+    if (!section || !$2("journalText")) return;
+    section.querySelector(".grid2")?.classList.add("hidden");
+    section.append(el3(
+      "div",
+      { className: "signin-card" },
+      el3("div", { className: "eyebrow", textContent: "CHECK IN WITH YOURSELF" }),
+      el3("h3", { textContent: "Keep a private journal" }),
+      el3("p", { textContent: "Sign in to write, or talk to your phone keyboard and let us tidy it up. Only you can read your entries, and you choose which ones your therapist sees." }),
+      el3(
+        "div",
+        { className: "row-actions" },
+        el3("a", { className: "btn", href: signInUrl(), textContent: "Sign in" }),
+        el3("a", { className: "btn secondary", href: signInUrl("signup"), textContent: "Create an account" })
+      )
+    ));
   }
   var entries = [];
   function setupJournal() {
@@ -2671,31 +2719,52 @@
     box.style.background = "#fcf9ff";
     out.append(box);
   }
+  var EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
   function setupBooking(user) {
     const form = $2("bookingForm");
     if (!form) return;
-    if ($2("bookName") && !$2("bookName").value) $2("bookName").value = user.name || "";
-    if ($2("bookEmail") && !$2("bookEmail").value) $2("bookEmail").value = user.email || "";
+    if (user && $2("bookName") && !$2("bookName").value) $2("bookName").value = user.name || "";
+    if (user && $2("bookEmail") && !$2("bookEmail").value) $2("bookEmail").value = user.email || "";
     const notice = form.querySelector(".notice");
-    if (notice) notice.textContent = "Your enquiry goes straight to the therapist, who will reply by email. Sending it does not confirm an appointment.";
+    if (notice) notice.textContent = "Your enquiry goes straight to the therapist, who will reply by email. You do not need an account. Sending it does not confirm an appointment.";
     const submitBtn = form.querySelector('[type="submit"]');
     if (submitBtn) submitBtn.textContent = "Send booking enquiry";
+    form.noValidate = true;
+    const trap = el3("input", { type: "text", name: "website", tabIndex: -1, autocomplete: "off" });
+    trap.setAttribute("aria-hidden", "true");
+    trap.style.cssText = "position:absolute;left:-9999px;width:1px;height:1px;opacity:0";
+    form.append(trap);
+    const status = (t) => $2("bookingStatus").textContent = t;
     document.addEventListener("submit", async (e) => {
       if (e.target !== form) return;
       e.preventDefault();
       e.stopImmediatePropagation();
       const data = Object.fromEntries(new FormData(form));
-      const status = (t) => $2("bookingStatus").textContent = t;
+      const name = (data.name || "").trim();
+      const email = (data.email || "").trim();
+      if (!name || !email) {
+        status(!name && !email ? "Please add your name and an email address, so the therapist can reply to you." : !name ? "Please add your name." : "Please add an email address, so the therapist can reply to you.");
+        (!name ? $2("bookName") : $2("bookEmail"))?.focus();
+        return;
+      }
+      if (!EMAIL_RE.test(email)) {
+        status("That email address does not look complete. Please check it.");
+        $2("bookEmail")?.focus();
+        return;
+      }
       submitBtn && (submitBtn.disabled = true);
       status("Sending\u2026");
       try {
         await api("/api/bookings", { method: "POST", body: data });
         form.reset();
-        $2("bookName").value = user.name || "";
-        $2("bookEmail").value = user.email || "";
+        if (user) {
+          $2("bookName").value = user.name || "";
+          $2("bookEmail").value = user.email || "";
+        }
         status("Thank you. Your enquiry has been sent. The therapist will reply by email. This is not yet an appointment confirmation.");
+        if (!user) askToSignIn("Your enquiry is sent. Want a private journal too?", { signup: true });
       } catch (err) {
-        status(handleApiError(err, "Could not send. Please try again, or email support@safe-spacetherapy.com."));
+        status(err?.status === 401 && !user ? "Could not send right now. Please try again, or email support@safe-spacetherapy.com." : handleApiError(err, "Could not send. Please try again, or email support@safe-spacetherapy.com."));
       } finally {
         submitBtn && (submitBtn.disabled = false);
       }
@@ -2714,6 +2783,10 @@
   }
   function handleApiError(err, fallback) {
     if (err?.status === 401) {
+      if (!signedIn) {
+        askToSignIn("Sign in to save this to your account.");
+        return "Please sign in first.";
+      }
       location.replace(loginUrl("private", "expired"));
       return "Your session has ended. Taking you to sign in\u2026";
     }
@@ -2732,15 +2805,17 @@
     } catch {
       user = null;
     }
-    if (!user) return location.replace(loginUrl("private"));
     if (isDoctor2(user)) return location.replace("doctor.html");
+    signedIn = !!user;
+    addSharedStyles();
     addAccountMenu(user);
     showDevBanner();
-    setupJournal();
-    setupMoodPickers((err) => handleApiError(err, ""));
+    if (user) setupJournal();
+    else setupGuestJournal();
+    setupMoodPickers((err) => handleApiError(err, ""), { guest: !user });
     setupBooking(user);
     reveal();
-    await Promise.all([setupAffirmations((err) => handleApiError(err, "")), loadAffirmations()]);
+    await Promise.all([setupAffirmations((err) => handleApiError(err, ""), { guest: !user }), loadAffirmations()]);
     refreshAffirmations();
     scrollToHash();
   }

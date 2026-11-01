@@ -33,8 +33,12 @@ const ymd = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate(
 
 let onError = (err) => console.error(err)
 
-export function setupMoodPickers(handleError) {
+let guest = false // not signed in: check-ins are shown but not saved
+let askedGuest = false
+
+export function setupMoodPickers(handleError, { guest: isGuest = false } = {}) {
   onError = handleError || onError
+  guest = isGuest
   addStyles()
 
   // Home page: swap the old picker (which opened a pop-up) for the shared one.
@@ -87,6 +91,12 @@ async function tap(button, emoji, name, status) {
   const now = new Date()
   const monday = new Date(now.getFullYear(), now.getMonth(), now.getDate())
   monday.setDate(monday.getDate() - ((monday.getDay() + 6) % 7))
+  if (guest) {
+    // Visitors still get the reminder; ask once to sign in so check-ins can be kept.
+    if (!askedGuest) onError(Object.assign(new Error('Please sign in first.'), { status: 401 }))
+    askedGuest = true
+    return
+  }
   try {
     await api('/api/moods', {
       method: 'POST',
@@ -135,6 +145,8 @@ function addStyles() {
 .mood-float{position:fixed;pointer-events:none;font-size:34px;transform:translate(-50%,-50%);animation:moodRise .95s ease-out forwards;will-change:transform,opacity}
 #mood h2,#mood .sub,.mood-checkin h2,.mood-checkin .sub{position:relative;z-index:1}
 .mood-controls{position:relative;z-index:2}
+/* The row hides cards that are scrolled out of view; leave room so a lifted or pressed card is never cut off. */
+.mood-controls .moods{padding:6px 3px;margin:-6px -3px}
 @keyframes moodRise{0%{opacity:1;transform:translate(-50%,-50%) scale(1)}70%{opacity:.9}100%{opacity:0;transform:translate(-50%,-150px) scale(1.6)}}
 @keyframes moodPress{0%{transform:scale(1)}40%{transform:scale(.93)}100%{transform:scale(1)}}
 @media (prefers-reduced-motion:reduce){.mood-float{animation-duration:.01s}.mood.tapped{animation:none}}`
