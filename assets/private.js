@@ -83,7 +83,7 @@ function setupGuestJournal() {
   section.append(el('div', { className: 'signin-card' },
     el('div', { className: 'eyebrow', textContent: 'CHECK IN WITH YOURSELF' }),
     el('h3', { textContent: 'Keep a private journal' }),
-    el('p', { textContent: 'Sign in to write, or talk to your phone keyboard and let us tidy it up. Only you can read your entries, and you choose which ones your therapist sees.' }),
+    el('p', { textContent: 'Sign in to write, or talk to record your day. Your journal is private, and you choose which ones your therapist sees.' }),
     el('div', { className: 'row-actions' },
       el('a', { className: 'btn', href: signInUrl(), textContent: 'Sign in' }),
       el('a', { className: 'btn secondary', href: signInUrl('signup'), textContent: 'Create an account' }))))

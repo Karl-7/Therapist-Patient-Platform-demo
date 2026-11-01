@@ -2248,7 +2248,7 @@
     Sad: "It is okay to feel sad. You do not have to pretend to be okay to deserve care. \u{1F497}",
     Anxious: "Come back to one slow breath. You only need to take the next small step. \u{1F33F}",
     Stressed: "Pause for a moment. You are allowed to rest, even when there is more to do. \u2601\uFE0F",
-    Overwhelmed: "You do not have to do everything at once. One small thing is enough for now. \u{1F497}",
+    Overwhelmed: "You do not have to do everything at once. One small thing is enough for now. \u{1F90D}",
     Lonely: "Even when you feel alone, you still matter and you are worthy of connection. \u{1FAF6}",
     Okay: "You do not need to feel amazing every day. Being here is enough. \u{1F33C}",
     Good: "Let this good feeling have a little space. You are allowed to enjoy it. \u2728",
@@ -2268,6 +2268,7 @@
   var ymd = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
   var onError2 = (err) => console.error(err);
   var guest2 = false;
+  var askedGuest = false;
   function setupMoodPickers(handleError, { guest: isGuest = false } = {}) {
     onError2 = handleError || onError2;
     guest2 = isGuest;
@@ -2323,7 +2324,8 @@
     const monday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     monday.setDate(monday.getDate() - (monday.getDay() + 6) % 7);
     if (guest2) {
-      onError2(Object.assign(new Error("Please sign in first."), { status: 401 }));
+      if (!askedGuest) onError2(Object.assign(new Error("Please sign in first."), { status: 401 }));
+      askedGuest = true;
       return;
     }
     try {
@@ -2428,7 +2430,7 @@
       { className: "signin-card" },
       el3("div", { className: "eyebrow", textContent: "CHECK IN WITH YOURSELF" }),
       el3("h3", { textContent: "Keep a private journal" }),
-      el3("p", { textContent: "Sign in to write, or talk to your phone keyboard and let us tidy it up. Only you can read your entries, and you choose which ones your therapist sees." }),
+      el3("p", { textContent: "Sign in to write, or talk to record your day. Your journal is private, and you choose which ones your therapist sees." }),
       el3(
         "div",
         { className: "row-actions" },
