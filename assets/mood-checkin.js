@@ -10,7 +10,7 @@ const QUOTES = {
   Sad: 'It is okay to feel sad. You do not have to pretend to be okay to deserve care. 💗',
   Anxious: 'Come back to one slow breath. You only need to take the next small step. 🌿',
   Stressed: 'Pause for a moment. You are allowed to rest, even when there is more to do. ☁️',
-  Overwhelmed: 'You do not have to do everything at once. One small thing is enough for now. 🤍',
+  Overwhelmed: 'You do not have to do everything at once. One small thing is enough for now. 💗',
   Lonely: 'Even when you feel alone, you still matter and you are worthy of connection. 🫶',
   Okay: 'You do not need to feel amazing every day. Being here is enough. 🌼',
   Good: 'Let this good feeling have a little space. You are allowed to enjoy it. ✨',
@@ -18,7 +18,7 @@ const QUOTES = {
 }
 const TITLE = 'How are you feeling today?'
 const SUB = 'Choose the mood that feels closest to you right now.'
-const NOTICE = 'Tap as often as you like, even on days you do not feel like writing. Each tap is quietly noted for today.'
+const NOTICE = 'Tap as often as you like, even on days you do not feel like writing.'
 // Moods shown at once: 5 on wider screens, 2 on phones (matches the page's phone layout).
 const narrow = window.matchMedia('(max-width: 650px)')
 const visibleCount = () => (narrow.matches ? 2 : 5)

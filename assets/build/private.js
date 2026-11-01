@@ -2430,7 +2430,7 @@
       { className: "signin-card" },
       el3("div", { className: "eyebrow", textContent: "CHECK IN WITH YOURSELF" }),
       el3("h3", { textContent: "Keep a private journal" }),
-      el3("p", { textContent: "Sign in to write, or talk to your phone keyboard and let us tidy it up. Only you can read your entries, and you choose which ones your therapist sees." }),
+      el3("p", { textContent: "Sign in to write, or talk to record your day. Your journal is private, and you choose which ones your therapist sees." }),
       el3(
         "div",
         { className: "row-actions" },
