@@ -34,7 +34,6 @@ const ymd = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate(
 let onError = (err) => console.error(err)
 
 let guest = false // not signed in: check-ins are shown but not saved
-let askedGuest = false
 
 export function setupMoodPickers(handleError, { guest: isGuest = false } = {}) {
   onError = handleError || onError
@@ -92,9 +91,8 @@ async function tap(button, emoji, name, status) {
   const monday = new Date(now.getFullYear(), now.getMonth(), now.getDate())
   monday.setDate(monday.getDate() - ((monday.getDay() + 6) % 7))
   if (guest) {
-    // Visitors still get the reminder; ask once to sign in so check-ins can be kept.
-    if (!askedGuest) onError(Object.assign(new Error('Please sign in first.'), { status: 401 }))
-    askedGuest = true
+    // Visitors still get the reminder, and each tap reminds them that signing in keeps check-ins.
+    onError(Object.assign(new Error('Please sign in first.'), { status: 401 }))
     return
   }
   try {

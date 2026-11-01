@@ -26,6 +26,8 @@ if (process.argv.includes('--dist')) {
     if (file.endsWith('.html') || file === 'affirmations.json') cpSync(file, `dist/${file}`)
   }
   cpSync('assets/site.css', 'dist/assets/site.css')
+  cpSync('assets/fonts.css', 'dist/assets/fonts.css')
+  cpSync('assets/fonts', 'dist/assets/fonts', { recursive: true })
   cpSync('assets/build', 'dist/assets/build', { recursive: true })
   console.log('Copied the public site into dist/')
 }
