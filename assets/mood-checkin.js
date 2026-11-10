@@ -136,7 +136,7 @@ function addStyles() {
   style.textContent = `
 .mood-checkin{margin-bottom:28px;padding-bottom:26px;border-bottom:1px solid var(--line,#e8dfed)}
 .mood-checkin h2{margin-bottom:8px}
-.mood-status{min-height:22px;margin:12px 0 0;font-size:14px;color:#6b6283}
+.mood-status{min-height:26px;margin:14px auto 0;max-width:780px;font-size:18px;font-weight:700;line-height:1.45;color:#5b4f7d}
 .mood.tapped{animation:moodPress .35s ease}
 .mood:disabled,.arrow:disabled{opacity:.35;cursor:default}
 #mood-float-layer{position:fixed;inset:0;z-index:2147483647;pointer-events:none;isolation:isolate}
