@@ -2085,14 +2085,25 @@
     }
     location.replace(destination(user));
   }
+  var authDetails = (err) => {
+    const cause = err?.cause || {};
+    const json = cause.json || {};
+    return {
+      status: err?.status || cause.status || 0,
+      text: [err?.message, json.msg, json.error_description, json.error, typeof cause.data === "string" && cause.data.length < 200 ? cause.data : ""].filter(Boolean).join(" \xB7 ")
+    };
+  };
   var friendly = (err) => {
-    const msg = String(err?.message || err || "");
-    if (/invalid_grant|No user found|Invalid Password|invalid login/i.test(msg)) return "Email or password is incorrect.";
-    if (/not confirmed|Email not confirmed/i.test(msg)) return "Please confirm your email first. Check your inbox for the link.";
-    if (/already (been )?registered|already exists/i.test(msg)) return "An account with this email already exists. Try signing in.";
-    if (/Signups not allowed|signup.*disabled/i.test(msg)) return "New accounts are not open right now.";
-    if (/Identity|MissingIdentity|404|Unsupported method|Failed to fetch|Unexpected token/i.test(msg)) return "Sign-in is not available yet. Netlify Identity needs to be turned on for this site.";
-    return msg || "Something went wrong. Please try again.";
+    const { status, text } = authDetails(err);
+    if (/not confirmed|Email not confirmed/i.test(text)) return "Please confirm your email first. Check your inbox for the link.";
+    if (/invalid_grant|No user found|Invalid Password|invalid login/i.test(text)) return "Email or password is incorrect.";
+    if (/already (been )?registered|already exists/i.test(text)) return "An account with this email already exists. Try signing in.";
+    if (/Signups not allowed|signup.*disabled/i.test(text)) return 'New accounts are not open on this site. (Netlify Identity registration is set to "Invite only".)';
+    if (/rate limit|too many/i.test(text) || status === 429) return "Too many attempts. Please wait a few minutes and try again.";
+    if (/password/i.test(text) && status === 422) return text;
+    if (status === 404 || /MissingIdentity|Identity is not available|Unsupported method|Failed to fetch|Unexpected token/i.test(text)) return "Sign-in is not available yet. Netlify Identity needs to be turned on for this site.";
+    if (text) return text + (status ? ` (${status})` : "");
+    return `Something went wrong${status ? ` (${status})` : ""}. Please try again.`;
   };
   document.querySelectorAll("[data-role]").forEach((b) => b.onclick = () => {
     role = b.dataset.role;
